@@ -17,7 +17,7 @@ Motivating Example
 ------------------
 
 Consider the following snippet to combine 50 images 
-from an iterable :data:`source`::
+from an iterable :code:`source`::
 
 	import numpy as np
 
@@ -27,7 +27,7 @@ from an iterable :data:`source`::
 	
 	avg = np.average(images, axis = 2)
 
-If the :data:`source` iterable provided 1000 images, the above routine would
+If the :code:`source` iterable provided 1000 images, the above routine would
 not work on most machines. Moreover, what if we want to transform the images 
 one by one before averaging them? What about looking at the average while it 
 is being computed? Let's look at an example::
@@ -39,20 +39,20 @@ is being computed? Let's look at an example::
 	stream = map(imread, list_of_filenames)
 	averaged = iaverage(stream)
 
-At this point, the generators :func:`map` and :func:`iaverage` are 'wired'
+At this point, the generators :code:`map` and :code:`iaverage` are 'wired'
 but will not compute anything until it is requested. We can look at the average evolve::
 
     import matplotlib.pyplot as plt
     for avg in average:
         plt.imshow(avg); plt.show()
 
-We can also use :func:`last` to get at the final average::
+We can also use :code:`last` to get at the final average::
 
 	from npstreams import last
 
 	total = last(averaged) # average of the entire stream
 
-While the :func:`average` example is simple, there are some functions that are not easily
+While the :code:`average` example is simple, there are some functions that are not easily
 brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm,
 but single-pass algorithms do exist and are implemented in this package.
 
