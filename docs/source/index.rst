@@ -6,9 +6,13 @@
 `npstreams`: streaming NumPy functions
 **************************************
 
-npstreams is an open-source Python package for streaming NumPy array operations. 
+:mod:`npstreams` is an open-source Python package for streaming NumPy array operations. 
 The goal is to provide tested, drop-in replacements for NumPy functions (where possible) 
 that operate on streams of arrays instead of dense arrays.
+
+:mod:`npstreams` also provides some utilities for parallelization. These parallelization
+generators can be combined with the streaming functions to drastically improve performance
+in some cases.
 
 The code presented herein has been in use at some point by the 
 `Siwick research group <http://www.physics.mcgill.ca/siwicklab>`_.

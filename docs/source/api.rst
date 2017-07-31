@@ -20,7 +20,6 @@ Iterator Utilities
 
 Parallelization
 ---------------
-
 .. autosummary::
     :toctree: functions/
 
