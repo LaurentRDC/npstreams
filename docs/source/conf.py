@@ -39,8 +39,7 @@ extensions = ['alabaster',
               'sphinx.ext.intersphinx',
               'sphinx.ext.autodoc',
 			  'sphinx.ext.napoleon',
-			  'sphinx.ext.mathjax',
-			  'matplotlib.sphinxext.plot_directive']
+			  'sphinx.ext.mathjax']
 
 intersphinx_mapping = {'numpy': ('http://docs.scipy.org/doc/numpy/', None)}
 
