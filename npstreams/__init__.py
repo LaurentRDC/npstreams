@@ -6,3 +6,4 @@ __version__ = '0.1.1' # TODO: automatic versioning?
 
 from .iter_utils import last, chunked, multilinspace, linspace
 from .stats import iaverage, imean, istd, isem, ivar
+from .numerics import isum, inansum, iprod, inanprod

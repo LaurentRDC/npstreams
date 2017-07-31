@@ -18,3 +18,10 @@ Statistical Functions
 .. autofunction:: npstreams.istd
 .. autofunction:: npstreams.ivar
 .. autofunction:: npstreams.isem
+
+Numerics
+--------
+.. autofunction:: npstreams.isum
+.. autofunction:: npstreams.inansum
+.. autofunction:: npstreams.iprod
+.. autofunction:: npstreams.inanprod
