@@ -2,16 +2,18 @@ npstreams
 =========
 
 .. image:: https://img.shields.io/appveyor/ci/LaurentRDC/npstreams/master.svg
-    :target: https://ci.appveyor.com/project/LaurentRDC/scikit-ued
+    :target: https://ci.appveyor.com/project/LaurentRDC/npstreams
     :alt: Windows Build Status
-.. image:: https://readthedocs.org/projects/npstreams/badge/?version=master
-    :target: http://scikit-ued.readthedocs.io
+.. image:: https://readthedocs.org/projects/npstreams/badge/?version=latest
+    :target: http://npstreams.readthedocs.io
     :alt: Documentation Build Status
 .. image:: https://img.shields.io/pypi/v/npstreams.svg
     :target: https://pypi.python.org/pypi/npstreams
     :alt: PyPI Version
 
-Drop-in replacement of NumPy functions for streaming array operations.
+npstreams is an open-source Python package for streaming NumPy array operations. 
+The goal is to provide tested, drop-in replacements for NumPy functions (where possible) 
+that operate on streams of arrays instead of dense arrays.
 
 Motivating Example
 ------------------
