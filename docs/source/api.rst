@@ -14,10 +14,15 @@ Iterator Utilities
 Statistical Functions
 ---------------------
 .. autofunction:: npstreams.imean
+.. autofunction:: npstreams.inanmean
 .. autofunction:: npstreams.iaverage
 .. autofunction:: npstreams.istd
+.. autofunction:: npstreams.inanstd
 .. autofunction:: npstreams.ivar
+.. autofunction:: npstreams.inanvar
 .. autofunction:: npstreams.isem
+
+
 
 Numerics
 --------

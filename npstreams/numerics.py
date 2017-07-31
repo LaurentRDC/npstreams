@@ -3,17 +3,9 @@
 Numerics Functions
 ------------------
 """
-
 import numpy as np
 from functools import partial
-
-# TODO: is in-place justified?
-def _nan_to_num(array, fill):
-    """ Replace NaNs in `array` with `fill`. Keyword-arguments
-    are passed to numpy.nan_to_num"""
-    with_nans = np.array(array)
-    with_nans[np.isnan(with_nans)] = fill
-    return with_nans
+from . import _nan_to_num
 
 def isum(arrays, dtype = None):
     """ 
