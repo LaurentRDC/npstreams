@@ -10,7 +10,7 @@ from math import sqrt
 from . import _nan_to_num
 
 def _atleast_array(arg, arr):
-    """ Make sure that if inputs are float or int, they are array of shape `shape` """
+    """ Make sure that if inputs are float or int, they are cast to array of shape `shape` """
     if isinstance(arg, (float, int)):
         arg = np.full(shape = arr.shape, fill_value = arg, dtype = arr.dtype)
     else:
@@ -219,7 +219,7 @@ def inanvar(arrays, ddof = 0, weights = None):
 
 def istd(arrays, ddof = 0, weights = None, ignore_nan = False):
     """ 
-    Streaming standard deviation of images. Weights are also supported.
+    Streaming standard deviation of arrays. Weights are also supported.
     This is equivalent to calling `numpy.std(axis = 2)` on a stack of images.
 
     Parameters
@@ -252,7 +252,7 @@ def istd(arrays, ddof = 0, weights = None, ignore_nan = False):
 
 def inanstd(arrays, ddof = 0, weights = None):
     """ 
-    Streaming standard deviation of images. Weights are also supported.
+    Streaming standard deviation of arrays. Weights are also supported.
     NaNs are ignored. Equivalent to `istd(ignore_nan = True)`
 
     Parameters
@@ -285,7 +285,7 @@ def inanstd(arrays, ddof = 0, weights = None):
 
 def isem(arrays, ddof = 1, ignore_nan = False):
     """ 
-    Streaming standard error in the mean (SEM) of images. This is equivalent to
+    Streaming standard error in the mean (SEM) of arrays. This is equivalent to
     calling `scipy.stats.sem(axis = 2)` on a stack of images.
 
     Parameters

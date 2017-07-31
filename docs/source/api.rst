@@ -4,29 +4,41 @@
 Reference/API
 *************
 
+Click on any function below to see detailed information.
+
+.. currentmodule:: npstreams
+
 Iterator Utilities
 ------------------
-.. autofunction:: npstreams.last
-.. autofunction:: npstreams.chunked
-.. autofunction:: npstreams.linspace
-.. autofunction:: npstreams.multilinspace
+.. autosummary::
+    :toctree: functions/
+
+    last
+    chunked
+    linspace
+    multilinspace
 
 Statistical Functions
 ---------------------
-.. autofunction:: npstreams.imean
-.. autofunction:: npstreams.inanmean
-.. autofunction:: npstreams.iaverage
-.. autofunction:: npstreams.istd
-.. autofunction:: npstreams.inanstd
-.. autofunction:: npstreams.ivar
-.. autofunction:: npstreams.inanvar
-.. autofunction:: npstreams.isem
+.. autosummary::
+    :toctree: functions/
 
+    imean
+    inanmean
+    iaverage
+    istd
+    inanstd
+    ivar
+    inanvar
+    isem
 
 
 Numerics
 --------
-.. autofunction:: npstreams.isum
-.. autofunction:: npstreams.inansum
-.. autofunction:: npstreams.iprod
-.. autofunction:: npstreams.inanprod
+.. autosummary::
+    :toctree: functions/
+
+    isum
+    inansum
+    iprod
+    inanprod

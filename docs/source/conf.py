@@ -37,6 +37,7 @@ year = datetime.now().year
 extensions = ['alabaster',
               'sphinx.ext.todo',
               'sphinx.ext.intersphinx',
+              'sphinx.ext.autosummary',
               'sphinx.ext.autodoc',
 			  'sphinx.ext.napoleon',
 			  'sphinx.ext.mathjax']
@@ -44,6 +45,7 @@ extensions = ['alabaster',
 intersphinx_mapping = {'numpy': ('http://docs.scipy.org/doc/numpy/', None)}
 
 napoleon_google_docstring = False
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

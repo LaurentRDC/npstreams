@@ -93,7 +93,7 @@ Links
 =====
 
 * `Source code <https://github.com/LaurentRDC/npstreams>`_
-* `Issues <https://github.com/LaurentRDC/npsterams/issues>`_
+* `Issues <https://github.com/LaurentRDC/npstreams/issues>`_
 * `Docs <http://npstreams.readthedocs.org/>`_
 
 .. _npstreams_docs:
@@ -103,7 +103,7 @@ General Documentation
 
 .. toctree::
     :maxdepth: 2
-
+    
     installation
     api
 
