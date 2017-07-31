@@ -13,6 +13,7 @@ def _nan_to_num(arr, fill):
     with_nans[isnan(with_nans)] = fill
     return with_nans
 
+from .parallel import pmap, preduce
 from .iter_utils import last, chunked, multilinspace, linspace
 from .stats import iaverage, imean, inanmean, istd, inanstd, isem, ivar, inanvar
 from .numerics import isum, inansum, iprod, inanprod

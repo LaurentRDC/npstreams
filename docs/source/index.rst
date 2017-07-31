@@ -49,7 +49,7 @@ but will not compute anything until it is requested. We can look at the average 
     for avg in average:
         plt.imshow(avg); plt.show()
 
-We can alco use :func:`last` to get at the final average::
+We can also use :func:`last` to get at the final average::
 
 	from npstreams import last
 

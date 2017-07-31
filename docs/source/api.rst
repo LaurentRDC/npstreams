@@ -18,6 +18,15 @@ Iterator Utilities
     linspace
     multilinspace
 
+Parallelization
+---------------
+
+.. autosummary::
+    :toctree: functions/
+
+    pmap
+    preduce
+
 Statistical Functions
 ---------------------
 .. autosummary::
