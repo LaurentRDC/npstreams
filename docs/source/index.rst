@@ -56,7 +56,8 @@ We can alco use :func:`last` to get at the final average::
 	total = last(averaged) # average of the entire stream
 
 While the :func:`average` example is simple, there are some functions that are not easily
-brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm.
+brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm,
+but single-pass algorithms do exist and are implemented in this package.
 
 Recipe: averaging with error
 ------------------------------

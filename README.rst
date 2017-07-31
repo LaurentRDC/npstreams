@@ -13,6 +13,49 @@ npstreams
 
 Drop-in replacement of NumPy functions for streaming array operations.
 
+Motivating Example
+------------------
+
+Consider the following snippet to combine 50 images 
+from an iterable :data:`source`::
+
+	import numpy as np
+
+	images = np.empty( shape = (2048, 2048, 50) )
+	from index, im in enumerate(source):
+	    images[:,:,index] = im
+	
+	avg = np.average(images, axis = 2)
+
+If the :data:`source` iterable provided 1000 images, the above routine would
+not work on most machines. Moreover, what if we want to transform the images 
+one by one before averaging them? What about looking at the average while it 
+is being computed? Let's look at an example::
+
+	import numpy as np
+	from npstreams import iaverage
+	from scipy.misc import imread
+
+	stream = map(imread, list_of_filenames)
+	averaged = iaverage(stream)
+
+At this point, the generators :func:`map` and :func:`iaverage` are 'wired'
+but will not compute anything until it is requested. We can look at the average evolve::
+
+    import matplotlib.pyplot as plt
+    for avg in average:
+        plt.imshow(avg); plt.show()
+
+We can also use :func:`last` to get at the final average::
+
+	from npstreams import last
+
+	total = last(averaged) # average of the entire stream
+
+While the :func:`average` example is simple, there are some functions that are not easily
+brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm,
+but single-pass algorithms do exist and are implemented in this package.
+
 API Reference
 -------------
 
