@@ -6,6 +6,19 @@ __pycache__/
 # C extensions
 *.so
 
+# Visual studio cache
+*.vs/
+*.vscode/
+
+# Protein DataBank files and cache folder
+*.ent
+
+# Structure file caches
+*_cache/
+
+# Jupyter notebooks
+notebooks/
+
 # Distribution / packaging
 .Python
 env/
@@ -53,8 +66,9 @@ coverage.xml
 *.log
 local_settings.py
 
-# Flask instance folder
+# Flask stuff:
 instance/
+.webassets-cache
 
 # Scrapy stuff:
 .scrapy
@@ -87,53 +101,6 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-# Windows
-# =========================
-
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
+# PyCharm
+.idea/
+benchmark.py

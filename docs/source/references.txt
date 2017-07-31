@@ -1,0 +1,2 @@
+.. _Numpy: http://www.numpy.org
+.. _Scipy: https://www.scipy.org
