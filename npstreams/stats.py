@@ -3,10 +3,19 @@
 Statistical functions
 ---------------------
 """
+from functools import partial
 from itertools import repeat, tee
 import numpy as np
 from math import sqrt
 from . import _nan_to_num
+
+def _atleast_array(arg, arr):
+    """ Make sure that if inputs are float or int, they are array of shape `shape` """
+    if isinstance(arg, (float, int)):
+        arg = np.full(shape = arr.shape, fill_value = arg, dtype = arr.dtype)
+    else:
+        arg = np.asarray(arg)
+    return arg
 
 # TODO: handle NaNs by having array sum_of_weights and not counting NaNs
 def iaverage(arrays, weights = None, ignore_nan = False):
@@ -39,26 +48,26 @@ def iaverage(arrays, weights = None, ignore_nan = False):
     arrays = iter(arrays)
     first = next(arrays)
     
+    # We make sure that weights is always an array
+    # This simplifies the handling of NaNs.
     if weights is None:
-        weights = repeat(np.ones_like(first))
-    weights = iter(weights)
+        weights = repeat(1)
+    weights = map(partial(_atleast_array, arr = first), iter(weights))
 
     sum_of_weights = np.array(next(weights), copy = True)
     if ignore_nan:
         sum_of_weights[np.isnan(first)] = 0
-        first[:] = np.nan_to_num(first)
+        first = np.nan_to_num(first)
     weighted_sum = np.array(first * sum_of_weights, copy = True)
     yield weighted_sum/sum_of_weights
 
     for array, weight in zip(arrays, weights):
-
+        valid = np.s_[:]
         if ignore_nan:
-            where_nan = np.isnan(array)
-            weight[where_nan] = 0
-            array[where_nan] = 0
+            valid = np.logical_not(np.isnan(array))
 
-        sum_of_weights += weight
-        weighted_sum += weight * array
+        sum_of_weights[valid] += weight[valid]
+        weighted_sum[valid] += weight[valid] * array[valid]
         yield weighted_sum/sum_of_weights
 
 def imean(arrays, ignore_nan = False):
@@ -95,7 +104,7 @@ def inanmean(arrays):
     """
     yield from imean(arrays, ignore_nan = True)
 
-def ivar(arrays, ddof = 1, weights = None, ignore_nan = False):
+def ivar(arrays, ddof = 0, weights = None, ignore_nan = False):
     """ 
     Streaming variance of arrays. Weights are also supported.
     
@@ -133,24 +142,28 @@ def ivar(arrays, ddof = 1, weights = None, ignore_nan = False):
     arrays = iter(arrays)
     first = next(arrays)
 
+    # We make sure that weights is always an array
+    # This simplifies the handling of NaNs.
     if weights is None:
-        weights = repeat(np.ones_like(first))
-    weights = iter(weights)
+        weights = repeat(1)
+    weights = map(partial(_atleast_array, arr = first), iter(weights))
+    
     sum_of_weights = np.array(next(weights), copy = True)
-
     if ignore_nan:
         sum_of_weights[np.isnan(first)] = 0
+        first = np.nan_to_num(first)
 
-    old_mean = new_mean = np.array(first, copy = True)
-    old_S = new_S = np.zeros_like(first, dtype = np.float)
-    yield np.zeros_like(first)  # No error if no averaging
+    old_mean = np.array(first, copy = True)
+    new_mean = np.array(first, copy = True)
+    old_S = np.zeros_like(first, dtype = np.float)
+    new_S = np.zeros_like(first, dtype = np.float)
+    yield np.zeros_like(first)
     
     for array, weight in zip(arrays, weights):
 
         if ignore_nan:
-            where_nan = np.isnan(array)
-            weight[where_nan] = 0
-            array[where_nan] = 0
+            weight[np.isnan(array)] = 0
+            array = np.nan_to_num(array)
 
         sum_of_weights += weight
 
