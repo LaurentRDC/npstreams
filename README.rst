@@ -59,7 +59,7 @@ but single-pass algorithms do exist and are implemented in this package.
 API Reference
 -------------
 
-The `API Reference on readthedocs.io <http://scikit-ued.readthedocs.io>`_ provides API-level documentation, as 
+The `API Reference on readthedocs.io <http://npstreams.readthedocs.io>`_ provides API-level documentation, as 
 well as tutorials.
 
 Installation
@@ -85,4 +85,4 @@ All support requests and issue reports should be
 License
 -------
 
-scikit-ued is made available under the BSD License, same as NumPy. For more details, see `LICENSE.txt <https://github.com/LaurentRDC/scikit-ued/blob/master/LICENSE.txt>`_.
+npstreams is made available under the BSD License, same as NumPy. For more details, see `LICENSE.txt <https://github.com/LaurentRDC/npstreams/blob/master/LICENSE.txt>`_.
