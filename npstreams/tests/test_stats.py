@@ -5,7 +5,6 @@ from random import randint, random
 
 import numpy as np
 from scipy.stats import sem as scipy_sem
-from skimage import data
 
 from .. import iaverage, imean, isem, istd, ivar, last
 
