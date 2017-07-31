@@ -129,6 +129,18 @@ class TestIstd(unittest.TestCase):
 
             self.assertTrue(np.allclose(from_istd, np.sqrt(wvar)))
 
+    def test_ignore_nan(self):
+        """ Test that NaNs are handled correctly """
+        stream = [np.random.random(size = (16,16)) for _ in range(5)]
+        for s in stream:
+            s[randint(0, 15), randint(0,15)] = np.nan
+        
+        with catch_warnings():
+            simplefilter('ignore')
+            from_istd = last(istd(stream, ignore_nan = True))  
+        from_numpy = np.nanstd(np.dstack(stream), axis = 2)
+        self.assertTrue(np.allclose(from_istd, from_numpy))
+
 class TestIvar(unittest.TestCase):
 
     def test_first(self):

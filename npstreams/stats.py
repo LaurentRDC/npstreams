@@ -181,7 +181,7 @@ def ivar(arrays, ddof = 0, weights = None, ignore_nan = False):
         old_mean[:] = new_mean
         old_S[:] = new_S
 
-def inanvar(arrays, ddof = 1, weights = None):
+def inanvar(arrays, ddof = 0, weights = None):
     """ 
     Streaming variance of arrays. Weights are also supported. NaNs are ignored.
     Equivalent to `ivarignore_nan = True)`.
@@ -217,7 +217,7 @@ def inanvar(arrays, ddof = 1, weights = None):
     """
     yield from ivar(arrays, ddof = ddof, weights = weights, ignore_nan = True)
 
-def istd(arrays, ddof = 1, weights = None, ignore_nan = False):
+def istd(arrays, ddof = 0, weights = None, ignore_nan = False):
     """ 
     Streaming standard deviation of images. Weights are also supported.
     This is equivalent to calling `numpy.std(axis = 2)` on a stack of images.
@@ -250,7 +250,7 @@ def istd(arrays, ddof = 1, weights = None, ignore_nan = False):
     """
     yield from map(np.sqrt, ivar(arrays, ddof = ddof, weights = weights, ignore_nan = ignore_nan))
 
-def inanstd(arrays, ddof = 1, weights = None):
+def inanstd(arrays, ddof = 0, weights = None):
     """ 
     Streaming standard deviation of images. Weights are also supported.
     NaNs are ignored. Equivalent to `istd(ignore_nan = True)`
