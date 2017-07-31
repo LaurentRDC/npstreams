@@ -2,10 +2,10 @@ npstreams
 =========
 
 .. image:: https://img.shields.io/appveyor/ci/LaurentRDC/npstreams/master.svg
-    :target: https://ci.appveyor.com/project/LaurentRDC/scikit-ued
+    :target: https://ci.appveyor.com/project/LaurentRDC/npstreams
     :alt: Windows Build Status
 .. image:: https://readthedocs.org/projects/npstreams/badge/?version=master
-    :target: http://scikit-ued.readthedocs.io
+    :target: http://npstreams.readthedocs.io
     :alt: Documentation Build Status
 .. image:: https://img.shields.io/pypi/v/npstreams.svg
     :target: https://pypi.python.org/pypi/npstreams
