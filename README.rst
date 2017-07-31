@@ -11,7 +11,9 @@ npstreams
     :target: https://pypi.python.org/pypi/npstreams
     :alt: PyPI Version
 
-Drop-in replacement of NumPy functions for streaming array operations.
+npstreams is an open-source Python package for streaming NumPy array operations. 
+The goal is to provide tested, drop-in replacements for NumPy functions (where possible) 
+that operate on streams of arrays instead of dense arrays.
 
 Motivating Example
 ------------------
