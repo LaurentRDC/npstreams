@@ -17,7 +17,7 @@ def _atleast_array(arg, arr):
         arg = np.asarray(arg)
     return arg
 
-# TODO: handle NaNs by having array sum_of_weights and not counting NaNs
+# TODO: AXIS
 def iaverage(arrays, weights = None, ignore_nan = False):
     """ 
     Streaming (weighted) average of arrays.
