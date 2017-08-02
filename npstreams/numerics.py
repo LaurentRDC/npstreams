@@ -129,6 +129,40 @@ def iprod(arrays, dtype = None, ignore_nan = False):
         accumulator *= array.astype(dtype, copy = False)
         yield accumulator
 
+# Can't pickle local functions, so it must be defined here
+# for use in pprod
+def _prodf(array1, array2, **kwargs):
+    return last(iprod([array1, array2], **kwargs))
+
+def pprod(arrays, dtype = None, ignore_nan = False, processes = 1):
+    """ 
+    Parallel product of array elements.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be multiplied.
+    dtype : numpy.dtype, optional
+        The type of the yielded array and of the accumulator in which the elements 
+        are summed. The dtype of a is used by default unless a has an integer dtype 
+        of less precision than the default platform integer. In that case, if a is 
+        signed then the platform integer is used while if a is unsigned then an 
+        unsigned integer of the same precision as the platform integer is used.
+    ignore_nan : bool, optional
+        If True, NaNs are ignored. Default is propagation of NaNs.
+    processes : int or None, optional
+        Number of processes to use. If `None`, maximal number of processes
+        is used. Default is one.
+    
+    Returns
+    -------
+    prod : ndarray
+    """
+    return preduce(_prodf, arrays, 
+                   kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype},
+                   processes = processes)
+
+
 def inanprod(arrays, dtype = None):
     """ 
     Streaming product of array elements. NaNs are ignored (i.e. treated as one).

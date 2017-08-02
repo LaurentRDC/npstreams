@@ -4,7 +4,7 @@ from random import randint, random
 
 import numpy as np
 
-from .. import isum, inansum, psum, iprod, inanprod, last
+from .. import isum, inansum, psum, iprod, pprod, inanprod, last
 
 class TestISum(unittest.TestCase):
 
@@ -65,6 +65,29 @@ class TestIProd(unittest.TestCase):
         source = [np.ones((16,), dtype = np.float) for _ in range(10)]
         product = last(iprod(source))
         self.assertTrue(np.allclose(product, np.ones_like(product)))
+
+class TestPProd(unittest.TestCase):
+
+    def test_trivial(self):
+        """ Test a product of ones """
+        source = [np.ones((16,), dtype = np.float) for _ in range(10)]
+        product = pprod(source)
+        self.assertTrue(np.allclose(product, np.ones_like(product)))
+    
+    def test_ignore_nans(self):
+        """ Test that NaNs are ignored. """
+        source = [np.ones((16,), dtype = np.float) for _ in range(10)]
+        source.append(np.full_like(source[0], np.nan))
+        product = pprod(source, ignore_nan = True)
+        self.assertTrue(np.allclose(product, np.ones_like(product)))
+
+    def test_dtype(self):
+        """ Test that dtype argument is working """
+        source = [np.ones((16,), dtype = np.float) for _ in range(10)]
+        product = pprod(source, dtype = np.int)
+        self.assertTrue(np.allclose(product, np.ones_like(product)))
+        self.assertEqual(product.dtype, np.int)
+        
     
 class TestINanProd(unittest.TestCase):
     

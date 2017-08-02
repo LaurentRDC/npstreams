@@ -50,4 +50,5 @@ Numerics
     psum
     inansum
     iprod
+    pprod
     inanprod
