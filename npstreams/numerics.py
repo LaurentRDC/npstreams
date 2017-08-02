@@ -5,7 +5,7 @@ Numerics Functions
 """
 import numpy as np
 from functools import partial
-from . import _nan_to_num, preduce, last, chunked
+from . import _nan_to_num, preduce, last, chunked, stream_reduce
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
@@ -34,31 +34,11 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     ------
     online_sum : ndarray
     """
-    arrays = iter(arrays)
-
-    first = next(arrays)
-    if dtype is None:
-        dtype = first.dtype
-    
-    if axis is not None:
-        if axis > first.ndim:
-            axis = -1
-
-    # Before the array is accumulated, it might be reduced based on axis
-    # parameter or dtype
-    axis_reduce = lambda x: x.astype(dtype, copy = False)
-    if axis != -1:
-        axis_reduce = partial(np.sum, axis = axis, dtype = dtype)
-    
+    npfunc = np.sum
     if ignore_nan:
-        first = np.nan_to_num(first)
+        npfunc = np.nansum
     
-    accumulator = axis_reduce(first)
-    for array in arrays:
-        if ignore_nan:  # TODO: also check if array of floats or complex
-            array = np.nan_to_num(array)
-        accumulator += axis_reduce(array)
-        yield accumulator
+    yield from stream_reduce(arrays, npfunc = npfunc, axis = axis, dtype = dtype)
 
 def inansum(arrays, axis = -1, dtype = None):
     """ 
@@ -122,10 +102,9 @@ def psum(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     -------
     sum : ndarray
     """
-    return preduce(_sumf, arrays, processes = processes,
-                   kwargs = {'ignore_nan': ignore_nan, 
-                             'dtype': dtype, 
-                             'axis': axis})
+    # TODO: parallelize using stream_reduce
+    kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype, 'axis': axis}
+    return last(isum(arrays, **kwargs))
 
 def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
@@ -154,31 +133,11 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     ------
     online_prod : ndarray
     """
-    arrays = iter(arrays)
-
-    first = next(arrays)
-    if dtype is None:
-        dtype = first.dtype
-    
-    if axis is not None:
-        if axis > first.ndim:
-            axis = -1
-
-    # Before the array is accumulated, it might be reduced based on axis
-    # parameter or dtype
-    axis_reduce = lambda x: x.astype(dtype, copy = False)
-    if axis != -1:
-        axis_reduce = partial(np.prod, axis = axis, dtype = dtype)
-    
+    npfunc = np.prod
     if ignore_nan:
-        first = _nan_to_num(first, 1)
+        npfunc = np.nanprod
     
-    accumulator = axis_reduce(first)
-    for array in arrays:
-        if ignore_nan:  # TODO: also check if array of floats or complex
-            array = _nan_to_num(array, 1)
-        accumulator *= axis_reduce(array)
-        yield accumulator
+    yield from stream_reduce(arrays, npfunc = npfunc, axis = axis, dtype = dtype)
 
 # Can't pickle local functions, so it must be defined here
 # for use in pprod
@@ -215,11 +174,9 @@ def pprod(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     -------
     prod : ndarray
     """
-    return preduce(_prodf, arrays, processes = processes,
-                   kwargs = {'ignore_nan': ignore_nan, 
-                             'dtype': dtype,
-                             'axis': axis})
-
+    # TODO: parallelize using stream_reduce
+    kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype, 'axis': axis}
+    return last(iprod(arrays, **kwargs))
 
 def inanprod(arrays, axis = -1, dtype = None):
     """ 
