@@ -7,6 +7,7 @@ import numpy as np
 from functools import partial
 from itertools import chain
 
+# TODO: initializer
 def stream_reduce(arrays, npfunc, axis = -1, dtype = None):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).

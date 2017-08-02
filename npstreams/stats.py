@@ -4,9 +4,10 @@ Statistical functions
 ---------------------
 """
 from functools import partial
-from itertools import repeat, tee
+from itertools import repeat, tee, chain
 import numpy as np
 from math import sqrt
+from .numerics import isum
 from . import _nan_to_num
 
 def _atleast_array(arg, arr):
@@ -16,6 +17,13 @@ def _atleast_array(arg, arr):
     else:
         arg = np.asarray(arg)
     return arg
+
+def _weighted(arrays, weights, ignore_nan = False):
+    for array, weight in zip(arrays, weights):
+        if ignore_nan:
+            weight[np.isnan(array)] = 0
+            array = np.nan_to_num(array)
+        yield array * weight
 
 def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 
@@ -52,43 +60,22 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     """
     arrays = iter(arrays)
     first = next(arrays)
-
-    if axis is not None:
-        if axis > first.ndim:
-            axis = -1
-    
-    axis_reduce = lambda x: x
-    if axis != -1:
-        axis_reduce = partial(np.sum, axis = axis)
-        if ignore_nan:
-            axis_reduce = partial(np.nansum, axis = axis)
     
     # We make sure that weights is always an array
     # This simplifies the handling of NaNs.
     if weights is None:
         weights = repeat(1)
     weights = map(partial(_atleast_array, arr = first), iter(weights))
-    first_weight = next(weights)
 
-    first = axis_reduce(first)
-    sum_of_weights = np.array(axis_reduce(first_weight), copy = True)
-    if ignore_nan:
-        sum_of_weights[np.isnan(first)] = 0
-        first = np.nan_to_num(first)
-    weighted_sum = np.array(first * sum_of_weights, copy = True)
-    yield weighted_sum/sum_of_weights
+    weights1, weights2 = tee(weights, 2)
+    arrays = chain([first], arrays)
 
-    for array, weight in zip(arrays, weights):
-        array = axis_reduce(array)
-        weight = axis_reduce(weight)
+    sum_of_weights = isum(weights1, axis = axis)
+    weighted_arrays = _weighted(arrays, weights2, ignore_nan)
+    weighted_sum = isum(weighted_arrays, axis = axis, ignore_nan = ignore_nan)
 
-        if ignore_nan:
-            weight[np.isnan(array)] = 0
-            array = np.nan_to_num(array)
-        
-        sum_of_weights += weight
-        weighted_sum += weight * array
-        yield weighted_sum/sum_of_weights
+    for cumsum, weightsum in zip(weighted_sum, sum_of_weights):
+        yield cumsum/weightsum
 
 def imean(arrays, axis = -1, ignore_nan = False):
     """ 
