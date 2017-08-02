@@ -17,7 +17,6 @@ def _atleast_array(arg, arr):
         arg = np.asarray(arg)
     return arg
 
-
 def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 
     Streaming (weighted) average of arrays.
