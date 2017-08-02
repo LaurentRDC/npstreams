@@ -7,7 +7,7 @@ import numpy as np
 from functools import partial
 from . import _nan_to_num, preduce, last, chunked
 
-def isum(arrays, dtype = None, ignore_nan = False):
+def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
     Streaming sum of array elements.
 
@@ -15,6 +15,12 @@ def isum(arrays, dtype = None, ignore_nan = False):
     ----------
     arrays : iterable
         Arrays to be summed.
+    axis : int, optional
+        Reduction axis. Default is to sum the arrays in the stream as if 
+        they had been stacked along a new axis, then sum along this new axis.
+        If None, arrays are flattened before summing. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, arrays are summed
+        along the new axis.
     dtype : numpy.dtype, optional
         The type of the yielded array and of the accumulator in which the elements 
         are summed. The dtype of a is used by default unless a has an integer dtype 
@@ -34,14 +40,27 @@ def isum(arrays, dtype = None, ignore_nan = False):
     if dtype is None:
         dtype = first.dtype
     
-    accumulator = first.astype(dtype, copy = True)
+    if axis is not None:
+        if axis > first.ndim:
+            axis = -1
+
+    # Before the array is accumulated, it might be reduced based on axis
+    # parameter or dtype
+    reduce_func = lambda x: x.astype(dtype, copy = False)
+    if axis != -1:
+        reduce_func = partial(np.sum, axis = axis, dtype = dtype)
+    
+    if ignore_nan:
+        first = np.nan_to_num(first)
+    
+    accumulator = reduce_func(first)
     for array in arrays:
         if ignore_nan:  # TODO: also check if array of floats or complex
             array = np.nan_to_num(array)
-        accumulator += array.astype(dtype, copy = False)
+        accumulator += reduce_func(array)
         yield accumulator
 
-def inansum(arrays, dtype = None):
+def inansum(arrays, axis = -1, dtype = None):
     """ 
     Streaming sum of array elements. NaNs are ignored (i.e. treated as zero).
 
@@ -49,6 +68,12 @@ def inansum(arrays, dtype = None):
     ----------
     arrays : iterable
         Arrays to be summed.
+    axis : int, optional
+        Reduction axis. Default is to sum the arrays in the stream as if 
+        they had been stacked along a new axis, then sum along this new axis.
+        If None, arrays are flattened before summing. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, arrays are summed
+        along the new axis.
     dtype : numpy.dtype, optional
         The type of the yielded array and of the accumulator in which the elements 
         are summed. The dtype of a is used by default unless a has an integer dtype 
@@ -60,14 +85,14 @@ def inansum(arrays, dtype = None):
     ------
     online_sum : ndarray
     """
-    yield from isum(arrays, dtype = dtype, ignore_nan = True)
+    yield from isum(arrays, axis = axis, dtype = dtype, ignore_nan = True)
 
 # Can't pickle local functions, so it must be defined here
 # for use in psum
 def _sumf(array1, array2, **kwargs):
     return last(isum([array1, array2], **kwargs))
 
-def psum(arrays, dtype = None, ignore_nan = False, processes = 1):
+def psum(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     """ 
     Parallel sum of array elements.
 
@@ -75,6 +100,12 @@ def psum(arrays, dtype = None, ignore_nan = False, processes = 1):
     ----------
     arrays : iterable
         Arrays to be summed.
+    axis : int, optional
+        Reduction axis. Default is to sum the arrays in the stream as if 
+        they had been stacked along a new axis, then sum along this new axis.
+        If None, arrays are flattened before summing. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, arrays are summed
+        along the new axis.
     dtype : numpy.dtype, optional
         The type of the yielded array and of the accumulator in which the elements 
         are summed. The dtype of a is used by default unless a has an integer dtype 
@@ -91,11 +122,12 @@ def psum(arrays, dtype = None, ignore_nan = False, processes = 1):
     -------
     sum : ndarray
     """
-    return preduce(_sumf, arrays, 
-                   kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype},
-                   processes = processes)
+    return preduce(_sumf, arrays, processes = processes,
+                   kwargs = {'ignore_nan': ignore_nan, 
+                             'dtype': dtype, 
+                             'axis': axis})
 
-def iprod(arrays, dtype = None, ignore_nan = False):
+def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
     Streaming product of array elements.
 
@@ -103,6 +135,12 @@ def iprod(arrays, dtype = None, ignore_nan = False):
     ----------
     arrays : iterable
         Arrays to be multiplied.
+    axis : int, optional
+        Reduction axis. Default is to multiply the arrays in the stream as if 
+        they had been stacked along a new axis, then multiply along this new axis.
+        If None, arrays are flattened before multiplication. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, arrays are multiplied
+        along the new axis.
     dtype : numpy.dtype, optional
         The type of the yielded array and of the accumulator in which the elements 
         are summed. The dtype of a is used by default unless a has an integer dtype 
@@ -122,11 +160,24 @@ def iprod(arrays, dtype = None, ignore_nan = False):
     if dtype is None:
         dtype = first.dtype
     
-    accumulator = first.astype(dtype, copy = True)
+    if axis is not None:
+        if axis > first.ndim:
+            axis = -1
+
+    # Before the array is accumulated, it might be reduced based on axis
+    # parameter or dtype
+    reduce_func = lambda x: x.astype(dtype, copy = False)
+    if axis != -1:
+        reduce_func = partial(np.prod, axis = axis, dtype = dtype)
+    
+    if ignore_nan:
+        first = _nan_to_num(first, 1)
+    
+    accumulator = reduce_func(first)
     for array in arrays:
-        if ignore_nan:
+        if ignore_nan:  # TODO: also check if array of floats or complex
             array = _nan_to_num(array, 1)
-        accumulator *= array.astype(dtype, copy = False)
+        accumulator *= reduce_func(array)
         yield accumulator
 
 # Can't pickle local functions, so it must be defined here
@@ -134,7 +185,7 @@ def iprod(arrays, dtype = None, ignore_nan = False):
 def _prodf(array1, array2, **kwargs):
     return last(iprod([array1, array2], **kwargs))
 
-def pprod(arrays, dtype = None, ignore_nan = False, processes = 1):
+def pprod(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     """ 
     Parallel product of array elements.
 
@@ -142,6 +193,12 @@ def pprod(arrays, dtype = None, ignore_nan = False, processes = 1):
     ----------
     arrays : iterable
         Arrays to be multiplied.
+    axis : int, optional
+        Reduction axis. Default is to multiply the arrays in the stream as if 
+        they had been stacked along a new axis, then multiply along this new axis.
+        If None, arrays are flattened before multiplication. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, arrays are multiplied
+        along the new axis.
     dtype : numpy.dtype, optional
         The type of the yielded array and of the accumulator in which the elements 
         are summed. The dtype of a is used by default unless a has an integer dtype 
@@ -158,12 +215,13 @@ def pprod(arrays, dtype = None, ignore_nan = False, processes = 1):
     -------
     prod : ndarray
     """
-    return preduce(_prodf, arrays, 
-                   kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype},
-                   processes = processes)
+    return preduce(_prodf, arrays, processes = processes,
+                   kwargs = {'ignore_nan': ignore_nan, 
+                             'dtype': dtype,
+                             'axis': axis})
 
 
-def inanprod(arrays, dtype = None):
+def inanprod(arrays, axis = -1, dtype = None):
     """ 
     Streaming product of array elements. NaNs are ignored (i.e. treated as one).
 
@@ -171,6 +229,12 @@ def inanprod(arrays, dtype = None):
     ----------
     arrays : iterable
         Arrays to be multiplied.
+    axis : int, optional
+        Reduction axis. Default is to multiply the arrays in the stream as if 
+        they had been stacked along a new axis, then multiply along this new axis.
+        If None, arrays are flattened before multiplication. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, arrays are multiplied
+        along the new axis.
     dtype : numpy.dtype, optional
         The type of the yielded array and of the accumulator in which the elements 
         are summed. The dtype of a is used by default unless a has an integer dtype 
@@ -182,4 +246,4 @@ def inanprod(arrays, dtype = None):
     ------
     online_prod : ndarray
     """
-    yield from iprod(arrays, dtype = dtype, ignore_nan = True)
+    yield from iprod(arrays, axis = axis, dtype = dtype, ignore_nan = True)
