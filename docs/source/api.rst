@@ -47,6 +47,7 @@ Numerics
     :toctree: functions/
 
     isum
+    psum
     inansum
     iprod
     inanprod

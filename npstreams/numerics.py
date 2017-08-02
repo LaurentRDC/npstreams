@@ -5,9 +5,9 @@ Numerics Functions
 """
 import numpy as np
 from functools import partial
-from . import _nan_to_num
+from . import _nan_to_num, preduce, last, chunked
 
-def isum(arrays, dtype = None):
+def isum(arrays, dtype = None, ignore_nan = False):
     """ 
     Streaming sum of array elements.
 
@@ -21,6 +21,8 @@ def isum(arrays, dtype = None):
         of less precision than the default platform integer. In that case, if a is 
         signed then the platform integer is used while if a is unsigned then an 
         unsigned integer of the same precision as the platform integer is used.
+    ignore_nan : bool, optional
+        If True, NaNs are ignored. Default is propagation of NaNs.
     
     Yields
     ------
@@ -34,6 +36,8 @@ def isum(arrays, dtype = None):
     
     accumulator = first.astype(dtype, copy = True)
     for array in arrays:
+        if ignore_nan:  # TODO: also check if array of floats or complex
+            array = np.nan_to_num(array)
         accumulator += array.astype(dtype, copy = False)
         yield accumulator
 
@@ -56,10 +60,42 @@ def inansum(arrays, dtype = None):
     ------
     online_sum : ndarray
     """
-    ignored_nans = map(np.nan_to_num, arrays)
-    yield from isum(ignored_nans, dtype = dtype)
+    yield from isum(arrays, dtype = dtype, ignore_nan = True)
 
-def iprod(arrays, dtype = None):
+# Can't pickle local functions, so it must be defined here
+# for use in psum
+def _sumf(array1, array2, **kwargs):
+    return last(isum([array1, array2], **kwargs))
+
+def psum(arrays, dtype = None, ignore_nan = False, processes = 1):
+    """ 
+    Parallel sum of array elements.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be summed.
+    dtype : numpy.dtype, optional
+        The type of the yielded array and of the accumulator in which the elements 
+        are summed. The dtype of a is used by default unless a has an integer dtype 
+        of less precision than the default platform integer. In that case, if a is 
+        signed then the platform integer is used while if a is unsigned then an 
+        unsigned integer of the same precision as the platform integer is used.
+    ignore_nan : bool, optional
+        If True, NaNs are ignored. Default is propagation of NaNs.
+    processes : int or None, optional
+        Number of processes to use. If `None`, maximal number of processes
+        is used. Default is one.
+    
+    Returns
+    -------
+    sum : ndarray
+    """
+    return preduce(_sumf, arrays, 
+                   kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype},
+                   processes = processes)
+
+def iprod(arrays, dtype = None, ignore_nan = False):
     """ 
     Streaming product of array elements.
 
@@ -73,6 +109,8 @@ def iprod(arrays, dtype = None):
         of less precision than the default platform integer. In that case, if a is 
         signed then the platform integer is used while if a is unsigned then an 
         unsigned integer of the same precision as the platform integer is used.
+    ignore_nan : bool, optional
+        If True, NaNs are ignored. Default is propagation of NaNs.
     
     Yields
     ------
@@ -86,6 +124,8 @@ def iprod(arrays, dtype = None):
     
     accumulator = first.astype(dtype, copy = True)
     for array in arrays:
+        if ignore_nan:
+            array = _nan_to_num(array, 1)
         accumulator *= array.astype(dtype, copy = False)
         yield accumulator
 
@@ -108,5 +148,4 @@ def inanprod(arrays, dtype = None):
     ------
     online_prod : ndarray
     """
-    ignored_nans = map(partial(_nan_to_num, fill = 1.0), arrays)
-    yield from iprod(ignored_nans, dtype = dtype)
+    yield from iprod(arrays, dtype = dtype, ignore_nan = True)
