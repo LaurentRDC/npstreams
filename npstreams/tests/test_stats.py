@@ -44,6 +44,18 @@ class TestIAverage(unittest.TestCase):
             from_iaverage = last(iaverage(stream, ignore_nan = True))  
         from_numpy = np.nanmean(np.dstack(stream), axis = 2)
         self.assertTrue(np.allclose(from_iaverage, from_numpy))
+    
+    def test_axis(self):
+        """ Test that the axis parameter is handled correctly """
+        stream = [np.zeros((16,)) for _ in range(5)]
+
+        with self.subTest('axis = 0'):
+            avg = last(iaverage(stream, axis = 0))
+            self.assertEqual(avg, 0)
+        
+        with self.subTest('axis = None'):
+            avg = last(iaverage(stream, axis = None))
+            self.assertEqual(avg, 0)
 
 class TestIMean(unittest.TestCase):
 
@@ -199,6 +211,18 @@ class TestIvar(unittest.TestCase):
             from_ivar = last(ivar(stream, ignore_nan = True))  
         from_numpy = np.nanvar(np.dstack(stream), axis = 2)
         self.assertTrue(np.allclose(from_ivar, from_numpy))
+
+    def test_axis(self):
+        """ Test that the axis parameter is handled correctly """
+        stream = [np.zeros((16,)) for _ in range(5)]
+
+        with self.subTest('axis = 0'):
+            var = last(ivar(stream, axis = 0))
+            self.assertEqual(var, 0)
+        
+        with self.subTest('axis = None'):
+            var = last(ivar(stream, axis = None))
+            self.assertEqual(var, 0)
 
 if __name__ == '__main__':
     unittest.main()

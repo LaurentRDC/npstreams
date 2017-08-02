@@ -46,18 +46,18 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
 
     # Before the array is accumulated, it might be reduced based on axis
     # parameter or dtype
-    reduce_func = lambda x: x.astype(dtype, copy = False)
+    axis_reduce = lambda x: x.astype(dtype, copy = False)
     if axis != -1:
-        reduce_func = partial(np.sum, axis = axis, dtype = dtype)
+        axis_reduce = partial(np.sum, axis = axis, dtype = dtype)
     
     if ignore_nan:
         first = np.nan_to_num(first)
     
-    accumulator = reduce_func(first)
+    accumulator = axis_reduce(first)
     for array in arrays:
         if ignore_nan:  # TODO: also check if array of floats or complex
             array = np.nan_to_num(array)
-        accumulator += reduce_func(array)
+        accumulator += axis_reduce(array)
         yield accumulator
 
 def inansum(arrays, axis = -1, dtype = None):
@@ -166,18 +166,18 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
 
     # Before the array is accumulated, it might be reduced based on axis
     # parameter or dtype
-    reduce_func = lambda x: x.astype(dtype, copy = False)
+    axis_reduce = lambda x: x.astype(dtype, copy = False)
     if axis != -1:
-        reduce_func = partial(np.prod, axis = axis, dtype = dtype)
+        axis_reduce = partial(np.prod, axis = axis, dtype = dtype)
     
     if ignore_nan:
         first = _nan_to_num(first, 1)
     
-    accumulator = reduce_func(first)
+    accumulator = axis_reduce(first)
     for array in arrays:
         if ignore_nan:  # TODO: also check if array of floats or complex
             array = _nan_to_num(array, 1)
-        accumulator *= reduce_func(array)
+        accumulator *= axis_reduce(array)
         yield accumulator
 
 # Can't pickle local functions, so it must be defined here
