@@ -10,21 +10,6 @@ from math import sqrt
 from .numerics import isum
 from . import _nan_to_num, peek
 
-def _atleast_array(arg, arr):
-    """ Make sure that if inputs are float or int, they are cast to array of shape `shape` """
-    if isinstance(arg, (float, int)):
-        arg = np.full(shape = arr.shape, fill_value = arg, dtype = arr.dtype)
-    else:
-        arg = np.asarray(arg)
-    return arg
-
-def _weighted(arrays, weights, ignore_nan = False):
-    for array, weight in zip(arrays, weights):
-        if ignore_nan:
-            weight[np.isnan(array)] = 0
-            array = np.nan_to_num(array)
-        yield array * weight
-
 def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 
     Streaming (weighted) average of arrays.
