@@ -5,6 +5,7 @@ Statistical functions
 """
 from functools import partial
 from itertools import repeat, tee, chain
+from cytoolz import peek
 import numpy as np
 from math import sqrt
 from .numerics import isum
@@ -58,18 +59,18 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     imean : streaming array mean.
     numpy.average : (weighted) average for dense arrays
     """
-    arrays = iter(arrays)
+    first, arrays = peek(arrays)
     
     # We make sure that weights is always an array
     # This simplifies the handling of NaNs.
     if weights is None:
         weights = repeat(1)
-    weights = map(np.atleast_1d, weights)
+    weights = map(partial(np.broadcast_to, shape = first.shape), weights)
 
     weights1, weights2 = tee(weights)
 
     sum_of_weights = isum(weights1, axis = axis)
-    weighted_arrays = _weighted(arrays, weights2, ignore_nan)
+    weighted_arrays = map(lambda arr, wgt: arr * wgt, arrays, weights2)
     weighted_sum = isum(weighted_arrays, axis = axis, ignore_nan = ignore_nan)
     
     yield from map(lambda arr, wgt: arr/wgt, weighted_sum, sum_of_weights)

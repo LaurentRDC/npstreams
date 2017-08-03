@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import unittest
 from itertools import repeat
-from random import randint, random
+from random import randint, random, seed
 from warnings import catch_warnings, simplefilter
 
 import numpy as np
 from scipy.stats import sem as scipy_sem
 
 from .. import iaverage, imean, isem, istd, ivar, last
+
+seed(23)
 
 class TestIAverage(unittest.TestCase):
 
@@ -33,17 +35,18 @@ class TestIAverage(unittest.TestCase):
             from_numpy = np.average(np.dstack(stream), axis = 2, weights = np.dstack(weights))
             self.assertTrue(np.allclose(from_iaverage, from_numpy))
     
-    @unittest.skip('')
+    #@unittest.skip('')
     def test_ignore_nan(self):
         """ Test that NaNs are handled correctly """
-        stream = [np.random.random(size = (16,16)) for _ in range(5)]
+        stream = [np.random.random(size = (4,4)) for _ in range(5)]
         for s in stream:
-            s[randint(0, 15), randint(0,15)] = np.nan
+            s[randint(0, 3), randint(0,3)] = np.nan
         
         with catch_warnings():
             simplefilter('ignore')
             from_iaverage = last(iaverage(stream, ignore_nan = True))  
         from_numpy = np.nanmean(np.dstack(stream), axis = 2)
+        print('\n', np.abs(from_numpy - from_iaverage))
         self.assertTrue(np.allclose(from_iaverage, from_numpy))
     
     def test_length(self):
@@ -61,16 +64,6 @@ class TestIAverage(unittest.TestCase):
                 from_numpy = np.average(stack, axis = axis)
                 out = last(iaverage(source, axis = axis))
                 self.assertSequenceEqual(from_numpy.shape, out.shape)
-                self.assertTrue(np.allclose(out, from_numpy))
-
-    def test_against_numpy(self):
-        """ Test results against numpy.average """
-        source = [np.zeros((16, 12)) for _ in range(10)]
-        stack = np.stack(source, axis = -1)
-        for axis in (0, 1, None):
-            with self.subTest('axis = {}'.format(axis)):
-                from_numpy = np.average(stack, axis = axis)
-                out = last(iaverage(source, axis = axis))
                 self.assertTrue(np.allclose(out, from_numpy))
 
 class TestIMean(unittest.TestCase):
