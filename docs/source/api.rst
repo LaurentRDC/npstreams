@@ -78,3 +78,10 @@ Numerics
     iprod
     pprod
     inanprod
+
+General Stream reduction
+------------------------
+.. autosummary::
+    :toctree: functions/
+
+    stream_reduce

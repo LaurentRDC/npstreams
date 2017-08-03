@@ -59,23 +59,20 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     numpy.average : (weighted) average for dense arrays
     """
     arrays = iter(arrays)
-    first = next(arrays)
     
     # We make sure that weights is always an array
     # This simplifies the handling of NaNs.
     if weights is None:
         weights = repeat(1)
-    weights = map(partial(_atleast_array, arr = first), iter(weights))
+    weights = map(np.atleast_1d, weights)
 
-    weights1, weights2 = tee(weights, 2)
-    arrays = chain([first], arrays)
+    weights1, weights2 = tee(weights)
 
     sum_of_weights = isum(weights1, axis = axis)
     weighted_arrays = _weighted(arrays, weights2, ignore_nan)
     weighted_sum = isum(weighted_arrays, axis = axis, ignore_nan = ignore_nan)
-
-    for cumsum, weightsum in zip(weighted_sum, sum_of_weights):
-        yield cumsum/weightsum
+    
+    yield from map(lambda arr, wgt: arr/wgt, weighted_sum, sum_of_weights)
 
 def imean(arrays, axis = -1, ignore_nan = False):
     """ 

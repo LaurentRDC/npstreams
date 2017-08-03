@@ -3,6 +3,7 @@
 Numerics Functions
 ------------------
 """
+from itertools import chain
 import numpy as np
 from functools import partial
 from . import _nan_to_num, preduce, last, chunked, stream_reduce
@@ -102,7 +103,7 @@ def psum(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     -------
     sum : ndarray
     """
-    # TODO: parallelize using stream_reduce
+    # TODO: parallelize
     kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype, 'axis': axis}
     return last(isum(arrays, **kwargs))
 
@@ -174,7 +175,7 @@ def pprod(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     -------
     prod : ndarray
     """
-    # TODO: parallelize using stream_reduce
+    # TODO: parallelize using preduce
     kwargs = {'ignore_nan': ignore_nan, 'dtype': dtype, 'axis': axis}
     return last(iprod(arrays, **kwargs))
 
