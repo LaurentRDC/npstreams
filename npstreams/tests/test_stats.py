@@ -102,6 +102,18 @@ class TestIvar(unittest.TestCase):
                 self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
                 self.assertTrue(np.allclose(from_ivar, from_numpy))
 
+    def test_weights(self):
+        """ Test that the weighted variance"""
+        stream = [np.random.random((16, 7, 3)) for _ in range(5)]
+        stack = np.stack(stream, axis = -1)
+
+        for axis in (0, 1, 2, None):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.var(stack, axis = axis)
+                from_ivar = last(ivar(stream, axis = axis))
+                self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
+                self.assertTrue(np.allclose(from_ivar, from_numpy))
+
     def test_ddof(self):
         """ Test that the ddof parameter is equivalent to numpy's """
         stream = [np.random.random((16, 7, 3)) for _ in range(10)]

@@ -5,11 +5,10 @@ Statistical functions
 """
 from functools import partial
 from itertools import repeat, tee, chain, count
-from cytoolz import peek
 import numpy as np
 from math import sqrt
 from .numerics import isum
-from . import _nan_to_num
+from . import _nan_to_num, peek
 
 def _atleast_array(arg, arr):
     """ Make sure that if inputs are float or int, they are cast to array of shape `shape` """

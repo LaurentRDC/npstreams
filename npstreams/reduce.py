@@ -6,7 +6,7 @@ Numerics Functions
 import numpy as np
 from functools import partial
 from itertools import chain
-from cytoolz import peek
+from . import peek
 
 # TODO: initializer
 # TODO: keepdims

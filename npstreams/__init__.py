@@ -14,7 +14,7 @@ def _nan_to_num(arr, fill):
     return with_nans
 
 from .parallel import pmap, preduce
-from .iter_utils import last, chunked, multilinspace, linspace
+from .iter_utils import last, chunked, multilinspace, linspace, peek
 from .reduce import stream_reduce
 from .stats import iaverage, imean, inanmean, istd, inanstd, isem, ivar, inanvar
 from .numerics import isum, inansum, psum, iprod, pprod, inanprod
