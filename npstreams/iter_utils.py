@@ -4,7 +4,7 @@ Iterator/Generator utilities
 ----------------------------
 """
 from collections import deque
-from itertools import islice
+from itertools import islice, chain
 
 def chunked(iterable, chunksize = 1):
 	"""
@@ -31,6 +31,12 @@ def chunked(iterable, chunksize = 1):
 	while next_chunk:	
 		yield next_chunk
 		next_chunk = tuple(islice(iterable, chunksize))
+
+def peek(iterable):
+    """  Peek ahead in an iterable. """
+    iterable = iter(iterable)
+    ahead = next(iterable)
+    return ahead, chain([ahead], iterable)
 
 def linspace(start, stop, num, endpoint = True):
 	""" 

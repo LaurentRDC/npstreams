@@ -12,8 +12,13 @@ npstreams
     :alt: PyPI Version
 
 npstreams is an open-source Python package for streaming NumPy array operations. 
-The goal is to provide tested, drop-in replacements for NumPy functions (where possible) 
-that operate on streams of arrays instead of dense arrays.
+The goal is to provide tested routines that operate on streams of arrays instead of dense arrays.
+
+Streaming reduction operations (sums, averages, etc.) can be implemented in constant memory, which in turns
+allows for easy parallelization. Some routines in npstreams are parallelized in this way.
+
+In my experience, this approach has been a godsend when working with images; the images are read
+one-by-one from disk and combined/processed in a streaming fashion.
 
 Motivating Example
 ------------------
