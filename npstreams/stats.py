@@ -239,7 +239,7 @@ def istd(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
         By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the variance 
+        Each value in an element of `arrays` contributes to the standard deviation 
         according to its associated weight. The weights array can either be a float
         or an array of the same shape as any element of `arrays`. If weights=None, 
         then all data in each element of `arrays` are assumed to have a weight equal to one.
@@ -279,7 +279,7 @@ def inanstd(arrays, axis = -1, ddof = 0, weights = None):
         By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the variance 
+        Each value in an element of `arrays` contributes to the standard deviation 
         according to its associated weight. The weights array can either be a float
         or an array of the same shape as any element of `arrays`. If weights=None, 
         then all data in each element of `arrays` are assumed to have a weight equal to one.
@@ -297,7 +297,7 @@ def inanstd(arrays, axis = -1, ddof = 0, weights = None):
     """
     yield from istd(arrays, axis = axis, ddof = ddof, weights = weights, ignore_nan = True)
 
-def isem(arrays, axis = -1, ddof = 1, ignore_nan = False):
+def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
     """ 
     Streaming standard error in the mean (SEM) of arrays. This is equivalent to
     calling `scipy.stats.sem(axis = 2)` on a stack of images.
@@ -316,6 +316,12 @@ def isem(arrays, axis = -1, ddof = 1, ignore_nan = False):
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
         By default `ddof` is one.
+    weights : iterable of ndarray, iterable of floats, or None, optional
+        Iterable of weights associated with the values in each item of `arrays`. 
+        Each value in an element of `arrays` contributes to the standard error 
+        according to its associated weight. The weights array can either be a float
+        or an array of the same shape as any element of `arrays`. If weights=None, 
+        then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
     
@@ -328,6 +334,26 @@ def isem(arrays, axis = -1, ddof = 1, ignore_nan = False):
     --------
     scipy.stats.sem : standard error in the mean of dense arrays.
     """
-    # TODO: include weights
-    for k, std in enumerate(istd(arrays, axis = axis, ddof = ddof, ignore_nan = ignore_nan), start = 1):
-        yield std / sqrt(k) 
+    first, arrays = peek(arrays)
+    
+    # We make sure that weights is always an array
+    # This simplifies the handling of NaNs.
+    if weights is None:
+        weights = repeat(1)
+    weights = map(partial(np.broadcast_to, shape = first.shape), weights)
+
+    # Need to know which array has NaNs, and modify the weights stream accordingly
+    if ignore_nan:
+        arrays, arrays2 = tee(arrays)
+        weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
+        arrays = map(np.nan_to_num, arrays)
+
+    arrays, arrays2 = tee(arrays)
+    weights, weights2, weights3 = tee(weights, 3)
+
+    avgs = iaverage(arrays, axis = axis, weights = weights, ignore_nan = ignore_nan)
+    avg_of_squares = iaverage(map(np.square, arrays2), axis = axis, weights = weights2, ignore_nan = ignore_nan)
+    sum_of_weights = isum(weights3, axis = axis, ignore_nan = ignore_nan)
+
+    for avg, sq_avg, swgt  in zip(avgs, avg_of_squares, sum_of_weights):
+        yield np.sqrt((sq_avg - avg**2) * (swgt / (swgt - ddof))/swgt)

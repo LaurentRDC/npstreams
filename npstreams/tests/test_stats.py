@@ -152,5 +152,19 @@ class TestIStd(unittest.TestCase):
                     self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
                     self.assertTrue(np.allclose(from_ivar, from_numpy))
 
+class TestISem(unittest.TestCase):
+
+    def test_against_scipy_no_nans(self):
+        source = [np.random.random((16, 12, 5)) for _ in range(10)]
+        stack = np.stack(source, axis = -1)
+
+        for axis in (0, 1, 2, None):
+            for ddof in range(4):
+                with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
+                    from_scipy = scipy_sem(stack, axis = axis, ddof = ddof)
+                    from_isem = last(isem(source, axis = axis, ddof = ddof))
+                    self.assertSequenceEqual(from_scipy.shape, from_isem.shape)
+                    self.assertTrue(np.allclose(from_isem, from_scipy))
+
 if __name__ == '__main__':
     unittest.main()
