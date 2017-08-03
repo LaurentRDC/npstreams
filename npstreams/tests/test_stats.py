@@ -155,6 +155,7 @@ class TestIStd(unittest.TestCase):
 class TestISem(unittest.TestCase):
 
     def test_against_scipy_no_nans(self):
+        """ Test that isem outputs the same as scipy.stats.sem """
         source = [np.random.random((16, 12, 5)) for _ in range(10)]
         stack = np.stack(source, axis = -1)
 
@@ -163,6 +164,21 @@ class TestISem(unittest.TestCase):
                 with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
                     from_scipy = scipy_sem(stack, axis = axis, ddof = ddof)
                     from_isem = last(isem(source, axis = axis, ddof = ddof))
+                    self.assertSequenceEqual(from_scipy.shape, from_isem.shape)
+                    self.assertTrue(np.allclose(from_isem, from_scipy))
+
+    def test_against_scipy_with_nans(self):
+        """ Test that isem outputs the same as scipy.stats.sem when NaNs are ignored. """
+        source = [np.random.random((16, 12, 5)) for _ in range(10)]
+        for arr in source:
+            arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
+        stack = np.stack(source, axis = -1)
+
+        for axis in (0, 1, 2, None):
+            for ddof in range(4):
+                with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
+                    from_scipy = scipy_sem(stack, axis = axis, ddof = ddof, nan_policy = 'omit')
+                    from_isem = last(isem(source, axis = axis, ddof = ddof, ignore_nan = True))
                     self.assertSequenceEqual(from_scipy.shape, from_isem.shape)
                     self.assertTrue(np.allclose(from_isem, from_scipy))
 
