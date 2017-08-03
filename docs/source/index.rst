@@ -63,36 +63,6 @@ While the :func:`average` example is simple, there are some functions that are n
 brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm,
 but single-pass algorithms do exist and are implemented in this package.
 
-Recipe: averaging with error
-------------------------------
-
-It is possible to combine :func:`imean` and :func:`isem` into a single stream using :func:`itertools.tee`. 
-Here is a recipe for it::
-
-    from itertools import tee
-    from npstreams import imean, isem
-
-	def iaverage_with_error(arrays):    
-	    """ 
-	    Combined streaming mean and standard error of arrays. 
-		
-	    Parameters
-	    ----------
-	    arrays : iterable of ndarrays
-	    	Arrays to be averaged. This iterable can also a generator.
-	    weights : iterable of ndarray, iterable of floats, or None, optional
-	    	Array of weights. See `numpy.average` for further information.
-	    
-	    Yields
-	    ------
-	    avg : `~numpy.ndarray`
-	    	Weighted average. 
-	    sem : `~numpy.ndarray`
-	    	Standard error in the mean
-	    """
-	    stream1, stream2 = itertools.tee(arrays, 2)
-	    yield from zip(imean(stream1), isem(stream2))
-
 Links
 =====
 
