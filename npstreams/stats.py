@@ -4,7 +4,7 @@ Statistical functions
 ---------------------
 """
 from functools import partial
-from itertools import repeat, tee, chain
+from itertools import repeat, tee, chain, count
 from cytoolz import peek
 import numpy as np
 from math import sqrt
@@ -168,57 +168,29 @@ def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
         Communications of the ACM Vol. 22, Issue 9, pp. 532 - 535 (1979)
     """
-    arrays = iter(arrays)
-    first = next(arrays)
-
+    first, arrays = peek(arrays)
+    
     # We make sure that weights is always an array
     # This simplifies the handling of NaNs.
     if weights is None:
         weights = repeat(1)
-    weights = map(partial(_atleast_array, arr = first), iter(weights))
-    first_weight = next(weights)
+    weights = map(partial(np.broadcast_to, shape = first.shape), weights)
 
-    axis_reduce = lambda x: x
-    if axis != -1:
-        axis_reduce = partial(np.sum, axis = axis)
-        if ignore_nan:
-            axis_reduce = partial(np.nansum, axis = axis)
-    
-    first = axis_reduce(first)
-    sum_of_weights = np.array(axis_reduce(first_weight), copy = True)
+    # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        sum_of_weights[np.isnan(first)] = 0
-        first = np.nan_to_num(first)
+        arrays, arrays2 = tee(arrays)
+        weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
+        arrays = map(np.nan_to_num, arrays)
 
-    old_mean = np.array(first, copy = True)
-    new_mean = np.array(first, copy = True)
-    old_S = np.zeros_like(first, dtype = np.float)
-    new_S = np.zeros_like(first, dtype = np.float)
-    yield np.zeros_like(first)
-    
-    for array, weight in zip(arrays, weights):
-        array = axis_reduce(array)
-        weight = axis_reduce(weight)
+    arrays, arrays2 = tee(arrays)
+    weights, weights2, weights3 = tee(weights, 3)
 
-        if ignore_nan:
-            weight[np.isnan(array)] = 0
-            array = np.nan_to_num(array)
+    avgs = iaverage(arrays, axis = axis, weights = weights, ignore_nan = ignore_nan)
+    avg_of_squares = iaverage(map(np.square, arrays2), axis = axis, weights = weights2, ignore_nan = ignore_nan)
+    sum_of_weights = isum(weights3, axis = axis, ignore_nan = ignore_nan)
 
-        sum_of_weights += weight
-
-        _sub = weight * (array - old_mean)
-        new_mean = old_mean + _sub/sum_of_weights
-        new_S = old_S + _sub*(array - new_mean)
-
-        # In case there hasn't been enough measurements yet,
-        # yield zeros.
-        if np.any(sum_of_weights - ddof <= 0):
-            yield np.zeros_like(first)
-        else:
-            yield new_S/(sum_of_weights - ddof) # variance = S / k-1, sem = std / sqrt(k)    
-
-        old_mean = new_mean
-        old_S = new_S
+    for avg, sq_avg, swgt  in zip(avgs, avg_of_squares, sum_of_weights):
+        yield (sq_avg - avg**2) * (swgt / (swgt - ddof))
 
 def inanvar(arrays, axis = -1, ddof = 0, weights = None):
     """ 

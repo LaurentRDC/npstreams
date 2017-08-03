@@ -81,85 +81,6 @@ class TestIMean(unittest.TestCase):
 
         self.assertTrue(np.allclose(from_imean, from_numpy))
 
-class TestISem(unittest.TestCase):
-
-    def test_first(self):
-        """ Test that the first yielded value of isem is an array fo zeros """
-        stream = repeat(np.random.random( size = (64,64)), times = 5)
-        first = next(isem(stream))
-
-        self.assertTrue(np.allclose(first, np.zeros_like(first)))
-    
-    def test_against_scipy_sem(self):
-        """ Test that the results of isem are in agreement with scipy.stats.sem """
-        stream = [np.random.random(size = (64,64)) for _ in range(5)]
-
-        for ddof in range(0, len(stream)):
-            with self.subTest('ddof = {}'.format(ddof)):
-                from_isem = last(isem(stream, ddof = ddof))
-                from_scipy = scipy_sem(np.dstack(stream), axis = 2, ddof = ddof)
-
-                self.assertTrue(np.allclose(from_isem, from_scipy))
-
-class TestIstd(unittest.TestCase):
-
-    def test_first(self):
-        """ Test that the first yielded value of istd is an array fo zeros """
-        stream = repeat(np.random.random( size = (64,64)), times = 5)
-        first = next(istd(stream))
-
-        self.assertTrue(np.allclose(first, np.zeros_like(first)))
-
-    def test_against_numpy_std(self):
-        """ Test that the results of istd are in agreement with numpy.std """
-        stream = [np.random.random(size = (64,64)) for _ in range(5)]
-
-        for ddof in range(0, len(stream)):
-            with self.subTest('ddof = {}'.format(ddof)):
-                from_istd = last(istd(stream, ddof = ddof))
-                from_numpy = np.std(np.dstack(stream), axis = 2, ddof = ddof)
-
-                self.assertTrue(np.allclose(from_istd, from_numpy))
-
-    def test_weighted_std(self):
-        """ Test that weighted streaming std gives correct results """
-        stream = [np.random.random(size = (64,64)) for _ in range(5)]
-
-        with self.subTest('float weights'):
-            weights = [random() for _ in stream]
-            from_istd = last(istd(stream, ddof = 0, weights = weights))
-            
-            # Numpy/scipy does not have a weighted variance function at this time
-            arr = np.dstack(stream)
-            average = np.average(arr, weights = weights, axis = 2)
-            wvar = np.average((arr - average[:,:,None])**2, weights = weights, axis = 2) 	# weighted variance
-
-            self.assertTrue(np.allclose(from_istd, np.sqrt(wvar)))
-
-        with self.subTest('array weights'):
-            weights = [np.random.random(size = stream[0].shape) for _ in stream]
-            from_istd = last(istd(stream, ddof = 0, weights = weights))
-            
-            # Numpy/scipy does not have a weighted variance function at this time
-            arr = np.dstack(stream)
-            weights = np.dstack(weights)
-            average = np.average(arr, weights = weights, axis = 2)
-            wvar = np.average((arr - average[:,:,None])**2, weights = weights, axis = 2) 	# weighted variance
-
-            self.assertTrue(np.allclose(from_istd, np.sqrt(wvar)))
-
-    def test_ignore_nan(self):
-        """ Test that NaNs are handled correctly """
-        stream = [np.random.random(size = (16,16)) for _ in range(5)]
-        for s in stream:
-            s[randint(0, 15), randint(0,15)] = np.nan
-        
-        with catch_warnings():
-            simplefilter('ignore')
-            from_istd = last(istd(stream, ignore_nan = True))  
-        from_numpy = np.nanstd(np.dstack(stream), axis = 2)
-        self.assertTrue(np.allclose(from_istd, from_numpy))
-
 class TestIvar(unittest.TestCase):
 
     def test_first(self):
@@ -169,67 +90,30 @@ class TestIvar(unittest.TestCase):
 
         self.assertTrue(np.allclose(first, np.zeros_like(first)))
 
-    def test_against_numpy_var(self):
-        """ Test that the results of istd are in agreement with numpy.var """
-        stream = [np.random.random(size = (64,64)) for _ in range(5)]
+    def test_output_shape(self):
+        """ Test that the axis parameter is handled correctly """
+        stream = [np.random.random((16, 7, 3)) for _ in range(5)]
+        stack = np.stack(stream, axis = -1)
 
-        for ddof in range(0, len(stream)):
-            with self.subTest('ddof = {}'.format(ddof)):
-                from_ivar = last(ivar(stream, ddof = ddof))
-                from_numpy = np.var(np.dstack(stream), axis = 2, ddof = ddof)
-
+        for axis in (0, 1, 2, None):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.var(stack, axis = axis)
+                from_ivar = last(ivar(stream, axis = axis))
+                self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
                 self.assertTrue(np.allclose(from_ivar, from_numpy))
 
-    def test_weighted_variance(self):
-        """ Test that weighted streaming variance gives correct results """
-        stream = [np.random.random(size = (64,64)) for _ in range(5)]
+    def test_ddof(self):
+        """ Test that the ddof parameter is equivalent to numpy's """
+        stream = [np.random.random((16, 7, 3)) for _ in range(10)]
+        stack = np.stack(stream, axis = -1)
 
-        with self.subTest('float weights'):
-            weights = [random() for _ in stream]
-            from_ivar = last(ivar(stream, ddof = 0, weights = weights))
-            
-            # Numpy/scipy does not have a weighted variance function at this time
-            arr = np.dstack(stream)
-            average = np.average(arr, weights = weights, axis = 2)
-            weighted = np.average((arr - average[:,:,None])**2, weights = weights, axis = 2) 
-
-            self.assertTrue(np.allclose(from_ivar, weighted))
-
-        with self.subTest('array weights'):
-            weights = [np.random.random(size = stream[0].shape) for _ in stream]
-            from_ivar = last(ivar(stream, ddof = 0, weights = weights))
-            
-            # Numpy/scipy does not have a weighted variance function at this time
-            arr = np.dstack(stream)
-            weights = np.dstack(weights)
-            average = np.average(arr, weights = weights, axis = 2)
-            weighted = np.average((arr - average[:,:,None])**2, weights = weights, axis = 2) 
-
-            self.assertTrue(np.allclose(from_ivar, weighted))
-        
-    def test_ignore_nan(self):
-        """ Test that NaNs are handled correctly """
-        stream = [np.random.random(size = (16,16)) for _ in range(5)]
-        for s in stream:
-            s[randint(0, 15), randint(0,15)] = np.nan
-        
-        with catch_warnings():
-            simplefilter('ignore')
-            from_ivar = last(ivar(stream, ignore_nan = True))  
-        from_numpy = np.nanvar(np.dstack(stream), axis = 2)
-        self.assertTrue(np.allclose(from_ivar, from_numpy))
-
-    def test_axis(self):
-        """ Test that the axis parameter is handled correctly """
-        stream = [np.zeros((16,)) for _ in range(5)]
-
-        with self.subTest('axis = 0'):
-            var = last(ivar(stream, axis = 0))
-            self.assertEqual(var, 0)
-        
-        with self.subTest('axis = None'):
-            var = last(ivar(stream, axis = None))
-            self.assertEqual(var, 0)
+        for axis in (0, 1, 2, None):
+            for ddof in range(4):
+                with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
+                    from_numpy = np.var(stack, axis = axis, ddof = ddof)
+                    from_ivar = last(ivar(stream, axis = axis, ddof = ddof))
+                    self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
+                    self.assertTrue(np.allclose(from_ivar, from_numpy))
 
 if __name__ == '__main__':
     unittest.main()
