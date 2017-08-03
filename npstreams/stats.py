@@ -67,6 +67,12 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
         weights = repeat(1)
     weights = map(partial(np.broadcast_to, shape = first.shape), weights)
 
+    # Need to know which array has NaNs, and modify the weights stream accordingly
+    if ignore_nan:
+        arrays, arrays2 = tee(arrays)
+        weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
+        arrays = map(np.nan_to_num, arrays)
+
     weights1, weights2 = tee(weights)
 
     sum_of_weights = isum(weights1, axis = axis)
