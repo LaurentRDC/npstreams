@@ -20,8 +20,7 @@ def stream_reduce(arrays, npfunc, axis = -1, dtype = None):
     arrays : iterable
         Arrays to be reduced.
     npfunc : callable
-        NumPy reduction function. This function must support the `axis` and `dtype` 
-        parameters.
+        NumPy reduction function. This function must support the `axis` parameter.
     axis : int, optional
         Reduction axis. Default is to reduce the arrays in the stream as if 
         they had been stacked along a new axis, then reduce along this new axis.
@@ -176,3 +175,53 @@ def _stream_reduce_all_axes(arrays, npfunc, dtype = None):
     for array in arrays:
         accumulator = axis_reduce([accumulator, axis_reduce(array)])
         yield accumulator
+
+def iall(arrays, axis = -1):
+    """ 
+    Test whether all array elements along a given axis evaluate to True 
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which a logical AND reduction is performed. The default
+        is to perform a logical AND along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+
+    Yields
+    ------
+    all : ndarray, dtype bool 
+    """
+    # Since stream_reduce will pass a 'dtype' parameter, we must ignore it
+    # TODO: this is clunky
+    def all_ignore_kwargs(*args, **kwargs):
+        kwargs.pop('dtype')
+        return np.all(*args, **kwargs)
+    yield from stream_reduce(arrays, npfunc = all_ignore_kwargs, axis = axis)
+
+def iany(arrays, axis = -1):
+    """ 
+    Test whether any array elements along a given axis evaluate to True.
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which a logical OR reduction is performed. The default
+        is to perform a logical AND along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+
+    Yields
+    ------
+    any : ndarray, dtype bool 
+    """
+    # Since stream_reduce will pass a 'dtype' parameter, we must ignore it
+    # TODO: this is clunky
+    def any_ignore_kwargs(*args, **kwargs):
+        kwargs.pop('dtype')
+        return np.any(*args, **kwargs)
+    yield from stream_reduce(arrays, npfunc = any_ignore_kwargs, axis = axis)
