@@ -116,13 +116,15 @@ class TestIvar(unittest.TestCase):
         stream = [np.random.random((16, 7, 3)) for _ in range(10)]
         stack = np.stack(stream, axis = -1)
 
-        for axis in (0, 1, 2, None):
-            for ddof in range(4):
-                with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
-                    from_numpy = np.var(stack, axis = axis, ddof = ddof)
-                    from_ivar = last(ivar(stream, axis = axis, ddof = ddof))
-                    self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
-                    self.assertTrue(np.allclose(from_ivar, from_numpy))
+        with catch_warnings():
+            simplefilter('ignore')
+            for axis in (0, 1, 2, None):
+                for ddof in range(4):
+                    with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
+                        from_numpy = np.var(stack, axis = axis, ddof = ddof)
+                        from_ivar = last(ivar(stream, axis = axis, ddof = ddof))
+                        self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
+                        self.assertTrue(np.allclose(from_ivar, from_numpy))
 
 class TestIStd(unittest.TestCase):
 
@@ -130,13 +132,15 @@ class TestIStd(unittest.TestCase):
         stream = [np.random.random((16, 7, 3)) for _ in range(10)]
         stack = np.stack(stream, axis = -1)
 
-        for axis in (0, 1, 2, None):
-            for ddof in range(4):
-                with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
-                    from_numpy = np.std(stack, axis = axis, ddof = ddof)
-                    from_ivar = last(istd(stream, axis = axis, ddof = ddof))
-                    self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
-                    self.assertTrue(np.allclose(from_ivar, from_numpy))
+        with catch_warnings():
+            simplefilter('ignore')
+            for axis in (0, 1, 2, None):
+                for ddof in range(4):
+                    with self.subTest('axis = {}, ddof = {}'.format(axis, ddof)):
+                        from_numpy = np.std(stack, axis = axis, ddof = ddof)
+                        from_ivar = last(istd(stream, axis = axis, ddof = ddof))
+                        self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
+                        self.assertTrue(np.allclose(from_ivar, from_numpy))
 
     def test_against_numpy_nanstd(self):
         source = [np.random.random((16, 12, 5)) for _ in range(10)]

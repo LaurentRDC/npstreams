@@ -8,7 +8,7 @@ from itertools import repeat, tee, chain, count
 import numpy as np
 from math import sqrt
 from .numerics import isum
-from . import _nan_to_num, peek
+from . import peek
 
 def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 

@@ -6,7 +6,7 @@ Numerics Functions
 from itertools import chain
 import numpy as np
 from functools import partial
-from . import _nan_to_num, preduce, last, chunked, stream_reduce
+from . import preduce, last, chunked, stream_reduce
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
