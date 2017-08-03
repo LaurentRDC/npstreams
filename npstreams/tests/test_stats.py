@@ -19,7 +19,7 @@ class TestIAverage(unittest.TestCase):
         for av in iaverage(stream):
             self.assertTrue(np.allclose(av, np.zeros_like(av)))
     
-    def test_average(self):
+    def test_weighted_average(self):
         """ Test results of weighted average against numpy.average """
         stream = [np.random.random(size = (16,16)) for _ in range(5)]
 
@@ -65,21 +65,30 @@ class TestIAverage(unittest.TestCase):
                 self.assertTrue(np.allclose(out, from_numpy))
 
 class TestIMean(unittest.TestCase):
-
-    def test_trivial(self):
-        """ Test iaverage on stream of zeroes """
-        stream = repeat(np.zeros( (64,64), dtype = np.float ), times = 5)
-        for av in imean(stream):
-            self.assertTrue(np.allclose(av, np.zeros_like(av)))
     
-    def test_mean(self):
-        """ Test results against of unweighted average against numpy.mean """
-        stream = [np.random.random(size = (64,64)) for _ in range(5)]
+    def test_against_numpy_mean(self):
+        """ Test results against numpy.mean"""
+        source = [np.random.random((16, 12, 5)) for _ in range(10)]
+        stack = np.stack(source, axis = -1)
+        for axis in (0, 1, 2, None):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.mean(stack, axis = axis)
+                out = last(imean(source, axis = axis))
+                self.assertSequenceEqual(from_numpy.shape, out.shape)
+                self.assertTrue(np.allclose(out, from_numpy))
 
-        from_imean = last(imean(stream))
-        from_numpy = np.mean(np.dstack(stream), axis = 2)
-
-        self.assertTrue(np.allclose(from_imean, from_numpy))
+    def test_against_numpy_nanmean(self):
+        """ Test results against numpy.mean"""
+        source = [np.random.random((16, 12, 5)) for _ in range(10)]
+        for arr in source:
+            arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
+        stack = np.stack(source, axis = -1)
+        for axis in (0, 1, 2, None):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.nanmean(stack, axis = axis)
+                out = last(imean(source, axis = axis, ignore_nan = True))
+                self.assertSequenceEqual(from_numpy.shape, out.shape)
+                self.assertTrue(np.allclose(out, from_numpy))
 
 class TestIvar(unittest.TestCase):
 
@@ -92,18 +101,6 @@ class TestIvar(unittest.TestCase):
 
     def test_output_shape(self):
         """ Test that the axis parameter is handled correctly """
-        stream = [np.random.random((16, 7, 3)) for _ in range(5)]
-        stack = np.stack(stream, axis = -1)
-
-        for axis in (0, 1, 2, None):
-            with self.subTest('axis = {}'.format(axis)):
-                from_numpy = np.var(stack, axis = axis)
-                from_ivar = last(ivar(stream, axis = axis))
-                self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
-                self.assertTrue(np.allclose(from_ivar, from_numpy))
-
-    def test_weights(self):
-        """ Test that the weighted variance"""
         stream = [np.random.random((16, 7, 3)) for _ in range(5)]
         stack = np.stack(stream, axis = -1)
 
