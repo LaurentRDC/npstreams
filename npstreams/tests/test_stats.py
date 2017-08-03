@@ -35,18 +35,16 @@ class TestIAverage(unittest.TestCase):
             from_numpy = np.average(np.dstack(stream), axis = 2, weights = np.dstack(weights))
             self.assertTrue(np.allclose(from_iaverage, from_numpy))
     
-    #@unittest.skip('')
     def test_ignore_nan(self):
         """ Test that NaNs are handled correctly """
-        stream = [np.random.random(size = (4,4)) for _ in range(5)]
+        stream = [np.random.random(size = (16,12)) for _ in range(5)]
         for s in stream:
-            s[randint(0, 3), randint(0,3)] = np.nan
+            s[randint(0, 15), randint(0,11)] = np.nan
         
         with catch_warnings():
             simplefilter('ignore')
             from_iaverage = last(iaverage(stream, ignore_nan = True))  
         from_numpy = np.nanmean(np.dstack(stream), axis = 2)
-        print('\n', np.abs(from_numpy - from_iaverage))
         self.assertTrue(np.allclose(from_iaverage, from_numpy))
     
     def test_length(self):
