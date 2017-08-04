@@ -27,7 +27,7 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
         If None, arrays are flattened before reduction. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are reduced
         along the new axis. Note that not all of NumPy Ufuncs support 
-        ``axis = None``, e.g. ``numpy.subtract.reduce``.
+        ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
     keepdims : bool, optional
@@ -44,7 +44,7 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
 
     Raises
     ------
-
+    TypeError : if ``ufunc`` is not a binary universal function.
     """
     kwargs.update({'dtype': dtype, 'axis': axis})
 
