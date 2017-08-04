@@ -73,15 +73,15 @@ All routines are documented in the `API Reference on readthedocs.io <http://npst
 Making your own Streaming Functions
 -----------------------------------
 
-Any NumPy reduction function can be transformed into a streaming function using the
-:code:`stream_reduce` function. For example::
+Any binary NumPy ufunc can be transformed into a streaming function using the
+:code:`stream_ufunc` function. For example::
 
-    from npstreams import stream_reduce
+    from npstreams import stream_ufunc
     from numpy import prod
 
-    def streaming_prod(stream, axis, **kwargs):
+    def streaming_prod(stream, **kwargs):
         """ Streaming product along axis """
-        yield from stream_reduce(stream, npfunc = prod, axis = axis, **kwargs)
+        yield from stream_ufunc(stream, npfunc = np.multiply, **kwargs)  # numpy.prod = numpy.multiply.reduce
 
 The above :code:`streaming_prod` will accumulate (and yield) the result of the operation
 as arrays come in the stream. 
@@ -91,7 +91,7 @@ The two following snippets should return the same result::
     from numpy import prod, stack
     
     dense = stack(stream, axis = -1) 
-    from_numpy = prod(dense, axis = 0)  # numpy.prod = numpy.multiply.reduce
+    from_numpy = prod(dense, axis = 0) 
 
 .. code::
 

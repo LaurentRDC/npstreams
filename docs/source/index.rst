@@ -62,15 +62,15 @@ We can also use :func:`last` to get at the final average::
 Making your own streaming functions
 ===================================
 
-Any NumPy reduction function can be transformed into a streaming function using the
-:func:`stream_reduce` function. For example::
+Any **binary** NumPy Ufunc function can be transformed into a streaming function using the
+:func:`stream_ufunc` function. For example::
 
     from npstreams import stream_reduce
     from numpy import prod
 
-    def streaming_prod(stream, axis, **kwargs):
+    def streaming_prod(stream, **kwargs):
         """ Streaming product along axis """
-        yield from stream_reduce(stream, npfunc = prod, axis = axis, **kwargs)
+        yield from stream_ufuc(stream, ufunc = np.multiply, **kwargs)
 
 The above :func:`streaming_prod` will accumulate (and yield) the result of the operation
 as arrays come in the stream. 

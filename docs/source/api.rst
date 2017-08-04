@@ -35,6 +35,22 @@ Numerics
     inanprod
     isub
 
+Linear Algebra
+--------------
+.. autosummary::
+    :toctree: functions/
+
+    idot
+    itensordot
+    ieinsum
+
+Control Flow
+------------
+.. autosummary::
+    :toctree: functions/
+
+    ipipe
+
 Others
 ------
 .. autosummary::
@@ -44,7 +60,7 @@ Others
     iall
     istack
     iflatten
-
+    
 Iterator Utilities
 ------------------
 .. autosummary::
@@ -68,7 +84,7 @@ General Stream reduction
 
 You can assemble your own streaming reduction using the following generator:
 
-    .. autofunction:: stream_reduce
+    .. autofunction:: stream_ufunc
 
 This decorator will ensure that streams will be transformed into streams of NumPy arrays
 

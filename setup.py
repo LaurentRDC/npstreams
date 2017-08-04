@@ -2,9 +2,10 @@
 from glob import glob
 import os
 import re
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 from unittest import TestLoader
 #from Cython.Build import cythonize
+#import numpy
 
 # To upload to pypi.org:
 #   >>> python setup.py sdist
@@ -51,6 +52,10 @@ if __name__ == '__main__':
         packages = packages,
         include_package_data = True,
         zip_safe = False,
+#        ext_modules = cythonize("npstreams/*.pyx",
+#                                include_path = [numpy.get_include()],
+#                                compiler_directives = {'language_level':3,
+#                                                       'boundscheck': False}),
         test_suite = 'setup.test_suite', 
         classifiers = ['Environment :: Console',
                        'Intended Audience :: Science/Research',

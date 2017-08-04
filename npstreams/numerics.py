@@ -3,10 +3,9 @@
 Numerics Functions
 ------------------
 """
-from itertools import chain
 import numpy as np
 from functools import partial
-from . import preduce, last, chunked, stream_reduce
+from . import preduce, last, chunked, stream_ufunc, array_stream
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
@@ -35,11 +34,11 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     ------
     online_sum : ndarray
     """
-    npfunc = np.sum
+    # TODO: don't map nan_to_num if arrays aren't floats
     if ignore_nan:
-        npfunc = np.nansum
+        arrays = map(np.nan_to_num, arrays)
     
-    yield from stream_reduce(arrays, npfunc = npfunc, axis = axis, dtype = dtype)
+    yield from stream_ufunc(arrays, ufunc = np.add, axis = axis, dtype = dtype)
 
 def inansum(arrays, axis = -1, dtype = None):
     """ 
@@ -134,11 +133,14 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     ------
     online_prod : ndarray
     """
-    npfunc = np.prod
     if ignore_nan:
-        npfunc = np.nanprod
-    
-    yield from stream_reduce(arrays, npfunc = npfunc, axis = axis, dtype = dtype)
+        def _nan_to_num(array): #numpy nan_to_num() replaces all NaNs with zeros
+            array = np.array(array, copy = True)
+            array[np.isnan(array)] = 1
+            return array
+        arrays = map(_nan_to_num, arrays)
+
+    yield from stream_ufunc(arrays, ufunc = np.multiply, axis = axis, dtype = dtype)
 
 # Can't pickle local functions, so it must be defined here
 # for use in pprod
@@ -241,4 +243,44 @@ def isub(arrays, axis = -1, dtype = None):
     if axis is None:
         raise ValueError('Subtraction is not a reorderable operation, and \
                           therefore a specific axis must be give.')
-    yield from stream_reduce(arrays, npfunc = np.subtract.reduce, axis = axis, dtype = dtype)
+    yield from stream_ufunc(arrays, ufunc = np.subtract, axis = axis, dtype = dtype)
+
+def iall(arrays, axis = -1):
+    """ 
+    Test whether all array elements along a given axis evaluate to True 
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which a logical AND reduction is performed. The default
+        is to perform a logical AND along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+
+    Yields
+    ------
+    all : ndarray, dtype bool 
+    """
+    yield from stream_ufunc(arrays, ufunc = np.logical_and, axis = axis)
+
+def iany(arrays, axis = -1):
+    """ 
+    Test whether any array elements along a given axis evaluate to True.
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which a logical OR reduction is performed. The default
+        is to perform a logical AND along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+
+    Yields
+    ------
+    any : ndarray, dtype bool 
+    """
+    yield from stream_ufunc(arrays, ufunc = np.logical_or, axis = axis)
