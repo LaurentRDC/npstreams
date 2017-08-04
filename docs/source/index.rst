@@ -7,7 +7,7 @@
 **************************************
 
 :mod:`npstreams` is an open-source Python package for streaming NumPy array operations. 
-The goal is to provide tested, drop-in replacements for NumPy functions (where possible) 
+The goal is to provide tested, (almost) drop-in replacements for NumPy functions (where possible) 
 that operate on streams of arrays instead of dense arrays.
 
 :mod:`npstreams` also provides some utilities for parallelization. These parallelization
@@ -34,7 +34,7 @@ from an iterable :data:`source`::
 	
 	avg = np.average(images, axis = 2)
 
-If the :data:`source` iterable provided 1000 images, the above routine would
+If the :data:`source` iterable provided 10000 images, the above routine would
 not work on most machines. Moreover, what if we want to transform the images 
 one by one before averaging them? What about looking at the average while it 
 is being computed? Let's look at an example::
@@ -59,9 +59,36 @@ We can also use :func:`last` to get at the final average::
 
 	total = last(averaged) # average of the entire stream
 
-While the :func:`average` example is simple, there are some functions that are not easily
-brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm,
-but single-pass algorithms do exist and are implemented in this package.
+Making your own streaming functions
+===================================
+
+Any NumPy reduction function can be transformed into a streaming function using the
+:func:`stream_reduce` function. For example::
+
+    from npstreams import stream_reduce
+    from numpy import prod
+
+    def streaming_prod(stream, axis, **kwargs):
+        """ Streaming product along axis """
+        yield from stream_reduce(stream, npfunc = prod, axis = axis, **kwargs)
+
+The above :func:`streaming_prod` will accumulate (and yield) the result of the operation
+as arrays come in the stream. 
+
+The two following snippets should return the same result::
+
+    from numpy import prod, stack
+    
+    dense = stack(stream, axis = -1) 
+    from_numpy = prod(dense, axis = 0)  # numpy.prod = numpy.multiply.reduce
+
+.. code::
+
+    from npstreams import last
+
+    from_stream = last(streaming_prod(stream, axis = 0))
+
+However, :func:`streaming_prod` will work on 100 GB of data in a single line of code.
 
 Links
 =====
@@ -76,10 +103,12 @@ General Documentation
 =====================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     
     installation
+    conventions
     api
+    recipes
 
 Authors
 =======

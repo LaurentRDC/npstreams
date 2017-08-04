@@ -5,7 +5,11 @@ from random import randint, random, seed
 from warnings import catch_warnings, simplefilter
 
 import numpy as np
-from scipy.stats import sem as scipy_sem
+try:
+    from scipy.stats import sem as scipy_sem
+    WITH_SCIPY = True
+except ImportError:
+    WITH_SCIPY = False
 
 from .. import iaverage, imean, isem, istd, ivar, last
 
@@ -156,6 +160,7 @@ class TestIStd(unittest.TestCase):
                     self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
                     self.assertTrue(np.allclose(from_ivar, from_numpy))
 
+@unittest.skipIf(not WITH_SCIPY, 'SciPy is not installed/importable')
 class TestISem(unittest.TestCase):
 
     def test_against_scipy_no_nans(self):

@@ -108,9 +108,12 @@ html_sidebars = {
     '**': [
         'about.html',
         'navigation.html',
-        'searchbox.html'
+        'searchbox.html',
+        'localtoc.html',
+        'sourcelink.html'
     ]
 }
+#html_show_sourcelink = True
 
 # Everything intersphinx's to Python.
 intersphinx_mapping = {

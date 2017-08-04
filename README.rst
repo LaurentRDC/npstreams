@@ -12,7 +12,7 @@ npstreams
     :alt: PyPI Version
 
 npstreams is an open-source Python package for streaming NumPy array operations. 
-The goal is to provide tested routines that operate on streams of arrays instead of dense arrays.
+The goal is to provide tested routines that operate on streams (or generators) of arrays instead of dense arrays.
 
 Streaming reduction operations (sums, averages, etc.) can be implemented in constant memory, which in turns
 allows for easy parallelization. Some routines in npstreams are parallelized in this way.
@@ -59,9 +59,36 @@ We can also use :code:`last` to get at the final average::
 
 	total = last(averaged) # average of the entire stream
 
-While the :code:`average` example is simple, there are some functions that are not easily
-brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm,
-but single-pass algorithms do exist and are implemented in this package.
+Making your own Streaming Functions
+-----------------------------------
+
+Any NumPy reduction function can be transformed into a streaming function using the
+:code:`stream_reduce` function. For example::
+
+    from npstreams import stream_reduce
+    from numpy import prod
+
+    def streaming_prod(stream, axis, **kwargs):
+        """ Streaming product along axis """
+        yield from stream_reduce(stream, npfunc = prod, axis = axis, **kwargs)
+
+The above :code:`streaming_prod` will accumulate (and yield) the result of the operation
+as arrays come in the stream. 
+
+The two following snippets should return the same result::
+
+    from numpy import prod, stack
+    
+    dense = stack(stream, axis = -1) 
+    from_numpy = prod(dense, axis = 0)  # numpy.prod = numpy.multiply.reduce
+
+.. code::
+
+    from npstreams import last
+
+    from_stream = last(streaming_prod(stream, axis = 0))
+
+However, :func:`streaming_prod` will work on 100 GB of data in a single line of code.
 
 API Reference
 -------------
