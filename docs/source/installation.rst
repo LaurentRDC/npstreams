@@ -9,15 +9,9 @@ Installation
 Requirements
 ============
 
-.. note::
-
-    Users are strongly recommended to manage these dependencies with the
-    excellent `Intel Distribution for Python <https://software.intel.com/en-us/intel-distribution-for-python>`_
-    which provides easy access to all of the above dependencies and more.
-
 **npstreams** works on Linux, Mac OS X and Windows. It requires Python 3.4+ 
 as well as `numpy`_. `scipy`_ is an optional dependency that is only used in
-tests.
+tests; however, if SciPy cannot be imported, tests will not fail.
 
 Install npstreams
 =================
