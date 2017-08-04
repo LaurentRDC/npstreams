@@ -8,51 +8,70 @@ from functools import partial
 from itertools import chain
 from . import peek, array_stream
 
-# TODO: initializer
-# TODO: keepdims?
 @array_stream
-def stream_reduce(arrays, npfunc, axis = -1, **kwargs):
+def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     """
-    Reduction operation for a stream of arrays. Applies a reduction function
-    progressively. 
+    Create a streaming reduction function from a NumPy ufunc.
+
+    Note that while all ufuncs have a ``reduce`` method, not all of them are useful.
     
     Parameters
     ----------
     arrays : iterable
         Arrays to be reduced.
-    npfunc : callable
-        NumPy reduction function. This function must support the `axis` parameter.
+    ufunc : numpy.ufunc
+        Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     axis : int or None, optional
         Reduction axis. Default is to reduce the arrays in the stream as if 
         they had been stacked along a new axis, then reduce along this new axis.
         If None, arrays are flattened before reduction. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are reduced
-        along the new axis. Note that not all of NumPy reduction functions support 
+        along the new axis. Note that not all of NumPy Ufuncs support 
         ``axis = None``, e.g. ``numpy.subtract.reduce``.
+    dtype : numpy.dtype or None, optional
+        Overrides the dtype of the calculation and output arrays.
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left in the result 
+        as dimensions with size one. With this option, the result will broadcast 
+        correctly against the original arr.
     kwargs
-        Keyword arguments are passed to ``npfunc``.
+        Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
+        (e.g. ``keepdims``) are not valid for all streaming functions.
     
     Yields 
     ------
     reduced : ndarray or scalar
+
+    Raises
+    ------
+
     """
-    if axis is None:
-        yield from _stream_reduce_all_axes(arrays, npfunc, **kwargs)
+    kwargs.update({'dtype': dtype, 'axis': axis})
+
+    try:
+        assert isinstance(ufunc, np.ufunc)
+        ufunc.reduce([1,2], axis = 0)
+    except (ValueError, AssertionError):
+        raise TypeError('Only binary ufuncs are supported, and {} is not one of them'.format(ufunc.__name__))
+    
+    if kwargs['axis'] is None:
+        yield from _stream_reduce_all_axes(arrays, ufunc, **kwargs)
         return
 
-    if axis == -1:
-        yield from _stream_reduce_new_axis(arrays, npfunc, **kwargs)
+    if kwargs['axis'] == -1:
+        yield from _stream_reduce_new_axis(arrays, ufunc, **kwargs)
         return
 
     first, arrays = peek(arrays)
     
-    if axis >= first.ndim:
-        yield from stream_reduce(arrays, npfunc, axis = -1, **kwargs)
+    if kwargs['axis'] >= first.ndim:
+        kwargs['axis'] = -1
+        yield from stream_ufunc(arrays, ufunc, **kwargs)
         return
 
-    yield from _stream_reduce_existing_axis(arrays, axis = axis, npfunc = npfunc, **kwargs)
+    yield from _stream_reduce_existing_axis(arrays, ufunc, **kwargs)
 
-def _stream_reduce_new_axis(arrays, npfunc, **kwargs):
+def _stream_reduce_new_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
     
@@ -60,11 +79,10 @@ def _stream_reduce_new_axis(arrays, npfunc, **kwargs):
     ----------
     arrays : iterable
         Arrays to be reduced.
-    npfunc : callable
-        NumPy reduction function. This function must support the `axis`
-        parameter, e.g. numpy.sum.
+    ufunc : numpy.ufunc
+        Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     kwargs
-        Keyword arguments are passed to ``npfunc``.
+        Keyword arguments are passed to ``ufunc``
     
     Yields 
     ------
@@ -72,21 +90,22 @@ def _stream_reduce_new_axis(arrays, npfunc, **kwargs):
     """
     arrays = iter(arrays)
     first = next(arrays)
+    
+    kwargs['axis'] = first.ndim
 
-    dtype = kwargs.get('dtype')
+    axis_reduce = partial(ufunc.reduce, **kwargs)
+                
+    dtype = kwargs.get('dtype', None)
     if dtype is None:
         dtype = first.dtype
-
-    axis_reduce = partial(npfunc, axis = first.ndim, **kwargs)
-                
     accumulator = np.array(first, copy = True).astype(dtype)
     yield accumulator
     
     for array in arrays:
-        accumulator[:] = axis_reduce(np.stack([accumulator, array], axis = -1))
+        accumulator = axis_reduce(np.stack([accumulator, array], axis = -1), out = accumulator)
         yield accumulator
 
-def _stream_reduce_existing_axis(arrays, axis, npfunc, **kwargs):
+def _stream_reduce_existing_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
     
@@ -94,13 +113,10 @@ def _stream_reduce_existing_axis(arrays, axis, npfunc, **kwargs):
     ----------
     arrays : iterable
         Arrays to be reduced.
-    axis : int
-        Axis along which a reduction is performed. 
-    npfunc : callable
-        NumPy reduction function. This function must support the `axis`
-        parameter, e.g. numpy.sum.
+    ufunc : numpy.ufunc
+        Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     kwargs
-        Keyword arguments are passed to ``npfunc``.
+        Keyword arguments are passed to ``ufunc``
 
     Yields 
     ------
@@ -109,14 +125,14 @@ def _stream_reduce_existing_axis(arrays, axis, npfunc, **kwargs):
     arrays = iter(arrays)
     first = next(arrays)
 
-    if axis not in range(first.ndim):
+    if kwargs['axis'] not in range(first.ndim):
         raise ValueError('Axis {} not supported on arrays of shape {}.'.format(axis, first.shape))
     
     dtype = kwargs.get('dtype')
     if dtype is None:
         dtype = first.dtype
     
-    axis_reduce = partial(npfunc, axis = axis, **kwargs)
+    axis_reduce = partial(ufunc.reduce, **kwargs)
 
     accumulator = np.atleast_1d(axis_reduce(first))
     yield accumulator
@@ -134,7 +150,7 @@ def _stream_reduce_existing_axis(arrays, axis, npfunc, **kwargs):
         accumulator = np.concatenate([accumulator, reduced], axis = accumulator.ndim - 1)
         yield accumulator
     
-def _stream_reduce_all_axes(arrays, npfunc, **kwargs):
+def _stream_reduce_all_axes(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, over all axes.
     
@@ -142,11 +158,10 @@ def _stream_reduce_all_axes(arrays, npfunc, **kwargs):
     ----------
     arrays : iterable
         Arrays to be reduced.
-    npfunc : callable
-        NumPy reduction function. This function must support the `axis` 
-        parameter, e.g. `numpy.sum`.
+    ufunc : numpy.ufunc
+        Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     kwargs
-        Keyword arguments are passed to ``npfunc``.
+        Keyword arguments are passed to ``ufunc``
 
     Yields 
     ------
@@ -155,7 +170,8 @@ def _stream_reduce_all_axes(arrays, npfunc, **kwargs):
     arrays = iter(arrays)
     first = next(arrays)
 
-    axis_reduce = partial(npfunc, axis = None, **kwargs)
+    kwargs['axis'] = None
+    axis_reduce = partial(ufunc.reduce, **kwargs)
 
     accumulator = axis_reduce(first)
     yield accumulator
