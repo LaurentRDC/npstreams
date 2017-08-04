@@ -88,7 +88,7 @@ The two following snippets should return the same result::
 
     from_stream = last(streaming_prod(stream, axis = 0))
 
-However, `streaming_prod` will work on 100 GB of data in a single line of code.
+However, :code:`streaming_prod` will work on 100 GB of data in a single line of code.
 
 Future Work
 -----------
