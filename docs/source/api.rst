@@ -42,6 +42,40 @@ Reference
 =========
 Click on any function below to see detailed information.
 
+Statistical Functions
+---------------------
+.. autosummary::
+    :toctree: functions/
+
+    imean
+    inanmean
+    iaverage
+    istd
+    inanstd
+    ivar
+    inanvar
+    isem
+
+Numerics
+--------
+.. autosummary::
+    :toctree: functions/
+
+    isum
+    psum
+    inansum
+    iprod
+    pprod
+    inanprod
+
+Others
+------
+.. autosummary::
+    :toctree: functions/
+
+    iany
+    iall
+
 Iterator Utilities
 ------------------
 .. autosummary::
@@ -59,33 +93,6 @@ Parallelization
 
     pmap
     preduce
-
-Statistical Functions
----------------------
-.. autosummary::
-    :toctree: functions/
-
-    imean
-    inanmean
-    iaverage
-    istd
-    inanstd
-    ivar
-    inanvar
-    isem
-
-
-Numerics
---------
-.. autosummary::
-    :toctree: functions/
-
-    isum
-    psum
-    inansum
-    iprod
-    pprod
-    inanprod
 
 General Stream reduction
 ------------------------
