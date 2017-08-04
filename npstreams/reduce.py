@@ -76,14 +76,14 @@ def _stream_reduce_new_axis(arrays, npfunc, **kwargs):
     dtype = kwargs.get('dtype')
     if dtype is None:
         dtype = first.dtype
-    
+
     axis_reduce = partial(npfunc, axis = first.ndim, **kwargs)
                 
     accumulator = np.array(first, copy = True).astype(dtype)
     yield accumulator
     
     for array in arrays:
-        accumulator = axis_reduce(np.stack([accumulator, array], axis = -1), out = accumulator)
+        accumulator[:] = axis_reduce(np.stack([accumulator, array], axis = -1))
         yield accumulator
 
 def _stream_reduce_existing_axis(arrays, axis, npfunc, **kwargs):
