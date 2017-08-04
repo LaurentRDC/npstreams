@@ -3,10 +3,9 @@
 Numerics Functions
 ------------------
 """
-from itertools import chain
 import numpy as np
 from functools import partial
-from . import preduce, last, chunked, stream_reduce
+from . import preduce, last, chunked, stream_reduce, array_stream
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
@@ -242,3 +241,43 @@ def isub(arrays, axis = -1, dtype = None):
         raise ValueError('Subtraction is not a reorderable operation, and \
                           therefore a specific axis must be give.')
     yield from stream_reduce(arrays, npfunc = np.subtract.reduce, axis = axis, dtype = dtype)
+
+def iall(arrays, axis = -1):
+    """ 
+    Test whether all array elements along a given axis evaluate to True 
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which a logical AND reduction is performed. The default
+        is to perform a logical AND along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+
+    Yields
+    ------
+    all : ndarray, dtype bool 
+    """
+    yield from stream_reduce(arrays, npfunc = np.all, axis = axis)
+
+def iany(arrays, axis = -1):
+    """ 
+    Test whether any array elements along a given axis evaluate to True.
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which a logical OR reduction is performed. The default
+        is to perform a logical AND along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+
+    Yields
+    ------
+    any : ndarray, dtype bool 
+    """
+    yield from stream_reduce(arrays, npfunc = np.any, axis = axis)

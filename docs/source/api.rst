@@ -35,6 +35,14 @@ Numerics
     inanprod
     isub
 
+Linear Algebra
+--------------
+.. autosummary::
+    :toctree: function/
+
+    idot
+    itensordot
+
 Others
 ------
 .. autosummary::
