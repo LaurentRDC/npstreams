@@ -88,7 +88,15 @@ The two following snippets should return the same result::
 
     from_stream = last(streaming_prod(stream, axis = 0))
 
-However, :func:`streaming_prod` will work on 100 GB of data in a single line of code.
+However, `streaming_prod` will work on 100 GB of data in a single line of code.
+
+Future Work
+-----------
+Some of the features I want to implement in this package in the near future:
+
+* Benchmark section : how does the performance compare with NumPy functions, as array size increases?
+* Cython : cythonizing the underlying routines would probably help.
+* More functions : more streaming functions borrowed from NumPy and SciPy.
 
 API Reference
 -------------
