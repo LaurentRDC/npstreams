@@ -3,7 +3,7 @@
 Numerics Functions
 ------------------
 """
-
+from functools import partial
 import numpy as np
 from . import array_stream
 
@@ -73,4 +73,69 @@ def itensordot(arrays, axes = 2):
         # For some reason, np.dot(..., out = accumulator) did not produce results
         # that were equal to numpy.linalg.multi_dot
         accumulator[:] = np.tensordot(accumulator, array, axes = axes)
+        yield accumulator
+
+@array_stream
+def ieinsum(arrays, subscripts, **kwargs):
+    """
+    Evaluates the Einstein summation convention on the operands.
+
+    Using the Einstein summation convention, many common multi-dimensional 
+    array operations can be represented in a simple fashion.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    subscripts : str
+        Specifies the subscripts for summation.
+    dtype : numpy.dtype or None, optional
+        The type of the yielded array and of the accumulator in which the elements 
+        are combined. The dtype of a is used by default unless a has an integer dtype 
+        of less precision than the default platform integer. In that case, if a is 
+        signed then the platform integer is used while if a is unsigned then an 
+        unsigned integer of the same precision as the platform integer is used.
+    order : {'C', 'F', 'A', 'K'}, optional
+        Controls the memory layout of the output. 'C' means it should
+        be C contiguous. 'F' means it should be Fortran contiguous,
+        'A' means it should be 'F' if the inputs are all 'F', 'C' otherwise.
+        'K' means it should be as close to the layout as the inputs as
+        is possible, including arbitrarily permuted axes.
+        Default is 'K'.
+    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
+        Controls what kind of data casting may occur.  Setting this to
+        'unsafe' is not recommended, as it can adversely affect accumulations.
+
+          * 'no' means the data types should not be cast at all.
+          * 'equiv' means only byte-order changes are allowed.
+          * 'safe' means only casts which can preserve values are allowed.
+          * 'same_kind' means only safe casts or casts within a kind,
+            like float64 to float32, are allowed.
+          * 'unsafe' means any data conversions may be done.
+
+        Default is 'safe'.
+    optimize : {False, True, 'greedy', 'optimal'}, optional
+        Controls if intermediate optimization should occur. No optimization
+        will occur if False and True will default to the 'greedy' algorithm.
+        Also accepts an explicit contraction list from the ``np.einsum_path``
+        function. See ``np.einsum_path`` for more details. Default is False.
+    
+    Yields
+    ------
+    online_einsum : ndarray
+        Cumulative Einstein summation
+    """
+    arrays = iter(arrays)
+    first = next(arrays)
+    second = next(arrays)
+    
+    einsumfunc = partial(np.einsum, **kwargs)
+
+    accumulator = einsumfunc(subscripts, first,  second)
+    yield accumulator
+
+    for array in arrays:
+        # For some reason, np.dot(..., out = accumulator) did not produce results
+        # that were equal to numpy.linalg.multi_dot
+        accumulator[:] = einsumfunc(subscripts, accumulator, array)
         yield accumulator

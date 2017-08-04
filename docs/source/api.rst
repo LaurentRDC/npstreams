@@ -42,6 +42,14 @@ Linear Algebra
 
     idot
     itensordot
+    ieinsum
+
+Control Flow
+------------
+.. autosummary::
+    :toctree: functions/
+
+    ipipe
 
 Others
 ------
@@ -52,7 +60,7 @@ Others
     iall
     istack
     iflatten
-
+    
 Iterator Utilities
 ------------------
 .. autosummary::

@@ -4,9 +4,9 @@ __email__ = 'laurent.renedecotret@mail.mcgill.ca'
 __license__ = 'BSD'
 __version__ = '0.2' # TODO: automatic versioning?
 
-from .array_stream import array_stream
+from .array_stream import array_stream, ipipe
 
-from .linalg import idot, itensordot
+from .linalg import idot, itensordot, ieinsum
 from .parallel import pmap, preduce
 from .iter_utils import last, chunked, multilinspace, linspace, peek
 from .reduce import stream_reduce
