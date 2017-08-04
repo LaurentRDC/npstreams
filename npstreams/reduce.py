@@ -8,6 +8,8 @@ from functools import partial
 from itertools import chain
 from . import peek, array_stream
 
+# Priming a generator allows the execution of error-checking
+# code immediatly. See stream_ufunc for an example
 def primed(gen):
     """ Primes a generator. Useful in cases where there are preliminary checks
     when creating the generator """
