@@ -69,3 +69,7 @@ General Stream reduction
 You can assemble your own streaming reduction using the following generator:
 
     .. autofunction:: stream_reduce
+
+This decorator will ensure that streams will be transformed into streams of NumPy arrays
+
+    .. autofunction:: array_stream
