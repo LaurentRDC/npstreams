@@ -59,6 +59,17 @@ We can also use :code:`last` to get at the final average::
 
 	total = last(averaged) # average of the entire stream
 
+Streaming Functions
+-------------------
+
+npstreams comes with some streaming functions built-in. Some examples:
+
+* Numerics : :code:`isum`, :code:`iprod`, :code:`isub`, etc.
+* Statistics : :code:`iaverage` (weighted mean), :code:`ivar` (single-pass variance), etc.
+* Stacking : :code:`iflatten`, :code:`istack`
+
+All routines are documented in the `API Reference on readthedocs.io <http://npstreams.readthedocs.io>`_.
+
 Making your own Streaming Functions
 -----------------------------------
 
@@ -88,7 +99,44 @@ The two following snippets should return the same result::
 
     from_stream = last(streaming_prod(stream, axis = 0))
 
-However, :func:`streaming_prod` will work on 100 GB of data in a single line of code.
+However, :code:`streaming_prod` will work on 100 GB of data in a single line of code.
+
+Benchmark
+---------
+
+Let's look at a simple benchmark. Let compare the two snippets to sum the following data::
+
+    def stream():
+        for _ in range(100):
+            yield np.empty((2048, 2048), dtype = np.int)
+
+Snippet 1: dense arrays only. Note that I count the creation of the dense array::
+
+    import numpy as np
+
+    stack = np.stack(list(stream()), axis = -1)
+    s = np.sum(stack, axis = -1)
+
+On my machine, this takes 7 seconds and ~3G of memory.
+Snippet 2: streaming arrays. This also includes the creation of the stream::
+
+    # snippet 2
+    import npstreams as nps
+    s = nps.last(nps.isum(stream(), axis = -1))
+
+On my machine, this takes 8 seconds and 95 MB of memory.
+
+Bottom line: for raw speed, use NumPy. If you want to mimimize memory usage, use streams.
+If you want to process data in parallel, you'll want to minimize memory usage.
+If your data is large (think 10 000 images), you better use streams as well.
+
+Future Work
+-----------
+Some of the features I want to implement in this package in the near future:
+
+* Benchmark section : how does the performance compare with NumPy functions, as array size increases?
+* Cython : cythonizing the underlying routines would probably help.
+* More functions : more streaming functions borrowed from NumPy and SciPy.
 
 API Reference
 -------------
@@ -107,7 +155,7 @@ To install the latest development version from `Github <https://github.com/Laure
 
     python -m pip install git+git://github.com/LaurentRDC/npstreams.git
 
-Each version is tested against Python 3.5 and 3.6. If you are using a different version, tests can be run
+Each version is tested against Python 3.4, 3.5 and 3.6. If you are using a different version, tests can be run
 using the standard library's `unittest` module.
 
 Support / Report Issues

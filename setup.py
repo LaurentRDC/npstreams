@@ -55,7 +55,7 @@ if __name__ == '__main__':
         classifiers = ['Environment :: Console',
                        'Intended Audience :: Science/Research',
                        'Topic :: Scientific/Engineering',
-                       'License :: OSI Approved :: MIT License',
+                       'License :: OSI Approved :: BSD License',
                        'Natural Language :: English',
                        'Operating System :: OS Independent',
                        'Programming Language :: Python',

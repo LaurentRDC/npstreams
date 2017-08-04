@@ -22,12 +22,13 @@ def stream_reduce(arrays, npfunc, axis = -1, **kwargs):
         Arrays to be reduced.
     npfunc : callable
         NumPy reduction function. This function must support the `axis` parameter.
-    axis : int, optional
+    axis : int or None, optional
         Reduction axis. Default is to reduce the arrays in the stream as if 
         they had been stacked along a new axis, then reduce along this new axis.
         If None, arrays are flattened before reduction. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are reduced
-        along the new axis.
+        along the new axis. Note that not all of NumPy reduction functions support 
+        ``axis = None``, e.g. ``numpy.subtract.reduce``.
     kwargs
         Keyword arguments are passed to ``npfunc``.
     
