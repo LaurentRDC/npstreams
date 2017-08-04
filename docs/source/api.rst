@@ -38,7 +38,7 @@ Numerics
 Linear Algebra
 --------------
 .. autosummary::
-    :toctree: function/
+    :toctree: functions/
 
     idot
     itensordot
