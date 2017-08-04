@@ -8,6 +8,16 @@ from functools import partial
 from itertools import chain
 from . import peek, array_stream
 
+def primed(gen):
+    """ Primes a generator. Useful in cases where there are preliminary checks
+    when creating the generator """
+    def primed_gen(*args, **kwargs):
+        generator = gen(*args, **kwargs)
+        next(generator)
+        return generator
+    return primed_gen
+
+@primed
 @array_stream
 def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     """
@@ -54,6 +64,9 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     except (ValueError, AssertionError):
         raise TypeError('Only binary ufuncs are supported, and {} is not one of them'.format(ufunc.__name__))
     
+    # Since stream_ufunc is primed, we need to wait here
+    yield
+
     if kwargs['axis'] is None:
         yield from _stream_reduce_all_axes(arrays, ufunc, **kwargs)
         return

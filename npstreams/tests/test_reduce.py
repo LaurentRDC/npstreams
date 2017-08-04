@@ -25,12 +25,12 @@ class TestStreamReduce(unittest.TestCase):
     def test_nonbinary_ufunc(self):
         """ Test that stream_ufunc raises TypeError when a non-binary ufunc is passed """
         with self.assertRaises(TypeError):
-            next(stream_ufunc(range(10), ufunc = np.sqrt))
+            stream_ufunc(range(10), ufunc = np.sqrt)
     
     def test_non_ufunc(self):
         """ Test that stream_ufunc raises TypeError when a non-binary ufunc is passed """
         with self.assertRaises(TypeError):
-            next(stream_ufunc(range(10), ufunc = lambda x: x))
+            stream_ufunc(range(10), ufunc = lambda x: x)
         
     def test_output_shape(self):
         """ Test output shape """
