@@ -7,9 +7,12 @@ import numpy as np
 from functools import wraps
 
 def array_stream(func):
-    """ Decorates streaming functions to make sure that the stream
-    is a stream of ndarrays. If the stream is in fact a single ndarray, 
-    this ndarray is repackaged into a sequence 
+    """ 
+    Decorates streaming functions to make sure that the stream
+    is a stream of ndarrays. Objects that are not arrays
+    are transformed into arrays using ``numpy.asarray``. If the stream 
+    is in fact a single ndarray, this ndarray is repackaged into a sequence of
+    length 1.
     
     Parameters
     ----------
