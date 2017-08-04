@@ -42,6 +42,7 @@ Others
 
     iany
     iall
+    istack
 
 Iterator Utilities
 ------------------

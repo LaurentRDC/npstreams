@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Numerics Functions
-------------------
+General stream reduction
+------------------------
 """
 import numpy as np
 from functools import partial
