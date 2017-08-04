@@ -64,9 +64,9 @@ Streaming Functions
 
 npstreams comes with some streaming functions built-in. Some examples:
 
-    * Numerics : :code:`isum`, :code:`iprod`, :code:`isub`, etc.
-    * Statistics : :code:`iaverage` (weighted mean), :code:`ivar` (single-pass variance), etc.
-    * Stacking : :code:`iflatten`, :code:`istack`
+* Numerics : :code:`isum`, :code:`iprod`, :code:`isub`, etc.
+* Statistics : :code:`iaverage` (weighted mean), :code:`ivar` (single-pass variance), etc.
+* Stacking : :code:`iflatten`, :code:`istack`
 
 All routines are documented in the `API Reference on readthedocs.io <http://npstreams.readthedocs.io>`_.
 
