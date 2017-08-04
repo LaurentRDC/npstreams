@@ -8,8 +8,9 @@ from itertools import repeat, tee, chain, count
 import numpy as np
 from math import sqrt
 from .numerics import isum
-from . import _nan_to_num, peek
+from . import peek, array_stream
 
+@array_stream
 def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 
     Streaming (weighted) average of arrays.
@@ -111,6 +112,7 @@ def inanmean(arrays, axis = -1):
     """
     yield from imean(arrays, axis = axis, ignore_nan = True)
 
+@array_stream
 def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     """ 
     Streaming variance of arrays. Weights are also supported.
@@ -297,6 +299,7 @@ def inanstd(arrays, axis = -1, ddof = 0, weights = None):
     """
     yield from istd(arrays, axis = axis, ddof = ddof, weights = weights, ignore_nan = True)
 
+@array_stream
 def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
     """ 
     Streaming standard error in the mean (SEM) of arrays. This is equivalent to

@@ -7,7 +7,7 @@
 **************************************
 
 :mod:`npstreams` is an open-source Python package for streaming NumPy array operations. 
-The goal is to provide tested, drop-in replacements for NumPy functions (where possible) 
+The goal is to provide tested, (almost) drop-in replacements for NumPy functions (where possible) 
 that operate on streams of arrays instead of dense arrays.
 
 :mod:`npstreams` also provides some utilities for parallelization. These parallelization
@@ -34,7 +34,7 @@ from an iterable :data:`source`::
 	
 	avg = np.average(images, axis = 2)
 
-If the :data:`source` iterable provided 1000 images, the above routine would
+If the :data:`source` iterable provided 10000 images, the above routine would
 not work on most machines. Moreover, what if we want to transform the images 
 one by one before averaging them? What about looking at the average while it 
 is being computed? Let's look at an example::
@@ -59,39 +59,36 @@ We can also use :func:`last` to get at the final average::
 
 	total = last(averaged) # average of the entire stream
 
-While the :func:`average` example is simple, there are some functions that are not easily
-brought 'online'. For example, the standard deviation is usually implemented as a two-pass algorithm,
-but single-pass algorithms do exist and are implemented in this package.
+Making your own streaming functions
+===================================
 
-Recipe: averaging with error
-------------------------------
+Any NumPy reduction function can be transformed into a streaming function using the
+:func:`stream_reduce` function. For example::
 
-It is possible to combine :func:`imean` and :func:`isem` into a single stream using :func:`itertools.tee`. 
-Here is a recipe for it::
+    from npstreams import stream_reduce
+    from numpy import prod
 
-    from itertools import tee
-    from npstreams import imean, isem
+    def streaming_prod(stream, axis, **kwargs):
+        """ Streaming product along axis """
+        yield from stream_reduce(stream, npfunc = prod, axis = axis, **kwargs)
 
-	def iaverage_with_error(arrays):    
-	    """ 
-	    Combined streaming mean and standard error of arrays. 
-		
-	    Parameters
-	    ----------
-	    arrays : iterable of ndarrays
-	    	Arrays to be averaged. This iterable can also a generator.
-	    weights : iterable of ndarray, iterable of floats, or None, optional
-	    	Array of weights. See `numpy.average` for further information.
-	    
-	    Yields
-	    ------
-	    avg : `~numpy.ndarray`
-	    	Weighted average. 
-	    sem : `~numpy.ndarray`
-	    	Standard error in the mean
-	    """
-	    stream1, stream2 = itertools.tee(arrays, 2)
-	    yield from zip(imean(stream1), isem(stream2))
+The above :func:`streaming_prod` will accumulate (and yield) the result of the operation
+as arrays come in the stream. 
+
+The two following snippets should return the same result::
+
+    from numpy import prod, stack
+    
+    dense = stack(stream, axis = -1) 
+    from_numpy = prod(dense, axis = 0)  # numpy.prod = numpy.multiply.reduce
+
+.. code::
+
+    from npstreams import last
+
+    from_stream = last(streaming_prod(stream, axis = 0))
+
+However, :func:`streaming_prod` will work on 100 GB of data in a single line of code.
 
 Links
 =====
@@ -106,10 +103,12 @@ General Documentation
 =====================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     
     installation
+    conventions
     api
+    recipes
 
 Authors
 =======

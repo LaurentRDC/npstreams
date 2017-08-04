@@ -43,7 +43,7 @@ install:
     - "conda --version"
     - "python --version"
 
-# Not a .NET project, we build ci-helpers in the install step instead
+# Not a .NET project, we build in the install step instead
 build: false
 
 test_script:
