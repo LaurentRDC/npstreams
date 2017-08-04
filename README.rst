@@ -59,6 +59,17 @@ We can also use :code:`last` to get at the final average::
 
 	total = last(averaged) # average of the entire stream
 
+Streaming Functions
+-------------------
+
+npstreams comes with some streaming functions built-in. Some examples:
+
+    * Numerics : :code:`isum`, :code:`iprod`, :code:`isub`, etc.
+    * Statistics : :code:`iaverage` (weighted mean), :code:`ivar` (single-pass variance), etc.
+    * Stacking : :code:`iflatten`, :code:`istack`
+
+All routines are documented in the `API Reference on readthedocs.io <http://npstreams.readthedocs.io>`_.
+
 Making your own Streaming Functions
 -----------------------------------
 
@@ -115,7 +126,7 @@ To install the latest development version from `Github <https://github.com/Laure
 
     python -m pip install git+git://github.com/LaurentRDC/npstreams.git
 
-Each version is tested against Python 3.5 and 3.6. If you are using a different version, tests can be run
+Each version is tested against Python 3.4, 3.5 and 3.6. If you are using a different version, tests can be run
 using the standard library's `unittest` module.
 
 Support / Report Issues
