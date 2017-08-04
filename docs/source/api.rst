@@ -43,6 +43,7 @@ Others
     iany
     iall
     istack
+    iflatten
 
 Iterator Utilities
 ------------------

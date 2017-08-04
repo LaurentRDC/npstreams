@@ -5,7 +5,9 @@ Stacking arrays from a stream
 """
 from functools import partial
 import numpy as np
+from . import array_stream
 
+@array_stream
 def istack(arrays, axis = -1):
     """ 
     Stack arrays from a stream. Generalization of numpy.stack
@@ -36,3 +38,23 @@ def istack(arrays, axis = -1):
     for array in arrays:
         stack = np.concatenate([stack, array], axis = axis)
         yield stack
+
+@array_stream
+def iflatten(arrays):
+    """
+    flatten the arrays in a stream into a single, 1D array. Note that
+    the order of flattening is not guaranteed.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Stream of NumPy arrays. Contrary to convention, these
+        arrays do not need to be of the same shape. 
+    
+    Yields
+    ------
+    online_flatten : ndarray
+        Cumulative flattened array.
+    """
+    arrays = map(np.ravel, arrays)
+    yield from istack(arrays, axis = 0)

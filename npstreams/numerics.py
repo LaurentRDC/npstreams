@@ -15,7 +15,7 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     Parameters
     ----------
     arrays : iterable
-        Arrays to be summed.
+        Arrays to be summed. 
     axis : int or None, optional
         Reduction axis. Default is to sum the arrays in the stream as if 
         they had been stacked along a new axis, then sum along this new axis.

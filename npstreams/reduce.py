@@ -6,10 +6,11 @@ General stream reduction
 import numpy as np
 from functools import partial
 from itertools import chain
-from . import peek
+from . import peek, array_stream
 
 # TODO: initializer
-# TODO: keepdims
+# TODO: keepdims?
+@array_stream
 def stream_reduce(arrays, npfunc, axis = -1, **kwargs):
     """
     Reduction operation for a stream of arrays. Applies a reduction function
