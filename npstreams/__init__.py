@@ -8,4 +8,4 @@ from .parallel import pmap, preduce
 from .iter_utils import last, chunked, multilinspace, linspace, peek
 from .reduce import stream_reduce, iall, iany
 from .stats import iaverage, imean, inanmean, istd, inanstd, isem, ivar, inanvar
-from .numerics import isum, inansum, psum, iprod, pprod, inanprod
+from .numerics import isum, inansum, psum, iprod, pprod, inanprod, isub

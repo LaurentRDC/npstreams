@@ -67,6 +67,7 @@ Numerics
     iprod
     pprod
     inanprod
+    isub
 
 Others
 ------
