@@ -15,8 +15,8 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     Parameters
     ----------
     arrays : iterable
-        Arrays to be summed.
-    axis : int, optional
+        Arrays to be summed. 
+    axis : int or None, optional
         Reduction axis. Default is to sum the arrays in the stream as if 
         they had been stacked along a new axis, then sum along this new axis.
         If None, arrays are flattened before summing. If `axis` is an int larger that
@@ -49,7 +49,7 @@ def inansum(arrays, axis = -1, dtype = None):
     ----------
     arrays : iterable
         Arrays to be summed.
-    axis : int, optional
+    axis : int or None, optional
         Reduction axis. Default is to sum the arrays in the stream as if 
         they had been stacked along a new axis, then sum along this new axis.
         If None, arrays are flattened before summing. If `axis` is an int larger that
@@ -81,7 +81,7 @@ def psum(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     ----------
     arrays : iterable
         Arrays to be summed.
-    axis : int, optional
+    axis : int or None, optional
         Reduction axis. Default is to sum the arrays in the stream as if 
         they had been stacked along a new axis, then sum along this new axis.
         If None, arrays are flattened before summing. If `axis` is an int larger that
@@ -115,7 +115,7 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     ----------
     arrays : iterable
         Arrays to be multiplied.
-    axis : int, optional
+    axis : int or None, optional
         Reduction axis. Default is to multiply the arrays in the stream as if 
         they had been stacked along a new axis, then multiply along this new axis.
         If None, arrays are flattened before multiplication. If `axis` is an int larger that
@@ -153,7 +153,7 @@ def pprod(arrays, axis = -1, dtype = None, ignore_nan = False, processes = 1):
     ----------
     arrays : iterable
         Arrays to be multiplied.
-    axis : int, optional
+    axis : int or None, optional
         Reduction axis. Default is to multiply the arrays in the stream as if 
         they had been stacked along a new axis, then multiply along this new axis.
         If None, arrays are flattened before multiplication. If `axis` is an int larger that
@@ -187,7 +187,7 @@ def inanprod(arrays, axis = -1, dtype = None):
     ----------
     arrays : iterable
         Arrays to be multiplied.
-    axis : int, optional
+    axis : int or None, optional
         Reduction axis. Default is to multiply the arrays in the stream as if 
         they had been stacked along a new axis, then multiply along this new axis.
         If None, arrays are flattened before multiplication. If `axis` is an int larger that
@@ -205,3 +205,40 @@ def inanprod(arrays, axis = -1, dtype = None):
     online_prod : ndarray
     """
     yield from iprod(arrays, axis = axis, dtype = dtype, ignore_nan = True)
+
+def isub(arrays, axis = -1, dtype = None):
+    """
+    Subtract elements in a reduction fashion. Equivalent to ``numpy.subtract.reduce`` on a dense array.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be multiplied.
+    axis : int, optional
+        Reduction axis. Since subtraction is not reorderable (unlike a sum, for example),
+        `axis` must be specified as an int; full reduction (``axis = None``) will raise an exception. 
+        Default is to subtract the arrays in the stream as if they had been stacked along a new axis, 
+        then subtract along this new axis. If None, arrays are flattened before subtraction. 
+        If `axis` is an int larger that the number of dimensions in the arrays of the stream, 
+        arrays are subtracted along the new axis.
+    dtype : numpy.dtype, optional
+        The type of the yielded array and of the accumulator in which the elements 
+        are combined. The dtype of a is used by default unless a has an integer dtype 
+        of less precision than the default platform integer. In that case, if a is 
+        signed then the platform integer is used while if a is unsigned then an 
+        unsigned integer of the same precision as the platform integer is used.
+    
+    Yields
+    ------
+    online_sub : ndarray
+
+    Raises
+    ------
+    ValueError
+        If `axis` is None. Since subtraction is not reorderable (unlike a sum, for example),
+        `axis` must be specified as an int.
+    """
+    if axis is None:
+        raise ValueError('Subtraction is not a reorderable operation, and \
+                          therefore a specific axis must be give.')
+    yield from stream_reduce(arrays, npfunc = np.subtract.reduce, axis = axis, dtype = dtype)

@@ -4,7 +4,7 @@ from random import randint, random
 
 import numpy as np
 
-from .. import isum, inansum, psum, iprod, pprod, inanprod, last
+from .. import isum, inansum, psum, iprod, pprod, inanprod, last, isub
 
 class TestISum(unittest.TestCase):
 
@@ -198,6 +198,19 @@ class TestINanProd(unittest.TestCase):
         source = [np.ones((16,), dtype = np.float) for _ in range(10)]
         product = last(inanprod(source))
         self.assertTrue(np.allclose(product, np.ones_like(product)))
+
+class TestISub(unittest.TestCase):
+    
+    def test_against_numpy(self):
+        """ Test against numpy.subtract.reduce """
+        stream = [np.random.random((8, 16, 2)) for _ in range(11)]
+        stack = np.stack(stream, axis = -1)
+
+        for axis in range(stack.ndim):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.subtract.reduce(stack, axis = axis)
+                from_stream = last(isub(stream, axis = axis))
+                self.assertTrue(np.allclose(from_numpy, from_stream))
 
 if __name__ == '__main__':
 	unittest.main()
