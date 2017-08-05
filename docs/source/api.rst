@@ -41,6 +41,7 @@ Linear Algebra
     :toctree: functions/
 
     idot
+    iinner
     itensordot
     ieinsum
 
@@ -65,7 +66,7 @@ Stacking
 --------
 .. autosummary::
     :toctree: functions/
-    
+
     istack
     iflatten
     
