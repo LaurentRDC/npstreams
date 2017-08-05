@@ -4,15 +4,16 @@ General stream reduction
 ------------------------
 """
 import numpy as np
-from functools import partial
+from functools import partial, wraps
 from itertools import chain
 from . import peek, array_stream
 
 # Priming a generator allows the execution of error-checking
-# code immediatly. See stream_ufunc for an example
+# code immediatly. See ireduce_ufunc for an example
 def primed(gen):
     """ Primes a generator. Useful in cases where there are preliminary checks
     when creating the generator """
+    @wraps(gen)
     def primed_gen(*args, **kwargs):
         generator = gen(*args, **kwargs)
         next(generator)
@@ -21,9 +22,9 @@ def primed(gen):
 
 @primed
 @array_stream
-def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
+def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     """
-    Create a streaming reduction function from a NumPy ufunc.
+    Create a streaming reduction function from a binary NumPy ufunc.
 
     Note that while all ufuncs have a ``reduce`` method, not all of them are useful.
     
@@ -42,10 +43,6 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
-    keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left in the result 
-        as dimensions with size one. With this option, the result will broadcast 
-        correctly against the original arr.
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
         (e.g. ``keepdims``) are not valid for all streaming functions.
@@ -56,37 +53,36 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
 
     Raises
     ------
-    TypeError : if ``ufunc`` is not a binary universal function.
+    TypeError : if ``ufunc`` is not NumPy ufunc.
     """
     kwargs.update({'dtype': dtype, 'axis': axis})
 
     try:
         assert isinstance(ufunc, np.ufunc)
-        ufunc.reduce([1,2], axis = 0)
-    except (ValueError, AssertionError):
+    except AssertionError:
         raise TypeError('Only binary ufuncs are supported, and {} is not one of them'.format(ufunc.__name__))
     
-    # Since stream_ufunc is primed, we need to wait here
+    # Since ireduce_ufunc is primed, we need to wait here
     yield
 
     if kwargs['axis'] is None:
-        yield from _stream_reduce_all_axes(arrays, ufunc, **kwargs)
+        yield from _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs)
         return
 
     if kwargs['axis'] == -1:
-        yield from _stream_reduce_new_axis(arrays, ufunc, **kwargs)
+        yield from _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs)
         return
 
     first, arrays = peek(arrays)
     
     if kwargs['axis'] >= first.ndim:
         kwargs['axis'] = -1
-        yield from stream_ufunc(arrays, ufunc, **kwargs)
+        yield from ireduce_ufunc(arrays, ufunc, **kwargs)
         return
 
-    yield from _stream_reduce_existing_axis(arrays, ufunc, **kwargs)
+    yield from _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs)
 
-def _stream_reduce_new_axis(arrays, ufunc, **kwargs):
+def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
     
@@ -120,7 +116,7 @@ def _stream_reduce_new_axis(arrays, ufunc, **kwargs):
         accumulator = axis_reduce(np.stack([accumulator, array], axis = -1), out = accumulator)
         yield accumulator
 
-def _stream_reduce_existing_axis(arrays, ufunc, **kwargs):
+def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
     
@@ -165,7 +161,7 @@ def _stream_reduce_existing_axis(arrays, ufunc, **kwargs):
         accumulator = np.concatenate([accumulator, reduced], axis = accumulator.ndim - 1)
         yield accumulator
     
-def _stream_reduce_all_axes(arrays, ufunc, **kwargs):
+def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, over all axes.
     

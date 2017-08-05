@@ -5,7 +5,7 @@ Numerics Functions
 """
 import numpy as np
 from functools import partial
-from . import preduce, last, chunked, stream_ufunc, array_stream
+from . import preduce, last, chunked, ireduce_ufunc, array_stream
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
@@ -38,7 +38,7 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     if ignore_nan:
         arrays = map(np.nan_to_num, arrays)
     
-    yield from stream_ufunc(arrays, ufunc = np.add, axis = axis, dtype = dtype)
+    yield from ireduce_ufunc(arrays, ufunc = np.add, axis = axis, dtype = dtype)
 
 def inansum(arrays, axis = -1, dtype = None):
     """ 
@@ -140,7 +140,7 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
             return array
         arrays = map(_nan_to_num, arrays)
 
-    yield from stream_ufunc(arrays, ufunc = np.multiply, axis = axis, dtype = dtype)
+    yield from ireduce_ufunc(arrays, ufunc = np.multiply, axis = axis, dtype = dtype)
 
 # Can't pickle local functions, so it must be defined here
 # for use in pprod
@@ -243,7 +243,7 @@ def isub(arrays, axis = -1, dtype = None):
     if axis is None:
         raise ValueError('Subtraction is not a reorderable operation, and \
                           therefore a specific axis must be give.')
-    yield from stream_ufunc(arrays, ufunc = np.subtract, axis = axis, dtype = dtype)
+    yield from ireduce_ufunc(arrays, ufunc = np.subtract, axis = axis, dtype = dtype)
 
 def iall(arrays, axis = -1):
     """ 
@@ -263,7 +263,7 @@ def iall(arrays, axis = -1):
     ------
     all : ndarray, dtype bool 
     """
-    yield from stream_ufunc(arrays, ufunc = np.logical_and, axis = axis)
+    yield from ireduce_ufunc(arrays, ufunc = np.logical_and, axis = axis)
 
 def iany(arrays, axis = -1):
     """ 
@@ -283,4 +283,4 @@ def iany(arrays, axis = -1):
     ------
     any : ndarray, dtype bool 
     """
-    yield from stream_ufunc(arrays, ufunc = np.logical_or, axis = axis)
+    yield from ireduce_ufunc(arrays, ufunc = np.logical_or, axis = axis)

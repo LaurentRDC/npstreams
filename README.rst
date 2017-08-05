@@ -70,36 +70,71 @@ npstreams comes with some streaming functions built-in. Some examples:
 
 All routines are documented in the `API Reference on readthedocs.io <http://npstreams.readthedocs.io>`_.
 
-Making your own Streaming Functions
------------------------------------
+Example: Streaming Maximum
+--------------------------
 
-Any binary NumPy ufunc can be transformed into a streaming function using the
-:code:`stream_ufunc` function. For example::
+Let's create a streaming maximum function for a stream. First, we have to choose 
+how to handle NaNs:
 
-    from npstreams import stream_ufunc
-    from numpy import prod
+* If we want to propagate NaNs, we should use :code:`numpy.maximum`
+* If we want to ignore NaNs, we should use :code:`numpy.fmax`
 
-    def streaming_prod(stream, **kwargs):
-        """ Streaming product along axis """
-        yield from stream_ufunc(stream, npfunc = np.multiply, **kwargs)  # numpy.prod = numpy.multiply.reduce
+Both of those functions are binary ufuncs, so we can use :code:`ireduce_ufunc`. We will
+also want to make sure that anything in the stream that isn't an array will be made into one
+using the :code:`array_stream` decorator.
 
-The above :code:`streaming_prod` will accumulate (and yield) the result of the operation
-as arrays come in the stream. 
+Putting it all together::
 
-The two following snippets should return the same result::
+    from npstreams import array_stream, ireduce_ufunc
+    from numpy import maximum, fmax
 
-    from numpy import prod, stack
-    
-    dense = stack(stream, axis = -1) 
-    from_numpy = prod(dense, axis = 0) 
+    @array_stream
+    def imax(arrays, axis = -1, ignore_nan = False, **kwargs):
+        """
+        Streaming maximum along an axis.
 
-.. code::
+        Parameters
+        ----------
+        arrays : iterable
+            Stream of arrays to be compared.
+        axis : int or None, optional
+            Axis along which to compute the maximum. If None, 
+            arrays are flattened before reduction.
+        ignore_nan : bool, optional
+            If True, NaNs are ignored. Default is False.
+        
+        Yields
+        ------
+        online_max : ndarray
+        """
+        ufunc = fmax if ignore_nan else maximum
+        yield from ireduce_ufunc(arrays, ufunc, axis = axis, **kwargs)
+
+This will provide us with a streaming function, meaning that we can look at the progress
+as it is being computer. We can also create a function that returns the max of the stream
+like :code:`numpy.ndarray.max()` using the :code:`npstreams.last` function::
 
     from npstreams import last
 
-    from_stream = last(streaming_prod(stream, axis = 0))
+    def smax(*args, **kwargs):  # s for stream
+        """
+        Maximum of all arrays in a stream, along an axis.
 
-However, :code:`streaming_prod` will work on 100 GB of data in a single line of code.
+        Parameters
+        ----------
+        arrays : iterable
+            Stream of arrays to be compared.
+        axis : int or None, optional
+            Axis along which to compute the maximum. If None, 
+            arrays are flattened before reduction.
+        ignore_nan : bool, optional
+            If True, NaNs are ignored. Default is False.
+        
+        Returns
+        -------
+        max : scalar or ndarray
+        """
+        return last(imax(*args, **kwargs)
 
 Benchmark
 ---------

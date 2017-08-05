@@ -48,7 +48,8 @@ def ipipe(arrays, *funcs):
     piped : ndarray
     """
     functions = tuple(reversed(funcs))
-    for arr in arrays:
+    def pipe(arr):
         for func in functions:
             arr = func(arr)
-        yield arr
+        return arr
+    yield from map(pipe, arrays)
