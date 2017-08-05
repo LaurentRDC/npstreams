@@ -9,7 +9,7 @@ from itertools import chain
 from . import peek, array_stream
 
 # Priming a generator allows the execution of error-checking
-# code immediatly. See stream_ufunc for an example
+# code immediatly. See ireduce_ufunc for an example
 def primed(gen):
     """ Primes a generator. Useful in cases where there are preliminary checks
     when creating the generator """
@@ -62,7 +62,7 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     except (ValueError, AssertionError):
         raise TypeError('Only binary ufuncs are supported, and {} is not one of them'.format(ufunc.__name__))
     
-    # Since stream_ufunc is primed, we need to wait here
+    # Since ireduce_ufunc is primed, we need to wait here
     yield
 
     if kwargs['axis'] is None:
@@ -77,7 +77,7 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     
     if kwargs['axis'] >= first.ndim:
         kwargs['axis'] = -1
-        yield from stream_ufunc(arrays, ufunc, **kwargs)
+        yield from ireduce_ufunc(arrays, ufunc, **kwargs)
         return
 
     yield from _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs)

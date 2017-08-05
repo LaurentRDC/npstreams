@@ -63,7 +63,7 @@ Making your own streaming functions
 ===================================
 
 Any **binary** NumPy Ufunc function can be transformed into a streaming function using the
-:func:`stream_ufunc` function. For example::
+:func:`ireduce_ufunc` function. For example::
 
     from npstreams import stream_reduce
     from numpy import prod

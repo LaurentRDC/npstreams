@@ -84,7 +84,7 @@ General Stream reduction
 
 You can assemble your own streaming reduction using the following generator:
 
-    .. autofunction:: stream_ufunc
+    .. autofunction:: ireduce_ufunc
 
 This decorator will ensure that streams will be transformed into streams of NumPy arrays
 
