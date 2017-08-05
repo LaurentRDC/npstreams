@@ -35,16 +35,41 @@ Numerics
     inanprod
     isub
 
-Others
-------
+Linear Algebra
+--------------
+.. autosummary::
+    :toctree: functions/
+
+    idot
+    iinner
+    itensordot
+    ieinsum
+
+Control Flow
+------------
+.. autosummary::
+    :toctree: functions/
+
+    ipipe
+
+Comparisons
+-----------
 .. autosummary::
     :toctree: functions/
 
     iany
     iall
+    imax
+    imin
+
+Stacking
+--------
+.. autosummary::
+    :toctree: functions/
+
     istack
     iflatten
-
+    
 Iterator Utilities
 ------------------
 .. autosummary::
@@ -62,14 +87,3 @@ Parallelization
 
     pmap
     preduce
-
-General Stream reduction
-------------------------
-
-You can assemble your own streaming reduction using the following generator:
-
-    .. autofunction:: stream_reduce
-
-This decorator will ensure that streams will be transformed into streams of NumPy arrays
-
-    .. autofunction:: array_stream

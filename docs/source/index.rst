@@ -62,15 +62,15 @@ We can also use :func:`last` to get at the final average::
 Making your own streaming functions
 ===================================
 
-Any NumPy reduction function can be transformed into a streaming function using the
-:func:`stream_reduce` function. For example::
+Any **binary** NumPy Ufunc function can be transformed into a streaming function using the
+:func:`ireduce_ufunc` function. For example::
 
     from npstreams import stream_reduce
     from numpy import prod
 
-    def streaming_prod(stream, axis, **kwargs):
+    def streaming_prod(stream, **kwargs):
         """ Streaming product along axis """
-        yield from stream_reduce(stream, npfunc = prod, axis = axis, **kwargs)
+        yield from stream_ufuc(stream, ufunc = np.multiply, **kwargs)
 
 The above :func:`streaming_prod` will accumulate (and yield) the result of the operation
 as arrays come in the stream. 
@@ -90,6 +90,36 @@ The two following snippets should return the same result::
 
 However, :func:`streaming_prod` will work on 100 GB of data in a single line of code.
 
+Benchmark
+=========
+
+Let's look at a simple benchmark. Let compare the two snippets to sum the following data::
+
+    def stream():
+        for _ in range(100):
+            yield np.empty((2048, 2048), dtype = np.int)
+
+Snippet 1: dense arrays only. Note that I count the creation of the dense array::
+
+    import numpy as np
+
+    stack = np.stack(list(stream()), axis = -1)
+    s = np.sum(stack, axis = -1)
+
+On my machine, this takes 7 seconds and ~3G of memory.
+
+Snippet 2: streaming arrays. This also includes the creation of the stream::
+
+    # snippet 2
+    import npstreams as nps
+    s = nps.last(nps.isum(stream(), axis = -1))
+
+On my machine, this takes 8 seconds and 95 MB of memory.
+
+Bottom line: for raw speed, use NumPy. If you want to mimimize memory usage, use streams.
+If you want to process data in parallel, you'll want to minimize memory usage.
+If your data is large (think 10 000 images), you better use streams as well.
+
 Links
 =====
 
@@ -108,6 +138,7 @@ General Documentation
     installation
     conventions
     api
+    making_your_own
     recipes
 
 Authors

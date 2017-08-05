@@ -25,3 +25,31 @@ def array_stream(func):
             arrays = (arrays,)
         return func(map(np.asarray, arrays), *args, **kwargs)
     return decorated
+
+@array_stream
+def ipipe(arrays, *funcs):
+    """
+    Pipe arrays through a sequence of functions. For example:
+
+    ``pipe(stream, f, g, h)`` is roughly equivalent to ::
+
+        for arr in stream:
+            yield f(g(h(arr)))
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays
+    funcs : callable
+        Callable that support Numpy arrays in their first argument.
+    
+    Yield
+    -----
+    piped : ndarray
+    """
+    functions = tuple(reversed(funcs))
+    def pipe(arr):
+        for func in functions:
+            arr = func(arr)
+        return arr
+    yield from map(pipe, arrays)

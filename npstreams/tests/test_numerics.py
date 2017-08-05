@@ -4,7 +4,8 @@ from random import randint, random
 
 import numpy as np
 
-from .. import isum, inansum, psum, iprod, pprod, inanprod, last, isub
+from .. import (isum, inansum, psum, iprod, pprod, inanprod, 
+                last, isub, iany, iall)
 
 class TestISum(unittest.TestCase):
 
@@ -210,6 +211,44 @@ class TestISub(unittest.TestCase):
             with self.subTest('axis = {}'.format(axis)):
                 from_numpy = np.subtract.reduce(stack, axis = axis)
                 from_stream = last(isub(stream, axis = axis))
+                self.assertTrue(np.allclose(from_numpy, from_stream))
+
+class TestIAll(unittest.TestCase):
+
+    def test_against_numpy(self):
+        """ Test iall against numpy.all """
+        stream = [np.zeros((8, 16, 2)) for _ in range(11)]
+        stream[3][3,0,1] = 1    # so that np.all(axis = None) evaluates to False
+        stack = np.stack(stream, axis = -1)
+
+        with self.subTest('axis = None'):
+            from_numpy = np.all(stack, axis = None)
+            from_stream = last(iall(stream, axis = None))
+            self.assertEqual(from_numpy, from_stream)
+
+        for axis in range(stack.ndim):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.all(stack, axis = axis)
+                from_stream = last(iall(stream, axis = axis))
+                self.assertTrue(np.allclose(from_numpy, from_stream))
+
+class TestIAny(unittest.TestCase):
+
+    def test_against_numpy(self):
+        """ Test iany against numpy.any """
+        stream = [np.zeros((8, 16, 2)) for _ in range(11)]
+        stream[3][3,0,1] = 1    # so that np.all(axis = None) evaluates to False
+        stack = np.stack(stream, axis = -1)
+
+        with self.subTest('axis = None'):
+            from_numpy = np.any(stack, axis = None)
+            from_stream = last(iany(stream, axis = None))
+            self.assertEqual(from_numpy, from_stream)
+
+        for axis in range(stack.ndim):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.any(stack, axis = axis)
+                from_stream = last(iany(stream, axis = axis))
                 self.assertTrue(np.allclose(from_numpy, from_stream))
 
 if __name__ == '__main__':
