@@ -53,14 +53,13 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
 
     Raises
     ------
-    TypeError : if ``ufunc`` is not a binary universal function.
+    TypeError : if ``ufunc`` is not NumPy ufunc.
     """
     kwargs.update({'dtype': dtype, 'axis': axis})
 
     try:
         assert isinstance(ufunc, np.ufunc)
-        ufunc.reduce([1,2], axis = 0)
-    except (ValueError, AssertionError):
+    except AssertionError:
         raise TypeError('Only binary ufuncs are supported, and {} is not one of them'.format(ufunc.__name__))
     
     # Since ireduce_ufunc is primed, we need to wait here
