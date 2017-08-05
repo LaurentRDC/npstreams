@@ -51,13 +51,21 @@ Control Flow
 
     ipipe
 
-Others
-------
+Comparisons
+-----------
 .. autosummary::
     :toctree: functions/
 
     iany
     iall
+    imax
+    imin
+
+Stacking
+--------
+.. autosummary::
+    :toctree: functions/
+    
     istack
     iflatten
     

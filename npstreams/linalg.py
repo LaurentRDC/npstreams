@@ -71,6 +71,21 @@ def itensordot(arrays, axes = 2):
     """
     yield from _ireduce_linalg(arrays, np.tensordot, axes = axes)
 
+def iinner(arrays):
+    """
+    Cumulative inner product of all arrays in a stream.
+    
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    
+    Yields
+    ------
+    online_inner : ndarray or scalar
+    """
+    yield from _ireduce_linalg(arrays, np.inner)
+
 def ieinsum(arrays, subscripts, **kwargs):
     """
     Evaluates the Einstein summation convention on the operands.

@@ -4,7 +4,7 @@ from random import randint, random
 
 import numpy as np
 
-from .. import idot, itensordot, ieinsum, last
+from .. import idot, itensordot, iinner, ieinsum, last
 
 class TestIDot(unittest.TestCase):
 
@@ -28,6 +28,20 @@ class TestITensordot(unittest.TestCase):
             with self.subTest('axis = {}'.format(axis)):
                 from_numpy = np.tensordot(*stream)
                 from_stream = last(itensordot(stream))
+
+                self.assertSequenceEqual(from_numpy.shape, from_stream.shape)
+                self.assertTrue(np.allclose(from_numpy, from_stream))
+
+class TestIInner(unittest.TestCase):
+
+    def test_against_numpy_inner(self):
+        """ Test against numpy.tensordot in 2D case """
+        stream = tuple(np.random.random((8, 8)) for _ in range(2))
+
+        for axis in (0, 1, 2):
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = np.inner(*stream)
+                from_stream = last(iinner(stream))
 
                 self.assertSequenceEqual(from_numpy.shape, from_stream.shape)
                 self.assertTrue(np.allclose(from_numpy, from_stream))
