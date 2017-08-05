@@ -284,3 +284,51 @@ def iany(arrays, axis = -1):
     any : ndarray, dtype bool 
     """
     yield from ireduce_ufunc(arrays, ufunc = np.logical_or, axis = axis)
+
+def imax(arrays, axis, ignore_nan = False):
+    """ 
+    Maximum of a stream of arrays along an axis.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which the maximum is found. The default
+        is to find the maximum along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+    ignore_nan : bool, optional
+        If True, NaNs are ignored. Default is propagation of NaNs.
+
+    Yields
+    ------
+    online_max : ndarray
+        Cumulative maximum.
+    """
+    ufunc = np.fmax if ignore_nan else np.maximum
+    yield from ireduce_ufunc(arrays, ufunc, axis)
+
+def imin(arrays, axis, ignore_nan = False):
+    """ 
+    Minimum of a stream of arrays along an axis.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    axis : int or None, optional
+        Axis along which the minimum is found. The default
+        is to find the minimum along the 'stream axis', as if all arrays in ``array``
+        were stacked along a new dimension. If ``axis = None``, arrays in ``arrays`` are flattened
+        before reduction.
+    ignore_nan : bool, optional
+        If True, NaNs are ignored. Default is propagation of NaNs.
+
+    Yields
+    ------
+    online_min : ndarray
+        Cumulative minimum.
+    """
+    ufunc = np.fmin if ignore_nan else np.minimum
+    yield from ireduce_ufunc(arrays, ufunc, axis)
