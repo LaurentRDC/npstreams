@@ -4,7 +4,7 @@ General stream reduction
 ------------------------
 """
 import numpy as np
-from functools import partial
+from functools import partial, wraps
 from itertools import chain
 from . import peek, array_stream
 
@@ -13,6 +13,7 @@ from . import peek, array_stream
 def primed(gen):
     """ Primes a generator. Useful in cases where there are preliminary checks
     when creating the generator """
+    @wraps(gen)
     def primed_gen(*args, **kwargs):
         generator = gen(*args, **kwargs)
         next(generator)

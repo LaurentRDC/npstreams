@@ -138,6 +138,7 @@ General Documentation
     installation
     conventions
     api
+    making_your_own
     recipes
 
 Authors
