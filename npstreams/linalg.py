@@ -8,6 +8,25 @@ import numpy as np
 from . import array_stream
 
 @array_stream
+def _ireduce_linalg(arrays, func, **kwargs):
+    """
+    Yield the cumulative reduction of a linag algebra function
+    """
+    arrays = iter(arrays)
+    first = next(arrays)
+    second = next(arrays)
+    
+    func = partial(func, **kwargs)
+
+    accumulator = func(first,  second)
+    yield accumulator
+
+    for array in arrays:
+        # For some reason, np.dot(..., out = accumulator) did not produce results
+        # that were equal to numpy.linalg.multi_dot
+        accumulator[:] = func(accumulator, array)
+        yield accumulator
+
 def idot(arrays):
     """
     Yields the cumulative array inner product (dot product) of arrays.
@@ -26,20 +45,8 @@ def idot(arrays):
     numpy.linalg.multi_dot : Compute the dot product of two or more arrays in a single function call, 
                              while automatically selecting the fastest evaluation order.
     """
-    arrays = iter(arrays)
-    first = next(arrays)
-    second = next(arrays)
+    yield from _ireduce_linalg(arrays, np.dot)
 
-    accumulator = np.dot(first, second)
-    yield accumulator
-
-    for array in arrays:
-        # For some reason, np.dot(..., out = accumulator) did not produce results
-        # that were equal to numpy.linalg.multi_dot
-        accumulator[:] = np.dot(accumulator, array)
-        yield accumulator
-
-@array_stream
 def itensordot(arrays, axes = 2):
     """
     Yields the cumulative array inner product (dot product) of arrays.
@@ -62,20 +69,8 @@ def itensordot(arrays, axes = 2):
     --------
     numpy.tensordot : Compute the tensordot on two tensors.
     """
-    arrays = iter(arrays)
-    first = next(arrays)
-    second = next(arrays)
+    yield from _ireduce_linalg(arrays, np.tensordot, axes = axes)
 
-    accumulator = np.tensordot(first, second, axes = axes)
-    yield accumulator
-
-    for array in arrays:
-        # For some reason, np.dot(..., out = accumulator) did not produce results
-        # that were equal to numpy.linalg.multi_dot
-        accumulator[:] = np.tensordot(accumulator, array, axes = axes)
-        yield accumulator
-
-@array_stream
 def ieinsum(arrays, subscripts, **kwargs):
     """
     Evaluates the Einstein summation convention on the operands.
@@ -125,17 +120,4 @@ def ieinsum(arrays, subscripts, **kwargs):
     online_einsum : ndarray
         Cumulative Einstein summation
     """
-    arrays = iter(arrays)
-    first = next(arrays)
-    second = next(arrays)
-    
-    einsumfunc = partial(np.einsum, **kwargs)
-
-    accumulator = einsumfunc(subscripts, first,  second)
-    yield accumulator
-
-    for array in arrays:
-        # For some reason, np.dot(..., out = accumulator) did not produce results
-        # that were equal to numpy.linalg.multi_dot
-        accumulator[:] = einsumfunc(subscripts, accumulator, array)
-        yield accumulator
+    yield from _ireduce_linalg(arrays, partial(np.einsum, subscripts), **kwargs)
