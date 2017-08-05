@@ -21,9 +21,9 @@ def primed(gen):
 
 @primed
 @array_stream
-def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
+def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     """
-    Create a streaming reduction function from a NumPy ufunc.
+    Create a streaming reduction function from a binary NumPy ufunc.
 
     Note that while all ufuncs have a ``reduce`` method, not all of them are useful.
     
@@ -42,10 +42,6 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
-    keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left in the result 
-        as dimensions with size one. With this option, the result will broadcast 
-        correctly against the original arr.
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
         (e.g. ``keepdims``) are not valid for all streaming functions.
@@ -70,11 +66,11 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     yield
 
     if kwargs['axis'] is None:
-        yield from _stream_reduce_all_axes(arrays, ufunc, **kwargs)
+        yield from _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs)
         return
 
     if kwargs['axis'] == -1:
-        yield from _stream_reduce_new_axis(arrays, ufunc, **kwargs)
+        yield from _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs)
         return
 
     first, arrays = peek(arrays)
@@ -84,9 +80,9 @@ def stream_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
         yield from stream_ufunc(arrays, ufunc, **kwargs)
         return
 
-    yield from _stream_reduce_existing_axis(arrays, ufunc, **kwargs)
+    yield from _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs)
 
-def _stream_reduce_new_axis(arrays, ufunc, **kwargs):
+def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
     
@@ -120,7 +116,7 @@ def _stream_reduce_new_axis(arrays, ufunc, **kwargs):
         accumulator = axis_reduce(np.stack([accumulator, array], axis = -1), out = accumulator)
         yield accumulator
 
-def _stream_reduce_existing_axis(arrays, ufunc, **kwargs):
+def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
     
@@ -165,7 +161,7 @@ def _stream_reduce_existing_axis(arrays, ufunc, **kwargs):
         accumulator = np.concatenate([accumulator, reduced], axis = accumulator.ndim - 1)
         yield accumulator
     
-def _stream_reduce_all_axes(arrays, ufunc, **kwargs):
+def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, over all axes.
     
