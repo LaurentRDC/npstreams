@@ -1,3 +1,5 @@
+.. include:: references.txt
+
 .. _making_your_own:
 
 ********************************************
@@ -24,7 +26,8 @@ This is why :func:`ireduce_ufunc` will only work with **binary** ufuncs, most of
 NumPy Binary Ufuncs
 ===================
 
-The following binary ufuncs are available in `NumPy <https://docs.scipy.org/doc/numpy/reference/ufuncs.html>`_:
+:func:`ireduce_ufunc` is tested to work on the following binary ufuncs, which are available in `NumPy`_.
+
 
 Arithmetics
 -----------
