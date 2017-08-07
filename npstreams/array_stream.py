@@ -5,6 +5,7 @@ Utilities
 """
 import numpy as np
 from functools import wraps
+from .parallel import pmap
 
 def array_stream(func):
     """ 
@@ -26,30 +27,37 @@ def array_stream(func):
         return func(map(np.asarray, arrays), *args, **kwargs)
     return decorated
 
-@array_stream
-def ipipe(arrays, *funcs):
+def ipipe(*args, **kwargs):
     """
     Pipe arrays through a sequence of functions. For example:
 
-    ``pipe(stream, f, g, h)`` is roughly equivalent to ::
+    ``pipe(f, g, h, stream)`` is roughly equivalent to ::
 
         for arr in stream:
             yield f(g(h(arr)))
     
     Parameters
     ----------
-    arrays : iterable
-        Arrays
     funcs : callable
         Callable that support Numpy arrays in their first argument.
+    arrays : iterable
+        Stream of arrays to be passed
+    processes : int or None, optional, keyword-only
+        Number of processes to use. If `None`, maximal number of processes
+        is used. Default is one.
+    ntotal : int or None, optional, keyword-only
+        If the length of `arrays` is known, but passing `arrays` as a list
+        would take too much memory, the total number of arrays `ntotal` can be specified. This
+        allows for `pmap` to chunk better in case of ``processes > 1``.
     
-    Yield
-    -----
+    Yields
+    ------
     piped : ndarray
     """
-    functions = tuple(reversed(funcs))
+    arrays = map(np.asarray, args[-1])
+    functions = tuple(reversed(args[:-1]))
     def pipe(arr):
         for func in functions:
             arr = func(arr)
         return arr
-    yield from map(pipe, arrays)
+    yield from pmap(pipe, arrays, **kwargs)
