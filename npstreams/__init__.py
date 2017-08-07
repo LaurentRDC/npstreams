@@ -2,7 +2,7 @@
 __author__ = 'Laurent P. René de Cotret'
 __email__ = 'laurent.renedecotret@mail.mcgill.ca'
 __license__ = 'BSD'
-__version__ = '0.2' # TODO: automatic versioning?
+__version__ = '0.2.1' # TODO: automatic versioning?
 
 from .array_stream import array_stream, ipipe
 
