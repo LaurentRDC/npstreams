@@ -5,6 +5,7 @@ Utilities
 """
 import numpy as np
 from functools import wraps
+from .parallel import pmap
 
 def array_stream(func):
     """ 
@@ -26,7 +27,6 @@ def array_stream(func):
         return func(map(np.asarray, arrays), *args, **kwargs)
     return decorated
 
-@array_stream
 def ipipe(*args, **kwargs):
     """
     Pipe arrays through a sequence of functions. For example:
@@ -54,7 +54,7 @@ def ipipe(*args, **kwargs):
     ------
     piped : ndarray
     """
-    arrays = args[-1]
+    arrays = map(np.asarray, args[-1])
     functions = tuple(reversed(args[:-1]))
     def pipe(arr):
         for func in functions:
