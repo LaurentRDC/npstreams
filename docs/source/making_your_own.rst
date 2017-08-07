@@ -17,6 +17,10 @@ using the following generator function:
 
     .. autofunction:: ireduce_ufunc
 
+The non-generator version is also availabl:
+
+    .. autofunction:: reduce_ufunc
+
 Note that while all NumPy ufuncs have a :meth:`reduce` method, not all of them are useful.
 This is why :func:`ireduce_ufunc` will only work with **binary** ufuncs, most of which are listed below.
 

@@ -26,6 +26,7 @@ def array_stream(func):
         return func(map(np.asarray, arrays), *args, **kwargs)
     return decorated
 
+# TODO: keyword-only argument 'processes' as a proxy for pmap?
 @array_stream
 def ipipe(arrays, *funcs):
     """
