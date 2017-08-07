@@ -112,6 +112,9 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     accumulator = np.array(first, copy = True).astype(dtype)
     yield accumulator
     
+    # TODO: avoid calling np.stack every loop
+    #       having a container of the same shape as np.stack([accumulator, accumulator], axis = -1)
+    #       seems like a great idea at first, but then the tests don't pass. Wtf?
     for array in arrays:
         accumulator = axis_reduce(np.stack([accumulator, array], axis = -1), out = accumulator)
         yield accumulator
