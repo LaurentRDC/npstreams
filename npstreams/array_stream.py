@@ -4,7 +4,7 @@ Utilities
 ---------
 """
 import numpy as np
-from functools import wraps
+from functools import wraps, partial
 from .parallel import pmap
 
 def array_stream(func):
@@ -27,21 +27,27 @@ def array_stream(func):
         return func(map(np.asarray, arrays), *args, **kwargs)
     return decorated
 
+# Multiprocessing.imap does not support local functions
+def _pipe(array, funcs):
+    for func in funcs:
+        array = func(array)
+    return array
+
 def ipipe(*args, **kwargs):
     """
     Pipe arrays through a sequence of functions. For example:
 
-    ``pipe(f, g, h, stream)`` is roughly equivalent to ::
+    ``pipe(f, g, h, stream)`` is equivalent to ::
 
         for arr in stream:
             yield f(g(h(arr)))
     
     Parameters
     ----------
-    funcs : callable
+    *funcs : callable
         Callable that support Numpy arrays in their first argument.
     arrays : iterable
-        Stream of arrays to be passed
+        Stream of arrays to be passed.
     processes : int or None, optional, keyword-only
         Number of processes to use. If `None`, maximal number of processes
         is used. Default is one.
@@ -56,8 +62,4 @@ def ipipe(*args, **kwargs):
     """
     arrays = map(np.asarray, args[-1])
     functions = tuple(reversed(args[:-1]))
-    def pipe(arr):
-        for func in functions:
-            arr = func(arr)
-        return arr
-    yield from pmap(pipe, arrays, **kwargs)
+    yield from pmap(partial(_pipe, funcs = functions), arrays, **kwargs)

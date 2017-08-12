@@ -14,6 +14,13 @@ class TestIPipe(unittest.TestCase):
 
         self.assertTrue(all(np.allclose(s, p) for s, p in zip(pipeline, squared)))
 
+    def test_multiprocessing(self):
+        """ Test that ipipe(f, g, h, arrays) -> f(g(h(arr))) for arr in arrays """
+        stream = [np.random.random((15,7,2,1)) for _ in range(10)]
+        squared = [np.cbrt(np.square(arr)) for arr in stream]
+        pipeline = ipipe(np.cbrt, np.square, stream, processes = 2)
+
+        self.assertTrue(all(np.allclose(s, p) for s, p in zip(pipeline, squared)))
 
 @array_stream
 def iden(arrays):
