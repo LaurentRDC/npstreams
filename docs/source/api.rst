@@ -79,6 +79,7 @@ Iterator Utilities
     chunked
     linspace
     multilinspace
+    peek
 
 Parallelization
 ---------------
