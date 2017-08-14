@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 
 from .. import ireduce_ufunc, last
+from ..reduce import _nan_to_num
 
 # Only testing binary ufuncs that support floats
 # i.e. leaving bitwise_* and logical_* behind
@@ -33,6 +34,13 @@ class TestIreduceUfunc(unittest.TestCase):
         source = np.ones( (16, 16), dtype = np.int)
         out = last(ireduce_ufunc(source, np.add, axis = -1))
         self.assertTrue(np.allclose(source, out))
+
+    def test_ignore_nan_no_identity(self):
+        """ Test ireduce_ufunc on an ufunc with no identity raises
+        an error for ignore_nan = True """
+        source = [np.ones( (16, 16), dtype = np.int) for _ in range(5)]
+        with self.assertRaises(ValueError):
+            ireduce_ufunc(source, np.maximum, axis = -1, ignore_nan = True)
     
     def test_non_ufunc(self):
         """ Test that ireduce_ufunc raises TypeError when a non-binary ufunc is passed """
@@ -55,6 +63,13 @@ class TestIreduceUfunc(unittest.TestCase):
                 source = (np.zeros((16, 5, 8)) for _ in range(10))
                 out = list(ireduce_ufunc(source, np.add, axis = axis))
                 self.assertEqual(10, len(out))
+    
+    def test_ignore_nan(self):
+        """ Test that ignore_nan is working """
+        for axis in (0, 1, 2, 3, None):
+            with self.subTest('axis = {}'.format(axis)):
+                out = last(ireduce_ufunc(self.source, np.add, axis = axis, ignore_nan = True))
+                self.assertFalse(np.any(np.isnan(out)))
 
 # Dynamics generation of tests on binary ufuncs
 def test_binary_ufunc(ufunc):
@@ -80,6 +95,34 @@ for ufunc in UFUNCS:
     test_name = 'test_ireduce_ufunc_on_{}'.format(ufunc.__name__)
     test = test_binary_ufunc(ufunc)
     setattr(TestAllBinaryUfuncs, test_name, test)
+
+
+def test_binary_ufunc_ignore_nan(ufunc):
+    """ Generate a test to ensure that ireduce_ufunc(..., ufunc, ...) 
+    works as intendent with NaNs in stream."""
+    def test_ufunc(self):
+        stack = _nan_to_num(self.stack, fill = ufunc.identity)
+
+        def sufunc(arrays, ignore_nan = False):  #s for stream
+            return last(ireduce_ufunc(arrays, ufunc, axis = 1, ignore_nan = True))
+        from_numpy = ufunc.reduce(stack, axis = 1)
+        from_sufunc = sufunc(self.source)
+        self.assertTrue(np.allclose(from_numpy, from_sufunc))
+    return test_ufunc
+
+class TestAllBinaryUfuncsIgnoreNans(unittest.TestCase):
+
+    def setUp(self):
+        self.source = [np.random.random((16,5,8)) for _ in range(10)]
+        self.source[0][0,0,0] = np.nan
+        self.stack = np.stack(self.source, axis = -1)
+
+for ufunc in UFUNCS:
+    if ufunc.identity is None:
+        continue
+    test_name = 'test_ireduce_ufunc_on_{}'.format(ufunc.__name__)
+    test = test_binary_ufunc_ignore_nan(ufunc)
+    setattr(TestAllBinaryUfuncsIgnoreNans, test_name, test)
 
 if __name__ == '__main__':
     unittest.main()

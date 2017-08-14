@@ -27,8 +27,8 @@ def array_stream(func):
         return func(map(np.asarray, arrays), *args, **kwargs)
     return decorated
 
-# Multiprocessing.imap does not support local functions
-def _pipe(array, funcs):
+# pmap does not support local functions
+def _pipe(funcs, array):
     for func in funcs:
         array = func(array)
     return array
@@ -45,7 +45,8 @@ def ipipe(*args, **kwargs):
     Parameters
     ----------
     *funcs : callable
-        Callable that support Numpy arrays in their first argument.
+        Callable that support Numpy arrays in their first argument. These
+        should *NOT* be generator functions.
     arrays : iterable
         Stream of arrays to be passed.
     processes : int or None, optional, keyword-only
@@ -62,4 +63,4 @@ def ipipe(*args, **kwargs):
     """
     arrays = map(np.asarray, args[-1])
     functions = tuple(reversed(args[:-1]))
-    yield from pmap(partial(_pipe, funcs = functions), arrays, **kwargs)
+    yield from pmap(partial(_pipe, functions), arrays, **kwargs)

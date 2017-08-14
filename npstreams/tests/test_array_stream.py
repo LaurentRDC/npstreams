@@ -2,7 +2,11 @@
 import unittest
 import numpy as np
 
-from .. import array_stream, ipipe
+from .. import array_stream, ipipe, iaverage, last
+
+@array_stream
+def iden(arrays):
+    yield from arrays
 
 class TestIPipe(unittest.TestCase):
     
@@ -21,10 +25,6 @@ class TestIPipe(unittest.TestCase):
         pipeline = ipipe(np.cbrt, np.square, stream, processes = 2)
 
         self.assertTrue(all(np.allclose(s, p) for s, p in zip(pipeline, squared)))
-
-@array_stream
-def iden(arrays):
-    yield from arrays
 
 class TestArrayStream(unittest.TestCase):
 
