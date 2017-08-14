@@ -24,6 +24,13 @@ The non-generator version is also available:
 Note that while all NumPy ufuncs have a :meth:`reduce` method, not all of them are useful.
 This is why :func:`ireduce_ufunc` and :func:`reduce_ufunc` will only work with **binary** ufuncs, most of which are listed below.
 
+NaNs handling
+-------------
+
+NumPy ufuncs can have an identity value, that is, a value such that ``ufunc(x1, identity)`` is always ``x1``. For such ufuncs,
+:func:`ireduce_ufunc` and :func:`reduce_ufunc` can replace NaNs in the stream with the ufunc's identity value, if ``ignore_nan = True``.
+Note that not all ufuncs have an identity value; for example, how would you define the identity value of ``numpy.maximum``? There is no answer.
+
 .. _numpy_binary_ufuncs:
 
 ===================
@@ -108,7 +115,8 @@ Example: Streaming Maximum
 ==========================
 
 Let's create a streaming maximum function for a stream. First, we have to choose 
-how to handle NaNs:
+how to handle NaNs; since ``numpy.maximum`` does not have an identity value, we must find
+another way. We can proceed as follows:
 
 * If we want to propagate NaNs, we should use :func:`numpy.maximum`
 * If we want to ignore NaNs, we should use :func:`numpy.fmax`

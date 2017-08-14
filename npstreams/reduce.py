@@ -8,6 +8,13 @@ from functools import partial, wraps
 from itertools import chain
 from . import peek, array_stream, last, chunked
 
+def _nan_to_num(array, fill = 0):
+    if not np.issubdtype(array.dtype, np.float):
+        return array 
+    array = np.array(array)
+    array[np.isnan(array)] = fill
+    return array
+
 # Priming a generator allows the execution of error-checking
 # code immediatly. See ireduce_ufunc for an example
 def primed(gen):
@@ -22,7 +29,7 @@ def primed(gen):
 
 @primed
 @array_stream
-def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
+def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **kwargs):
     """
     Streaming reduction generator function from a binary NumPy ufunc. Generator
     version of `reduce_ufunc`.
@@ -44,6 +51,9 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
+    ignore_nan : bool, optional
+        If True and ufunc has an identity value (e.g. ``numpy.add.identity`` is 0), then NaNs
+        are replaced with this identity. An error is raised if ``ufunc`` has no identity (e.g. ``numpy.maximum.identity`` is ``None``).
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
         (e.g. ``keepdims``) are not valid for all streaming functions.
@@ -55,6 +65,7 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     Raises
     ------
     TypeError : if ``ufunc`` is not NumPy ufunc.
+    ValueError : if ``ignore_nan`` is True but ``ufunc`` has no identity
     """
     kwargs.update({'dtype': dtype, 'axis': axis})
 
@@ -63,7 +74,13 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, **kwargs):
     except AssertionError:
         raise TypeError('Only binary ufuncs are supported, and {} is not one of them'.format(ufunc.__name__))
     
+    if ignore_nan and (ufunc.identity is None):
+        raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
+    
     # Since ireduce_ufunc is primed, we need to wait here
+    if ignore_nan:
+        arrays = map(partial(_nan_to_num, fill = ufunc.identity), arrays)
+
     yield
 
     if kwargs['axis'] is None:
@@ -105,6 +122,9 @@ def reduce_ufunc(*args, **kwargs):
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
+    ignore_nan : bool, optional
+        If True and ufunc has an identity value (e.g. ``numpy.add.identity`` is 0), then NaNs
+        are replaced with this identity. An error is raised if ``ufunc`` has no identity (e.g. ``numpy.maximum.identity`` is ``None``).
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
         (e.g. ``keepdims``) are not valid for all streaming functions.
