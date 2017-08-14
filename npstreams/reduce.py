@@ -122,6 +122,9 @@ def reduce_ufunc(*args, **kwargs):
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
+    ignore_nan : bool, optional
+        If True and ufunc has an identity value (e.g. ``numpy.add.identity`` is 0), then NaNs
+        are replaced with this identity. An error is raised if ``ufunc`` has no identity (e.g. ``numpy.maximum.identity`` is ``None``).
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
         (e.g. ``keepdims``) are not valid for all streaming functions.
