@@ -71,10 +71,11 @@ npstreams comes with some streaming functions built-in. Some examples:
 * Statistics : :code:`iaverage` (weighted mean), :code:`ivar` (single-pass variance), etc.
 * Stacking : :code:`iflatten`, :code:`istack`
 
+More importantly, npstreams gives you all the tools required to build your own streaming function.
 All routines are documented in the `API Reference on readthedocs.io <http://npstreams.readthedocs.io>`_.
 
-Example: Streaming Maximum
---------------------------
+Creating your own: Streaming Maximum
+-------------------------------------
 
 Let's create a streaming maximum function for a stream. First, we have to choose 
 how to handle NaNs:
