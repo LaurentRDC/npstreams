@@ -28,10 +28,8 @@ Numerics
     :toctree: functions/
 
     isum
-    psum
     inansum
     iprod
-    pprod
     inanprod
     isub
 
@@ -79,6 +77,7 @@ Iterator Utilities
     chunked
     linspace
     multilinspace
+    peek
 
 Parallelization
 ---------------

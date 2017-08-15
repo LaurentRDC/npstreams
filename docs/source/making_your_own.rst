@@ -17,8 +17,23 @@ using the following generator function:
 
     .. autofunction:: ireduce_ufunc
 
+The non-generator version is also available:
+
+    .. autofunction:: reduce_ufunc
+
 Note that while all NumPy ufuncs have a :meth:`reduce` method, not all of them are useful.
-This is why :func:`ireduce_ufunc` will only work with **binary** ufuncs, most of which are listed below.
+This is why :func:`ireduce_ufunc` and :func:`reduce_ufunc` will only work with **binary** ufuncs, 
+most of which are listed below. For performance reasons, we further restrict the use of 
+:func:`ireduce_ufunc` and :func:`reduce_ufunc` to ufuncs that have the same input types
+as output types. Therefore, for example, :func:`numpy.greater` cannot be made to work with
+:func:`ireduce_ufunc` and :func:`reduce_ufunc`.
+
+NaNs handling
+-------------
+
+NumPy ufuncs can have an identity value, that is, a value such that ``ufunc(x1, identity)`` is always ``x1``. For such ufuncs,
+:func:`ireduce_ufunc` and :func:`reduce_ufunc` can replace NaNs in the stream with the ufunc's identity value, if ``ignore_nan = True``.
+Note that not all ufuncs have an identity value; for example, how would you define the identity value of ``numpy.maximum``? There is no answer.
 
 .. _numpy_binary_ufuncs:
 
@@ -75,15 +90,6 @@ Comparison functions
 .. autosummary::
     :nosignatures:
 
-    numpy.greater
-    numpy.greater_equal
-    numpy.less
-    numpy.less_equal
-    numpy.not_equal
-    numpy.equal
-    numpy.logical_and
-    numpy.logical_or
-    numpy.logical_xor
     numpy.maximum
     numpy.fmax
     numpy.minimum
@@ -99,39 +105,29 @@ Floating functions
     numpy.nextafter
     numpy.ldexp
 
-================
-Stream of arrays
-================
-
-This decorator will ensure that streams will be transformed into streams of NumPy arrays.
-A single NumPy array can be passed to a function expecting a stream, decorated with :func:`array_stream`;
-this solitary array will be repackaged into a sequence of length one.
-
-    .. autofunction:: array_stream
-
 ==========================
 Example: Streaming Maximum
 ==========================
 
 Let's create a streaming maximum function for a stream. First, we have to choose 
-how to handle NaNs:
+how to handle NaNs; since ``numpy.maximum`` does not have an identity value, we must find
+another way. We can proceed as follows:
 
 * If we want to propagate NaNs, we should use :func:`numpy.maximum`
 * If we want to ignore NaNs, we should use :func:`numpy.fmax`
 
-Both of those functions are binary ufuncs, so we can use :func:`ireduce_ufunc`. We will
-also want to make sure that anything in the stream that isn't an array will be made into one
-using the :func:`array_stream` decorator.
+Both of those functions are binary ufuncs, so we can use :func:`ireduce_ufunc`. Note that any function based
+on :func:`ireduce_ufunc` or :func:`reduce_ufunc` will automatically work on streams of numbers thanks to the
+:func:`array_stream` decorator.
 
 Putting it all together::
 
-    from npstreams import array_stream, ireduce_ufunc
+    from npstreams import ireduce_ufunc
     from numpy import maximum, fmax
 
-    @array_stream
     def imax(arrays, axis = -1, ignore_nan = False, **kwargs):
         """
-        Streaming maximum along an axis.
+        Streaming cumulative maximum along an axis.
 
         Parameters
         ----------
@@ -151,14 +147,14 @@ Putting it all together::
         yield from ireduce_ufunc(arrays, ufunc, axis = axis, **kwargs)
 
 This will provide us with a streaming function, meaning that we can look at the progress
-as it is being computer. We can also create a function that returns the max of the stream
-like :meth:`numpy.ndarray.max()` using the :func:`npstreams.last` function::
+as it is being computed. We can also create a function that returns the max of the stream
+like :meth:`numpy.ndarray.max()` using the :func:`reduce_ufunc` function::
 
-    from npstreams import last
+    from npstreams import reduce_ufunc
 
     def smax(*args, **kwargs):  # s for stream
         """
-        Maximum of all arrays in a stream, along an axis.
+        Maximum of a stream along an axis.
 
         Parameters
         ----------
@@ -170,8 +166,8 @@ like :meth:`numpy.ndarray.max()` using the :func:`npstreams.last` function::
         ignore_nan : bool, optional
             If True, NaNs are ignored. Default is False.
         
-        Returns
-        -------
-        max : scalar or ndarray
+        Yields
+        ------
+        max : ndarray
         """
-        return last(imax(*args, **kwargs)
+        return reduce_ufunc(*args, **kwargs)
