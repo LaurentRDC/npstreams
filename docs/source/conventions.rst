@@ -30,7 +30,8 @@ In order to facilitate documentation, functions in :mod:`npstreams` follow the f
     * Routines are named after their closest equivalent in :mod:`numpy` and :mod:`scipy`.
     * Routines with names starting with 'i' (e.g. :func:`iprod`) return a generator.
     * Routines with names starting with 'p' (e.g. :func:`pmap`) can be parallelized. The default
-      behavior is always to not use multiple cores.
+      behavior is always to not use multiple cores. For example, the default behavior of :func:`pmap`
+      is to behave like :func:`map`.
 
 Axis Conventions
 ----------------

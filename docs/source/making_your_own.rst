@@ -118,7 +118,7 @@ another way. We can proceed as follows:
 
 Both of those functions are binary ufuncs, so we can use :func:`ireduce_ufunc`. Note that any function based
 on :func:`ireduce_ufunc` or :func:`reduce_ufunc` will automatically work on streams of numbers thanks to the
- :func:`array_stream` decorator.
+:func:`array_stream` decorator.
 
 Putting it all together::
 
