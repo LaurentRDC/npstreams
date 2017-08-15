@@ -225,7 +225,7 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     first = next(arrays)
 
     if kwargs['axis'] not in range(first.ndim):
-        raise ValueError('Axis {} not supported on arrays of shape {}.'.format(axis, first.shape))
+        raise ValueError('Axis {} not supported on arrays of shape {}.'.format(kwargs['axis'], first.shape))
     
     dtype = kwargs.get('dtype')
     if dtype is None:
