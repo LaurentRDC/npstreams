@@ -6,14 +6,18 @@
 Conventions
 ***********
 
+.. currentmodule:: npstreams
+
 Stream Conventions
 ------------------
 
 Most (all?) functions in :mod:`npstreams` are designed to work on streams, or
 iterables of NumPy arrays. These iterables can be infinite. 
 The quintessential example is a stream of images progressively read from disk. 
-These streams of arrays must contain arrays that all have the same shape, unless 
-specified otherwise.
+These streams of arrays must contain arrays that all have the same shape and data-type, 
+unless specified otherwise. 
+
+An example of a function that operates on a stream of arrays of different shapes is :func:`ieinsum`
 
 A single NumPy array can be passed where a stream is expected; the array will be repackaged
 into a stream of a single array.
