@@ -45,4 +45,4 @@ keyword-only ``processes``::
     avgs = last(iaverage(pipeline))
 
 Since :func:`ipipe` uses :func:`pmap` under the hood, we can also use all available cores
-by passing ``processes = None``
+by passing ``processes = None``.

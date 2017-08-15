@@ -22,7 +22,11 @@ The non-generator version is also available:
     .. autofunction:: reduce_ufunc
 
 Note that while all NumPy ufuncs have a :meth:`reduce` method, not all of them are useful.
-This is why :func:`ireduce_ufunc` and :func:`reduce_ufunc` will only work with **binary** ufuncs, most of which are listed below.
+This is why :func:`ireduce_ufunc` and :func:`reduce_ufunc` will only work with **binary** ufuncs, 
+most of which are listed below. For performance reasons, we further restrict the use of 
+:func:`ireduce_ufunc` and :func:`reduce_ufunc` to ufuncs that have the same input types
+as output types. Therefore, for example, :func:`numpy.greater` cannot be made to work with
+:func:`ireduce_ufunc` and :func:`reduce_ufunc`.
 
 NaNs handling
 -------------
@@ -86,15 +90,6 @@ Comparison functions
 .. autosummary::
     :nosignatures:
 
-    numpy.greater
-    numpy.greater_equal
-    numpy.less
-    numpy.less_equal
-    numpy.not_equal
-    numpy.equal
-    numpy.logical_and
-    numpy.logical_or
-    numpy.logical_xor
     numpy.maximum
     numpy.fmax
     numpy.minimum
@@ -123,7 +118,7 @@ another way. We can proceed as follows:
 
 Both of those functions are binary ufuncs, so we can use :func:`ireduce_ufunc`. Note that any function based
 on :func:`ireduce_ufunc` or :func:`reduce_ufunc` will automatically work on streams of numbers thanks to the
- :func:`array_stream` decorator.
+:func:`array_stream` decorator.
 
 Putting it all together::
 

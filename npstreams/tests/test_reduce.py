@@ -8,14 +8,12 @@ from ..reduce import _nan_to_num
 # Only testing binary ufuncs that support floats
 # i.e. leaving bitwise_* and logical_* behind
 # Also, numpy.ldexp takes in ints and floats separately, so
-# i leave it behind
+# leave it behind
 UFUNCS = (np.add, np.subtract, np.multiply, np.divide,
-            np.logaddexp, np.logaddexp2, np.true_divide, np.floor_divide,
-            np.power, np.remainder, np.mod, np.fmod, np.arctan2,
-            np.hypot, np.greater, np.greater_equal, np.less,
-            np.less_equal, np.not_equal, np.equal, np.maximum,
-            np.fmax, np.minimum, np.fmin, np.copysign,
-            np.nextafter)
+          np.logaddexp, np.logaddexp2, np.true_divide, np.floor_divide,
+          np.power, np.remainder, np.mod, np.fmod, np.arctan2,
+          np.hypot, np.maximum, np.fmax, np.minimum, np.fmin, np.copysign,
+          np.nextafter)
 
 class TestIreduceUfunc(unittest.TestCase):
 
@@ -43,9 +41,20 @@ class TestIreduceUfunc(unittest.TestCase):
             ireduce_ufunc(source, np.maximum, axis = -1, ignore_nan = True)
     
     def test_non_ufunc(self):
-        """ Test that ireduce_ufunc raises TypeError when a non-binary ufunc is passed """
+        """ Test that ireduce_ufunc raises TypeError when a non-ufunc is passed """
         with self.assertRaises(TypeError):
             ireduce_ufunc(range(10), ufunc = lambda x: x)
+    
+    def test_non_binary_ufunc(self):
+        """ Test that ireduce_ufunc raises ValueError if non-binary ufunc is used """
+        with self.assertRaises(ValueError):
+            ireduce_ufunc(range(10), ufunc = np.absolute)
+    
+    def test_non_type_preserving_ufunc(self):
+        """ Test that ireduce_ufunc raises ValueError if binary ufunc that doesn't preserve type
+        is used """
+        with self.assertRaises(ValueError):
+            ireduce_ufunc(range(10), ufunc = np.greater)
         
     def test_output_shape(self):
         """ Test output shape """
@@ -79,10 +88,11 @@ def test_binary_ufunc(ufunc):
         def sufunc(arrays, axis = -1):  #s for stream
             return last(ireduce_ufunc(arrays, ufunc, axis = axis))
         for axis in (0, 1, 2, -1):
-            from_numpy = ufunc.reduce(self.stack, axis = axis)
-            from_sufunc = sufunc(self.source, axis = axis)
-            self.assertSequenceEqual(from_sufunc.shape, from_numpy.shape)
-            self.assertTrue(np.allclose(from_numpy, from_sufunc))
+            with self.subTest('axis = {}'.format(axis)):
+                from_numpy = ufunc.reduce(self.stack, axis = axis)
+                from_sufunc = sufunc(self.source, axis = axis)
+                self.assertSequenceEqual(from_sufunc.shape, from_numpy.shape)
+                self.assertTrue(np.allclose(from_numpy, from_sufunc))
     return test_ufunc
 
 class TestAllBinaryUfuncs(unittest.TestCase):
@@ -107,6 +117,7 @@ def test_binary_ufunc_ignore_nan(ufunc):
             return last(ireduce_ufunc(arrays, ufunc, axis = 1, ignore_nan = True))
         from_numpy = ufunc.reduce(stack, axis = 1)
         from_sufunc = sufunc(self.source)
+        self.assertSequenceEqual(from_numpy.shape, from_sufunc.shape)
         self.assertTrue(np.allclose(from_numpy, from_sufunc))
     return test_ufunc
 

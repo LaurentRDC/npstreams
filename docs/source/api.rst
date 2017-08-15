@@ -28,10 +28,8 @@ Numerics
     :toctree: functions/
 
     isum
-    psum
     inansum
     iprod
-    pprod
     inanprod
     isub
 

@@ -6,14 +6,18 @@
 Conventions
 ***********
 
+.. currentmodule:: npstreams
+
 Stream Conventions
 ------------------
 
 Most (all?) functions in :mod:`npstreams` are designed to work on streams, or
 iterables of NumPy arrays. These iterables can be infinite. 
 The quintessential example is a stream of images progressively read from disk. 
-These streams of arrays must contain arrays that all have the same shape, unless 
-specified otherwise.
+These streams of arrays must contain arrays that all have the same shape and data-type, 
+unless specified otherwise. 
+
+An example of a function that operates on a stream of arrays of different shapes is :func:`ieinsum`
 
 A single NumPy array can be passed where a stream is expected; the array will be repackaged
 into a stream of a single array.
@@ -26,7 +30,8 @@ In order to facilitate documentation, functions in :mod:`npstreams` follow the f
     * Routines are named after their closest equivalent in :mod:`numpy` and :mod:`scipy`.
     * Routines with names starting with 'i' (e.g. :func:`iprod`) return a generator.
     * Routines with names starting with 'p' (e.g. :func:`pmap`) can be parallelized. The default
-      behavior is always to not use multiple cores.
+      behavior is always to not use multiple cores. For example, the default behavior of :func:`pmap`
+      is to behave like :func:`map`.
 
 Axis Conventions
 ----------------
