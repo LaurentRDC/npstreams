@@ -15,10 +15,13 @@ npstreams is an open-source Python package for streaming NumPy array operations.
 The goal is to provide tested routines that operate on streams (or generators) of arrays instead of dense arrays.
 
 Streaming reduction operations (sums, averages, etc.) can be implemented in constant memory, which in turns
-allows for easy parallelization. Some routines in npstreams are parallelized in this way.
+allows for easy parallelization.
 
 In my experience, this approach has been a godsend when working with images; the images are read
 one-by-one from disk and combined/processed in a streaming fashion.
+
+This package is developed in conjunction with other software projects in the 
+`Siwick research group <www.physics.mcgill.ca/siwicklab>`_
 
 Motivating Example
 ------------------
@@ -136,41 +139,11 @@ like :code:`numpy.ndarray.max()` using the :code:`npstreams.last` function::
         """
         return last(imax(*args, **kwargs)
 
-Benchmark
----------
-
-Let's look at a simple benchmark. Let compare the two snippets to sum the following data::
-
-    def stream():
-        for _ in range(100):
-            yield np.empty((2048, 2048), dtype = np.int)
-
-Snippet 1: dense arrays only. Note that I count the creation of the dense array::
-
-    import numpy as np
-
-    stack = np.stack(list(stream()), axis = -1)
-    s = np.sum(stack, axis = -1)
-
-On my machine, this takes 7 seconds and ~3G of memory.
-Snippet 2: streaming arrays. This also includes the creation of the stream::
-
-    # snippet 2
-    import npstreams as nps
-    s = nps.last(nps.isum(stream(), axis = -1))
-
-On my machine, this takes 8 seconds and 95 MB of memory.
-
-Bottom line: for raw speed, use NumPy. If you want to mimimize memory usage, use streams.
-If you want to process data in parallel, you'll want to minimize memory usage.
-If your data is large (think 10 000 images), you better use streams as well.
-
 Future Work
 -----------
 Some of the features I want to implement in this package in the near future:
 
 * Benchmark section : how does the performance compare with NumPy functions, as array size increases?
-* Cython : cythonizing the underlying routines would probably help.
 * More functions : more streaming functions borrowed from NumPy and SciPy.
 
 API Reference
