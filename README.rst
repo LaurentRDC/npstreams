@@ -21,7 +21,6 @@ In my experience, this approach has been a godsend when working with images; the
 one-by-one from disk and combined/processed in a streaming fashion.
 
 This package is developed in conjunction with other software projects in the 
-`Siwick research group <www.physics.mcgill.ca/siwicklab>`_
 
 Motivating Example
 ------------------
