@@ -6,12 +6,13 @@ Utilities
 import numpy as np
 from functools import wraps, partial
 from .parallel import pmap
+from .iter_utils import peek
 
 def array_stream(func):
     """ 
     Decorates streaming functions to make sure that the stream
     is a stream of ndarrays. Objects that are not arrays
-    are transformed into arrays using ``numpy.asarray``. If the stream 
+    are transformed into arrays. If the stream 
     is in fact a single ndarray, this ndarray is repackaged into a sequence of
     length 1.
     
@@ -24,7 +25,7 @@ def array_stream(func):
     def decorated(arrays, *args, **kwargs):
         if isinstance(arrays, np.ndarray):
             arrays = (arrays,)
-        return func(map(np.asarray, arrays), *args, **kwargs)
+        return func(map(np.atleast_1d, arrays), *args, **kwargs)
     return decorated
 
 # pmap does not support local functions

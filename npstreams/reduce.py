@@ -15,6 +15,22 @@ def _nan_to_num(array, fill = 0):
     array[np.isnan(array)] = fill
     return array
 
+def _check_binary_ufunc(ufunc):
+    """ Check that ufunc is suitable for ``ireduce_ufunc`` """
+    if not isinstance(ufunc, np.ufunc):
+        raise TypeError('{} is not a NumPy Ufunc'.format(ufunc.__name__))
+    if not ufunc.nin == 2:
+        raise ValueError('Only binary ufuncs are supported, and {} is \
+                          not one of them'.format(ufunc.__name__))
+    
+    # TODO: find a way to discern type in and type out
+    # the following doesn't work with bool -> bool -> bool
+    #if not isinstance(ufunc(1.0, 1.0), float):
+    #    raise ValueError('Only binary ufunc with same output and input types are \
+    #                      supported, and {} is not one of them'.format(ufunc.__name__))
+    
+    return ufunc
+
 # Priming a generator allows the execution of error-checking
 # code immediatly. See ireduce_ufunc for an example
 def primed(gen):
@@ -34,7 +50,10 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
     Streaming reduction generator function from a binary NumPy ufunc. Generator
     version of `reduce_ufunc`.
 
-    Note that while all ufuncs have a ``reduce`` method, not all of them are useful.
+    ``ufunc`` must be a NumPy binary Ufunc (i.e. it takes two arguments). Moreover,
+    for performance reasons, ufunc must have the same return types as input types.
+    This precludes the use of ``numpy.greater``, for example.
+
     
     Parameters
     ----------
@@ -66,14 +85,12 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
     ------
     TypeError : if ``ufunc`` is not NumPy ufunc.
     ValueError : if ``ignore_nan`` is True but ``ufunc`` has no identity
+    ValueError: if ``ufunc`` is not a binary ufunc
+    ValueError: if ``ufunc`` does not have the same input type as output type
     """
     kwargs.update({'dtype': dtype, 'axis': axis})
 
-    try:
-        assert isinstance(ufunc, np.ufunc)
-    except AssertionError:
-        raise TypeError('Only binary ufuncs are supported, and {} is not one of them'.format(ufunc.__name__))
-    
+    ufunc = _check_binary_ufunc(ufunc)
     if ignore_nan and (ufunc.identity is None):
         raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
     
@@ -158,10 +175,9 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     """
     arrays = iter(arrays)
     first = next(arrays)
-    
-    kwargs['axis'] = first.ndim
 
-    axis_reduce = partial(ufunc.reduce, **kwargs)
+    kwargs.pop('axis')
+    kwargs['casting'] = 'unsafe'
                 
     dtype = kwargs.get('dtype', None)
     if dtype is None:
@@ -169,11 +185,8 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     accumulator = np.array(first, copy = True).astype(dtype)
     yield accumulator
     
-    # TODO: avoid calling np.stack every loop
-    #       having a container of the same shape as np.stack([accumulator, accumulator], axis = -1)
-    #       seems like a great idea at first, but then the tests don't pass. Wtf?
     for array in arrays:
-        accumulator = axis_reduce(np.stack([accumulator, array], axis = -1), out = accumulator)
+        accumulator = ufunc(accumulator, array, out = accumulator, **kwargs)
         yield accumulator
 
 def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
