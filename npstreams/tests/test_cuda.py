@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from itertools import repeat
 import numpy as np
 import unittest
+
 try:
     import pycuda
     WITH_CUDA = True
-
     from ..cuda import csum
 except ImportError:
     WITH_CUDA = False
