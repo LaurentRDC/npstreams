@@ -34,7 +34,7 @@ def csum(arrays, ignore_nan = False):
         arrays = map(np.nan_to_num, arrays)
 
     first = next(arrays)
-    acc_gpu = gpuarray.to_gpu(first)
+    arr_gpu = gpuarray.to_gpu(first)
 
     for arr in arrays:
         arr_gpu += gpuarray.to_gpu(arr)
