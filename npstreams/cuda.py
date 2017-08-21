@@ -10,7 +10,6 @@ from warnings import warn
 
 try:
     import pycuda.gpuarray as gpuarray
-    from skcuda.misc import add
 except ImportError:
     raise RuntimeError('pycuda is not installed. CUDA capabilities are not available.')
 
