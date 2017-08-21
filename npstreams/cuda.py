@@ -9,6 +9,7 @@ import numpy as np
 from warnings import warn
 
 try:
+    import pycuda.autoinit
     import pycuda.gpuarray as gpuarray
 except ImportError:
     raise RuntimeError('pycuda is not installed. CUDA capabilities are not available.')
