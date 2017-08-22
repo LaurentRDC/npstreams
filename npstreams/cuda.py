@@ -6,6 +6,7 @@ CUDA-accelerated streaming operations
 from functools import partial, wraps
 from itertools import repeat, tee
 import numpy as np
+from operator import iadd, imul
 from warnings import warn
 
 from . import array_stream, peek
@@ -34,6 +35,24 @@ if driver.Device.count() == 0:
     raise ImportError('No GPU is available.')
 
 @array_stream
+def cuda_inplace_reduce(arrays, operator, dtype = None, ignore_nan = False, identity = 0):
+    # No need to cast all arrays if ``dtype`` is the same
+    # type as the stream
+    first, arrays = peek(arrays)
+    if (dtype is not None) and (first.dtype != dtype):
+        arrays = map(lambda arr: arr.astype(dtype), arrays)
+
+    if ignore_nan:
+        arrays = map(partial(_nan_to_num, fill = identity), arrays)
+
+    acc_gpu = gpuarray.to_gpu(next(arrays))  # Accumulator
+    arr_gpu = gpuarray.empty_like(acc_gpu)        # GPU memory location for each array
+    for arr in arrays:
+        arr_gpu.set(arr)
+        operator(acc_gpu, arr_gpu)
+
+    return acc_gpu.get()
+
 def csum(arrays, dtype = None, ignore_nan = False):
     """ 
     CUDA-enabled sum of stream of arrays. Arrays are summed along 
@@ -54,22 +73,8 @@ def csum(arrays, dtype = None, ignore_nan = False):
     --------
     isum : streaming sum of array elements, possibly along different axes
     """
-    # No need to cast all arrays if ``dtype`` is the same
-    # type as the stream
-    first, arrays = peek(arrays)
-    if (dtype is not None) and (first.dtype != dtype):
-        arrays = map(lambda arr: arr.astype(dtype), arrays)
-
-    if ignore_nan:
-        arrays = map(np.nan_to_num, arrays)
-
-    first = next(arrays)
-    arr_gpu = gpuarray.to_gpu(first)
-
-    for arr in arrays:
-        arr_gpu += gpuarray.to_gpu(arr)
-
-    return arr_gpu.get()
+    return cuda_inplace_reduce(arrays, operator = iadd, dtype = dtype, 
+                               ignore_nan = ignore_nan, identity = 0)
 
 @array_stream
 def cprod(arrays, dtype = None, ignore_nan = False):
@@ -94,22 +99,8 @@ def cprod(arrays, dtype = None, ignore_nan = False):
     ------
     online_prod : ndarray
     """
-    # No need to cast all arrays if ``dtype`` is the same
-    # type as the stream
-    first, arrays = peek(arrays)
-    if (dtype is not None) and (first.dtype != dtype):
-        arrays = map(lambda arr: arr.astype(dtype), arrays)
-
-    if ignore_nan:
-        arrays = map(partial(_nan_to_num, fill = 1), arrays)
-
-    first = next(arrays)
-    arr_gpu = gpuarray.to_gpu(first)
-
-    for arr in arrays:
-        arr_gpu *= gpuarray.to_gpu(arr)
-
-    return arr_gpu.get()
+    return cuda_inplace_reduce(arrays, operator = imul, dtype = dtype, 
+                               ignore_nan = ignore_nan, identity = 1)
 
 @array_stream
 def cmean(arrays, ignore_nan = False):
@@ -144,13 +135,15 @@ def cmean(arrays, ignore_nan = False):
 
     
     first = next(arrays)
-    arr_gpu = gpuarray.to_gpu(first)
+    accumulator = gpuarray.to_gpu(next(arrays))
+    array_gpu = gpuarray.empty_like(accumulator)
     num_arrays = 1
     for arr in arrays:
         num_arrays += 1
-        arr_gpu += gpuarray.to_gpu(arr)
+        array_gpu.set(arr)
+        accumulator += array_gpu
     
-    return arr_gpu.get() / num_arrays
+    return accumulator.get() / num_arrays
 
 @array_stream
 def caverage(arrays, weights = None, ignore_nan = False):
