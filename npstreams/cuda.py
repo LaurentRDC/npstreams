@@ -36,6 +36,27 @@ if driver.Device.count() == 0:
 
 @array_stream
 def cuda_inplace_reduce(arrays, operator, dtype = None, ignore_nan = False, identity = 0):
+    """
+    Inplace reduce on GPU arrays.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    operator : callable
+        Callable of two arguments. This operator should operate in-place, storing the results into
+        the buffer of the first argument, e.g. operator.iadd
+    dtype : numpy.dtype, optional
+        Arrays of the stream are cast to this dtype before reduction.
+    ignore_nan : bool, optional
+        If True, NaNs are replaced with ``identity``. Default is propagation of NaNs.
+    identity : float, optional
+        If ``ignore_nan = True``, NaNs are replaced with this value.
+    
+    Returns
+    -------
+    out : ndarray
+    """
     # No need to cast all arrays if ``dtype`` is the same
     # type as the stream
     first, arrays = peek(arrays)
@@ -76,7 +97,6 @@ def csum(arrays, dtype = None, ignore_nan = False):
     return cuda_inplace_reduce(arrays, operator = iadd, dtype = dtype, 
                                ignore_nan = ignore_nan, identity = 0)
 
-@array_stream
 def cprod(arrays, dtype = None, ignore_nan = False):
     """ 
     CUDA-enabled product of a stream of arrays. Arrays are multiplied
