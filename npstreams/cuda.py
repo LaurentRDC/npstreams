@@ -35,7 +35,8 @@ if driver.Device.count() == 0:
 @array_stream
 def csum(arrays, ignore_nan = False):
     """ 
-    Streaming sum of array elements.
+    CUDA-enabled sum of stream of arrays. Arrays are summed along 
+    the streaming axis for performance reasons. 
 
     Parameters
     ----------
@@ -47,6 +48,10 @@ def csum(arrays, ignore_nan = False):
     Returns
     -------
     cuda_sum : ndarray
+
+    See Also
+    --------
+    isum : streaming sum of array elements, possibly along different axes
     """
     if ignore_nan:
         arrays = map(np.nan_to_num, arrays)
@@ -62,7 +67,8 @@ def csum(arrays, ignore_nan = False):
 @array_stream
 def caverage(arrays, weights = None, ignore_nan = False):
     """
-    Average of stream of arrays, possibly weighted.
+    CUDA-enabled average of stream of arrays, possibly weighted. Arrays are averaged
+    along the streaming axis for performance reasons.
 
     Parameters
     ----------
@@ -80,6 +86,10 @@ def caverage(arrays, weights = None, ignore_nan = False):
     Returns
     -------
     cuda_avg : ndarray
+
+    See also
+    --------
+    iaverage : streaming weighted average, possibly along different axes
     """
     first, arrays = peek(arrays)
     

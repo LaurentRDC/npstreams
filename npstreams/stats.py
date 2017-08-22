@@ -42,6 +42,7 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     See Also
     --------
     imean : streaming array mean.
+    caverage : CUDA-enabled weighted average
     numpy.average : (weighted) average for dense arrays
     """
     first, arrays = peek(arrays)
