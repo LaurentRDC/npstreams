@@ -8,11 +8,27 @@ from . import array_stream, peek
 import numpy as np
 from warnings import warn
 
+# Determine if 
+#   1. pycuda is installed;
+#   2. pycuda can compile with nvcc
+#   3. a GPU is available
+
 try:
-    import pycuda.autoinit
     import pycuda.gpuarray as gpuarray
+    import pycuda.autoinit
 except ImportError:
-    raise RuntimeError('pycuda is not installed. CUDA capabilities are not available.')
+    raise RuntimeError('PyCUDA is not installed. CUDA capabilities are not available.')
+
+import pycuda.driver as driver
+from pycuda.compiler import SourceModule
+
+try:
+    SourceModule('')
+except driver.CompileError:
+    raise RuntimeError('CUDA compiler not availble.')
+
+if driver.Device.count() == 0:
+    raise RuntimeError('No GPU is available.')
 
 @array_stream
 def csum(arrays, ignore_nan = False):

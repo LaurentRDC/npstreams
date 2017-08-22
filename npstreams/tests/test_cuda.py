@@ -5,10 +5,9 @@ import numpy as np
 import unittest
 
 try:
-    import pycuda
-    WITH_CUDA = True
     from ..cuda import csum
-except ImportError:
+    WITH_CUDA = True
+except RuntimeError:
     WITH_CUDA = False
 
 @unittest.skipIf(not WITH_CUDA, 'pycuda is not installed/available')
