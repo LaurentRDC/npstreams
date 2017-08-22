@@ -8,7 +8,7 @@ from time import time
 
 def stream():
     for _ in range(50):
-        yield np.random.random((2048, 2048))
+        yield np.random.random((2048, 2048)).astype(np.float32)
 
 if __name__ == '__main__':
 
