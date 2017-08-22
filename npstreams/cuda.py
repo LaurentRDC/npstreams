@@ -3,10 +3,12 @@
 CUDA-accelerated streaming operations
 -------------------------------------
 """
-
-from . import array_stream, peek
+from functools import partial
+from itertools import repeat
 import numpy as np
 from warnings import warn
+
+from . import array_stream, peek
 
 # Determine if 
 #   1. pycuda is installed;
@@ -58,7 +60,7 @@ def csum(arrays, ignore_nan = False):
     return arr_gpu.get()
 
 @array_stream
-def caverage(arrays, weights, ignore_nan = False):
+def caverage(arrays, weights = None, ignore_nan = False):
     """
     Average of stream of arrays, possibly weighted.
 
@@ -93,5 +95,13 @@ def caverage(arrays, weights, ignore_nan = False):
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
     
-    return csum(arrays)/csum(weights)
+    first, fst_wgt = next(arrays), next(weights)
+    arr_gpu = gpuarray.to_gpu(first)
+    wgt_gpu = gpuarray.to_gpu(fst_wgt)
+    for arr, wgt in zip(arrays, weights):
+        arr_gpu += gpuarray.to_gpu(arr)
+        wgt_gpu += gpuarray.to_gpu(wgt)
+    
+    arr_gpu /= wgt_gpu
+    return arr_gpu.get()
     
