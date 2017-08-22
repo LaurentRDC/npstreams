@@ -13,6 +13,7 @@ npstreams
 
 npstreams is an open-source Python package for streaming NumPy array operations. 
 The goal is to provide tested routines that operate on streams (or generators) of arrays instead of dense arrays.
+Some routines are CUDA-enabled, based on `PyCUDA <https://documen.tician.de/pycuda/>`_'s GPUArray.
 
 Streaming reduction operations (sums, averages, etc.) can be implemented in constant memory, which in turns
 allows for easy parallelization.
@@ -156,7 +157,8 @@ well as tutorials.
 Installation
 ------------
 
-scikit-ued is available on PyPI; it can be installed with `pip <https://pip.pypa.io>`_.::
+The only requirement is NumPy. To have access to CUDA-enabled routines, PyCUDA must also be
+installed. npstreams is available on PyPI; it can be installed with `pip <https://pip.pypa.io>`_.::
 
     python -m pip install npstreams
 
