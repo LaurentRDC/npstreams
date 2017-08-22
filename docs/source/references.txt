@@ -1,2 +1,3 @@
 .. _Numpy: http://www.numpy.org
 .. _Scipy: https://www.scipy.org
+.. _PyCUDA: https://documen.tician.de/pycuda/
