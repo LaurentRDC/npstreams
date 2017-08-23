@@ -78,6 +78,13 @@ class TestCMean(CudaTestCase):
         stream = repeat(np.ones( (16,16), dtype = np.float ), times = 5)
         s = cmean(stream)
         self.assertTrue(np.allclose(s, np.ones((16,16))))
-
+    
+    def test_mean_random(self):
+        """ Test cmean against numpy.mean on random data """
+        stream = [np.random.random(size = (16,16)) for _ in range(5)]
+        from_cmean = cmean(stream)
+        from_numpy = np.mean(np.dstack(stream), axis = 2)
+        self.assertTrue(np.allclose(from_cmean, from_numpy))
+        
 if __name__ == '__main__':
     unittest.main()

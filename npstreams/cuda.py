@@ -152,9 +152,7 @@ def cmean(arrays, ignore_nan = False):
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
         return caverage(arrays, weights, ignore_nan = False)
-
     
-    first = next(arrays)
     accumulator = gpuarray.to_gpu(next(arrays))
     array_gpu = gpuarray.empty_like(accumulator)
     num_arrays = 1
@@ -194,7 +192,7 @@ def caverage(arrays, weights = None, ignore_nan = False):
     """
     if weights is None:
         return cmean(arrays, ignore_nan)
-    
+
     first, arrays = peek(arrays)
     
     # We make sure that weights is always an array
