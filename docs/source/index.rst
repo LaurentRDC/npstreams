@@ -96,7 +96,7 @@ Benchmark
 Let's look at a simple benchmark. Let compare the two snippets to sum the following data::
 
     def stream():
-        for _ in range(100):
+        for _ in range(50):
             yield np.empty((2048, 2048), dtype = np.int)
 
 Snippet 1: dense arrays only. Note that I count the creation of the dense array::
@@ -106,7 +106,7 @@ Snippet 1: dense arrays only. Note that I count the creation of the dense array:
     stack = np.stack(list(stream()), axis = -1)
     s = np.sum(stack, axis = -1)
 
-On my machine, this takes 7 seconds and ~3G of memory.
+On my machine, this takes 4.93s and ~3G of memory.
 
 Snippet 2: streaming arrays. This also includes the creation of the stream::
 
@@ -114,11 +114,9 @@ Snippet 2: streaming arrays. This also includes the creation of the stream::
     import npstreams as nps
     s = nps.last(nps.isum(stream(), axis = -1))
 
-On my machine, this takes 8 seconds and 95 MB of memory.
+On my machine, this takes 2.93s seconds and 95 MB of memory.
 
-Bottom line: for raw speed, use NumPy. If you want to mimimize memory usage, use streams.
-If you want to process data in parallel, you'll want to minimize memory usage.
-If your data is large (think 10 000 images), you better use streams as well.
+Bottom line: If your data is not already in memory, the routines of npstreams will be faster.
 
 Links
 =====
@@ -138,6 +136,7 @@ General Documentation
     installation
     conventions
     api
+    cuda
     control_flow
     making_your_own
     recipes

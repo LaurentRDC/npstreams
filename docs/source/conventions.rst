@@ -29,6 +29,7 @@ In order to facilitate documentation, functions in :mod:`npstreams` follow the f
 
     * Routines are named after their closest equivalent in :mod:`numpy` and :mod:`scipy`.
     * Routines with names starting with 'i' (e.g. :func:`iprod`) return a generator.
+    * Routines with names starting with 'c' (e.g. :func:`csum`) are CUDA-enabled (requires :mod:`pycuda`)
     * Routines with names starting with 'p' (e.g. :func:`pmap`) can be parallelized. The default
       behavior is always to not use multiple cores. For example, the default behavior of :func:`pmap`
       is to behave like :func:`map`.
@@ -48,3 +49,7 @@ The convention for specification of the :data:`axis` parameter is as follows:
       new axis. For example, summing images together along ``axis = -1`` is equivalent
       to stacking images along a new axis, then averaging along this new axis
     * if ``axis`` is an ``int``, then arrays are reduced according to this axis, and then combined.
+
+CUDA-enabled functions
+----------------------
+Some functions are implemented using CUDA

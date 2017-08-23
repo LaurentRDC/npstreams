@@ -1,3 +1,5 @@
+.. include:: references.txt
+
 .. _api:
 
 *************
@@ -32,6 +34,19 @@ Numerics
     iprod
     inanprod
     isub
+
+CUDA-enabled routines
+---------------------
+`PyCUDA`_ must be installed. These routines must explicitly be imported from
+the :mod:`npstreams.cuda` submodule.
+
+.. autosummary::
+    :toctree: functions/
+
+    cuda.csum
+    cuda.cprod
+    cuda.caverage
+
 
 Linear Algebra
 --------------
