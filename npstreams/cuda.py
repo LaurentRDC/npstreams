@@ -192,6 +192,9 @@ def caverage(arrays, weights = None, ignore_nan = False):
     --------
     iaverage : streaming weighted average, possibly along different axes
     """
+    if weights is None:
+        return cmean(arrays, ignore_nan)
+    
     first, arrays = peek(arrays)
     
     # We make sure that weights is always an array
