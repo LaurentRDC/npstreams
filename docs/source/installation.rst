@@ -13,6 +13,9 @@ Requirements
 as well as `numpy`_. `scipy`_ is an optional dependency that is only used in
 tests; however, if SciPy cannot be imported, tests will not fail.
 
+To get access to the :mod:`npstreams.cuda` module, which contains CUDA-enabled routines,
+PyCUDA_ must be installed as well.
+
 Install npstreams
 =================
 
