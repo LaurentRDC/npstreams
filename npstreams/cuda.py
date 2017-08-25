@@ -4,12 +4,12 @@ CUDA-accelerated streaming operations
 -------------------------------------
 """
 from functools import partial, wraps
-from itertools import repeat, tee
+from itertools import repeat
 import numpy as np
 from operator import iadd, imul
 from warnings import warn
 
-from . import array_stream, peek
+from . import array_stream, peek, itercopy
 from .reduce import _nan_to_num
 
 # Determine if 
@@ -148,7 +148,7 @@ def cmean(arrays, ignore_nan = False):
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        arrays, arrays2 = tee(arrays)
+        arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
         return caverage(arrays, weights, ignore_nan = False)
@@ -204,7 +204,7 @@ def caverage(arrays, weights = None, ignore_nan = False):
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        arrays, arrays2 = tee(arrays)
+        arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
     

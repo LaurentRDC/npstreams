@@ -4,11 +4,11 @@ Statistical functions
 ---------------------
 """
 from functools import partial
-from itertools import repeat, tee, chain, count
+from itertools import repeat, chain, count
 import numpy as np
 from math import sqrt
 from .numerics import isum
-from . import peek, array_stream
+from . import peek, array_stream, itercopy
 
 @array_stream
 def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
@@ -55,11 +55,11 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        arrays, arrays2 = tee(arrays)
+        arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
 
-    weights1, weights2 = tee(weights)
+    weights1, weights2 = itercopy(weights)
 
     sum_of_weights = isum(weights1, axis = axis)
     weighted_arrays = map(lambda arr, wgt: arr * wgt, arrays, weights2)
@@ -165,12 +165,12 @@ def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        arrays, arrays2 = tee(arrays)
+        arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
 
-    arrays, arrays2 = tee(arrays)
-    weights, weights2, weights3 = tee(weights, 3)
+    arrays, arrays2 = itercopy(arrays)
+    weights, weights2, weights3 = itercopy(weights, 3)
 
     avgs = iaverage(arrays, axis = axis, weights = weights, ignore_nan = ignore_nan)
     avg_of_squares = iaverage(map(np.square, arrays2), axis = axis, weights = weights2, ignore_nan = ignore_nan)
@@ -348,12 +348,12 @@ def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        arrays, arrays2 = tee(arrays)
+        arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
 
-    arrays, arrays2 = tee(arrays)
-    weights, weights2, weights3 = tee(weights, 3)
+    arrays, arrays2 = itercopy(arrays)
+    weights, weights2, weights3 = itercopy(weights, 3)
 
     avgs = iaverage(arrays, axis = axis, weights = weights, ignore_nan = ignore_nan)
     avg_of_squares = iaverage(map(np.square, arrays2), axis = axis, weights = weights2, ignore_nan = ignore_nan)
