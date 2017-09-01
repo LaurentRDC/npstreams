@@ -4,6 +4,7 @@ Iterator/Generator utilities
 ----------------------------
 """
 from collections import deque
+from functools import wraps
 from itertools import islice, chain, tee
 
 def chunked(iterable, chunksize = 1):
@@ -163,8 +164,8 @@ def multilinspace(start, stop, num, endpoint = True):
 
 def last(stream):
     """ 
-    Retrieve the last item from a stream/iterator. Generators are consumed. 
-    If empty stream, returns None. 
+    Retrieve the last item from a stream/iterator, consuming 
+    iterables in the process. If empty stream, returns None. 
     """
     # Wonderful idea from itertools recipes
     # https://docs.python.org/3.6/library/itertools.html#itertools-recipes
@@ -172,3 +173,16 @@ def last(stream):
         return deque(stream, maxlen = 1)[0]
     except IndexError:	# Empty stream
         return None
+
+def primed(gen):
+    """ 
+    Decorator that primes a generator function, i.e. runs the function
+    until the first ``yield`` statement. Useful in cases where there 
+    are preliminary checks when creating the generator.
+    """
+    @wraps(gen)
+    def primed_gen(*args, **kwargs):
+        generator = gen(*args, **kwargs)
+        next(generator)
+        return generator
+    return primed_gen
