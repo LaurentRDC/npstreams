@@ -100,4 +100,5 @@ Parallelization
     :toctree: functions/
 
     pmap
+    pmap_unordered
     preduce

@@ -7,7 +7,7 @@ __version__ = '0.5' # TODO: automatic versioning?
 from .array_stream import array_stream, ipipe
 
 from .linalg import idot, itensordot, ieinsum, iinner
-from .parallel import pmap, preduce
+from .parallel import pmap, pmap_unordered, preduce
 from .iter_utils import last, chunked, multilinspace, linspace, peek, itercopy
 from .reduce import ireduce_ufunc, reduce_ufunc
 from .stacking import istack, iflatten
