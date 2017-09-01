@@ -95,6 +95,13 @@ Iterator Utilities
     peek
     primed
 
+Array Utilities
+---------------
+.. autosummary::
+    :toctree: functions/
+
+    nan_to_num
+
 Parallelization
 ---------------
 .. autosummary::

@@ -6,15 +6,7 @@ General stream reduction
 import numpy as np
 from functools import partial, wraps, lru_cache
 from itertools import chain
-from . import peek, array_stream, last, chunked, primed
-
-def _nan_to_num(array, fill = 0):
-    if not np.issubdtype(array.dtype, np.float):
-        return array # NaNs is a float concept
-
-    array = np.array(array)
-    array[np.isnan(array)] = fill
-    return array
+from . import peek, array_stream, last, chunked, primed, nan_to_num
 
 @lru_cache(maxsize = 128)
 def _check_binary_ufunc(ufunc):
@@ -88,7 +80,7 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
         raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
     
     if ignore_nan:
-        arrays = map(partial(_nan_to_num, fill = ufunc.identity), arrays)
+        arrays = map(partial(nan_to_num, fill_value = ufunc.identity), arrays)
 
     # Since ireduce_ufunc is primed, we need to wait here
     yield

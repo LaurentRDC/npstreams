@@ -9,8 +9,7 @@ import numpy as np
 from operator import iadd, imul
 from warnings import warn
 
-from . import array_stream, peek, itercopy
-from .reduce import _nan_to_num
+from . import array_stream, peek, itercopy, nan_to_num
 
 # Determine if 
 #   1. pycuda is installed;
@@ -64,7 +63,7 @@ def cuda_inplace_reduce(arrays, operator, dtype = None, ignore_nan = False, iden
         arrays = map(lambda arr: arr.astype(dtype), arrays)
 
     if ignore_nan:
-        arrays = map(partial(_nan_to_num, fill = identity), arrays)
+        arrays = map(partial(nan_to_num, fill_value = identity), arrays)
 
     acc_gpu = gpuarray.to_gpu(next(arrays))  # Accumulator
     arr_gpu = gpuarray.empty_like(acc_gpu)        # GPU memory location for each array
