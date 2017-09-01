@@ -31,12 +31,16 @@ def nan_to_num(array, fill_value = 0.0, copy = True):
     -----
     Contrary to ``numpy.nan_to_num``, this functions does not handle
     infinite values.
+
+    See Also
+    --------
+    numpy.nan_to_num : replace NaNs and Infs with zeroes.
     """
     array = np.array(array, subok = True, copy = copy)
+    
     dtype = array.dtype.type
     if not issubclass(dtype, np.inexact):
         return array
-
     iscomplex = issubclass(dtype, np.complexfloating)
 
     dest = (array.real, array.imag) if iscomplex else (array,)
