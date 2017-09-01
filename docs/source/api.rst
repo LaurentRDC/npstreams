@@ -93,6 +93,7 @@ Iterator Utilities
     linspace
     multilinspace
     peek
+    primed
 
 Parallelization
 ---------------
