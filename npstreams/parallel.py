@@ -47,7 +47,8 @@ def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1):
         else:
             chunksize = 1
         
-        res = pool.imap_unordered(partial(reduce, func), tuple(chunked(iterable, chunksize)))
+        # Some reductions are order-sensitive
+        res = pool.imap(partial(reduce, func), tuple(chunked(iterable, chunksize)))
         return reduce(func, res)
 
 def pmap(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal = None):

@@ -8,7 +8,7 @@ from itertools import repeat, chain, count
 import numpy as np
 from math import sqrt
 from .numerics import isum
-from . import peek, array_stream, itercopy
+from . import peek, array_stream, itercopy, nan_to_num
 
 @array_stream
 def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
@@ -57,7 +57,7 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     if ignore_nan:
         arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
-        arrays = map(np.nan_to_num, arrays)
+        arrays = map(nan_to_num, arrays)
 
     weights1, weights2 = itercopy(weights)
 
@@ -167,7 +167,7 @@ def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     if ignore_nan:
         arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
-        arrays = map(np.nan_to_num, arrays)
+        arrays = map(nan_to_num, arrays)
 
     arrays, arrays2 = itercopy(arrays)
     weights, weights2, weights3 = itercopy(weights, 3)
@@ -350,7 +350,7 @@ def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
     if ignore_nan:
         arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
-        arrays = map(np.nan_to_num, arrays)
+        arrays = map(nan_to_num, arrays)
 
     arrays, arrays2 = itercopy(arrays)
     weights, weights2, weights3 = itercopy(weights, 3)
