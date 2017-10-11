@@ -10,7 +10,7 @@ from . import array_stream
 @array_stream
 def _ireduce_linalg(arrays, func, **kwargs):
     """
-    Yield the cumulative reduction of a linag algebra function
+    Yield the cumulative reduction of a linear algebra function
     """
     arrays = iter(arrays)
     first = next(arrays)
@@ -22,9 +22,7 @@ def _ireduce_linalg(arrays, func, **kwargs):
     yield accumulator
 
     for array in arrays:
-        # For some reason, np.dot(..., out = accumulator) did not produce results
-        # that were equal to numpy.linalg.multi_dot
-        accumulator[:] = func(accumulator, array)
+        func(accumulator, array, out = accumulator)
         yield accumulator
 
 def idot(arrays):
