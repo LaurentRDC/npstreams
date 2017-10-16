@@ -4,13 +4,12 @@ CUDA-accelerated streaming operations
 -------------------------------------
 """
 from functools import partial, wraps
-from itertools import repeat, tee
+from itertools import repeat
 import numpy as np
 from operator import iadd, imul
 from warnings import warn
 
-from . import array_stream, peek
-from .reduce import _nan_to_num
+from . import array_stream, peek, itercopy, nan_to_num
 
 # Determine if 
 #   1. pycuda is installed;
@@ -64,7 +63,7 @@ def cuda_inplace_reduce(arrays, operator, dtype = None, ignore_nan = False, iden
         arrays = map(lambda arr: arr.astype(dtype), arrays)
 
     if ignore_nan:
-        arrays = map(partial(_nan_to_num, fill = identity), arrays)
+        arrays = map(partial(nan_to_num, fill_value = identity), arrays)
 
     acc_gpu = gpuarray.to_gpu(next(arrays))  # Accumulator
     arr_gpu = gpuarray.empty_like(acc_gpu)        # GPU memory location for each array
@@ -148,7 +147,7 @@ def cmean(arrays, ignore_nan = False):
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        arrays, arrays2 = tee(arrays)
+        arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
         return caverage(arrays, weights, ignore_nan = False)
@@ -204,7 +203,7 @@ def caverage(arrays, weights = None, ignore_nan = False):
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
-        arrays, arrays2 = tee(arrays)
+        arrays, arrays2 = itercopy(arrays)
         weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
         arrays = map(np.nan_to_num, arrays)
     

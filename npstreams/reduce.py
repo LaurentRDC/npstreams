@@ -6,14 +6,7 @@ General stream reduction
 import numpy as np
 from functools import partial, wraps, lru_cache
 from itertools import chain
-from . import peek, array_stream, last, chunked
-
-def _nan_to_num(array, fill = 0):
-    if not np.issubdtype(array.dtype, np.float):
-        return array 
-    array = np.array(array)
-    array[np.isnan(array)] = fill
-    return array
+from . import peek, array_stream, last, chunked, primed, nan_to_num
 
 @lru_cache(maxsize = 128)
 def _check_binary_ufunc(ufunc):
@@ -30,18 +23,6 @@ def _check_binary_ufunc(ufunc):
     if all(type_signature[-1] == '?' for type_signature in ufunc.types):
         raise ValueError('Only binary ufuncs that preserve type are supported, \
                           and {} is not one of them'.format(ufunc.__name__))
-
-# Priming a generator allows the execution of error-checking
-# code immediatly. See ireduce_ufunc for an example
-def primed(gen):
-    """ Primes a generator. Useful in cases where there are preliminary checks
-    when creating the generator """
-    @wraps(gen)
-    def primed_gen(*args, **kwargs):
-        generator = gen(*args, **kwargs)
-        next(generator)
-        return generator
-    return primed_gen
 
 @primed
 @array_stream
@@ -98,10 +79,10 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
     if ignore_nan and (ufunc.identity is None):
         raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
     
-    # Since ireduce_ufunc is primed, we need to wait here
     if ignore_nan:
-        arrays = map(partial(_nan_to_num, fill = ufunc.identity), arrays)
+        arrays = map(partial(nan_to_num, fill_value = ufunc.identity), arrays)
 
+    # Since ireduce_ufunc is primed, we need to wait here
     yield
 
     if kwargs['axis'] is None:

@@ -2,8 +2,7 @@
 import unittest
 import numpy as np
 
-from .. import ireduce_ufunc, last
-from ..reduce import _nan_to_num
+from .. import ireduce_ufunc, last, nan_to_num
 
 # Only testing binary ufuncs that support floats
 # i.e. leaving bitwise_* and logical_* behind
@@ -111,7 +110,7 @@ def test_binary_ufunc_ignore_nan(ufunc):
     """ Generate a test to ensure that ireduce_ufunc(..., ufunc, ...) 
     works as intendent with NaNs in stream."""
     def test_ufunc(self):
-        stack = _nan_to_num(self.stack, fill = ufunc.identity)
+        stack = nan_to_num(self.stack, fill_value = ufunc.identity)
 
         def sufunc(arrays, ignore_nan = False):  #s for stream
             return last(ireduce_ufunc(arrays, ufunc, axis = 1, ignore_nan = True))

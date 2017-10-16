@@ -65,12 +65,12 @@ Making your own streaming functions
 Any **binary** NumPy Ufunc function can be transformed into a streaming function using the
 :func:`ireduce_ufunc` function. For example::
 
-    from npstreams import stream_reduce
+    from npstreams import stream_ufunc
     from numpy import prod
 
     def streaming_prod(stream, **kwargs):
         """ Streaming product along axis """
-        yield from stream_ufuc(stream, ufunc = np.multiply, **kwargs)
+        yield from stream_ufunc(stream, ufunc = np.multiply, **kwargs)
 
 The above :func:`streaming_prod` will accumulate (and yield) the result of the operation
 as arrays come in the stream. 

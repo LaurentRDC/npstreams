@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .. import pmap, preduce
+from .. import pmap, pmap_unordered, preduce
 from functools import reduce
 import numpy as np
 from operator import add
@@ -43,13 +43,27 @@ class TestParallelMap(unittest.TestCase):
 	def test_trivial_map_no_args(self):
 		""" Test that pmap is working with no positional arguments """
 		integers = list(range(0,10))
-		result = list(pmap(identity, integers))
+		result = list(pmap(identity, integers, processes = 2))
 		self.assertEqual(integers, result)
 	
 	def test_trivial_map_kwargs(self):
 		""" Test that pmap is working with args and kwargs """
 		integers = list(range(0,10))
-		result = list(pmap(identity, integers, kwargs = {'test' : True}))
+		result = list(pmap(identity, integers, processes = 2, kwargs = {'test' : True}))
+		self.assertEqual(result, integers)
+
+class TestParallelMap(unittest.TestCase):
+
+	def test_trivial_map_no_args(self):
+		""" Test that pmap_unordered is working with no positional arguments """
+		integers = list(range(0,10))
+		result = list(sorted(pmap_unordered(identity, integers, processes = 2)))
+		self.assertEqual(integers, result)
+	
+	def test_trivial_map_kwargs(self):
+		""" Test that pmap_unordered is working with args and kwargs """
+		integers = list(range(0,10))
+		result = list(sorted(pmap_unordered(identity, integers, processes = 2, kwargs = {'test' : True})))
 		self.assertEqual(result, integers)
 
 if __name__ == '__main__':
