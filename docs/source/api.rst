@@ -89,6 +89,7 @@ Iterator Utilities
     :toctree: functions/
 
     last
+    itercopy
     chunked
     linspace
     multilinspace
