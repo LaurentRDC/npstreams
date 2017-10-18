@@ -1,5 +1,5 @@
 include README.rst LICENSE.txt requirements.txt
 recursive-include tests *
-recursive-include docs *
+recursive-exclude docs *
 recursive-exclude docs/_build *
 recursive-exclude benchmarks *
