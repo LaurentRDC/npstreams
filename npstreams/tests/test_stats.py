@@ -11,7 +11,7 @@ try:
 except ImportError:
     WITH_SCIPY = False
 
-from .. import iaverage, imean, isem, istd, ivar, last
+from .. import iaverage, imean, isem, istd, ivar, last, ihistogram
 
 seed(23)
 
@@ -190,6 +190,19 @@ class TestISem(unittest.TestCase):
                     from_isem = last(isem(source, axis = axis, ddof = ddof, ignore_nan = True))
                     self.assertSequenceEqual(from_scipy.shape, from_isem.shape)
                     self.assertTrue(np.allclose(from_isem, from_scipy))
+
+class TestIHistogram(unittest.TestCase):
+    
+    def test_against_numpy(self):
+        source = [np.random.random((16, 12, 5)) for _ in range(10)]
+        stack = np.stack(source, axis = -1)
+
+        bins = np.linspace(0, 1, num = 10)
+        from_numpy = np.histogram(stack, bins = bins)[0]
+        from_ihistogram = last(ihistogram(source, bins = bins))
+
+        # Since histogram output is int, cannot use allclose
+        self.assertTrue(np.all(np.equal(from_numpy, from_ihistogram)))
 
 if __name__ == '__main__':
     unittest.main()

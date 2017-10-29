@@ -23,6 +23,7 @@ Statistical Functions
     ivar
     inanvar
     isem
+    ihistogram
 
 Numerics
 --------

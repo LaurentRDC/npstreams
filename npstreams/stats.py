@@ -121,7 +121,7 @@ def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     Parameters
     ----------
     arrays : iterable of ndarrays
-        Arrays to be averaged. This iterable can also a generator.
+        Arrays to be combined. This iterable can also a generator.
     axis : int, optional
         Reduction axis. Default is to combine the arrays in the stream as if 
         they had been stacked along a new axis, then compute the variance along this new axis.
@@ -187,7 +187,7 @@ def inanvar(arrays, axis = -1, ddof = 0, weights = None):
     Parameters
     ----------
     arrays : iterable of ndarrays
-        Arrays to be averaged. This iterable can also a generator.
+        Arrays to be combined. This iterable can also a generator.
     axis : int, optional
         Reduction axis. Default is to combine the arrays in the stream as if 
         they had been stacked along a new axis, then compute the variance along this new axis.
@@ -229,7 +229,7 @@ def istd(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     Parameters
     ----------
     arrays : iterable of ndarrays
-        Arrays to be averaged. This iterable can also a generator.
+        Arrays to be combined. This iterable can also a generator.
     axis : int, optional
         Reduction axis. Default is to combine the arrays in the stream as if 
         they had been stacked along a new axis, then compute the standard deviation along this new axis.
@@ -269,7 +269,7 @@ def inanstd(arrays, axis = -1, ddof = 0, weights = None):
     Parameters
     ----------
     arrays : iterable of ndarrays
-        Arrays to be averaged. This iterable can also a generator.
+        Arrays to be combined. This iterable can also a generator.
     axis : int, optional
         Reduction axis. Default is to combine the arrays in the stream as if 
         they had been stacked along a new axis, then compute the standard deviation along this new axis.
@@ -309,7 +309,7 @@ def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
     Parameters
     ----------
     arrays : iterable of ndarrays
-        Arrays to be averaged. This iterable can also a generator.
+        Arrays to be combined. This iterable can also a generator.
     axis : int, optional
         Reduction axis. Default is to combine the arrays in the stream as if 
         they had been stacked along a new axis, then compute the standard error along this new axis.
@@ -361,3 +361,37 @@ def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
 
     for avg, sq_avg, swgt  in zip(avgs, avg_of_squares, sum_of_weights):
         yield np.sqrt((sq_avg - avg**2) * (swgt / (swgt - ddof))/swgt)
+
+@array_stream
+def ihistogram(arrays, bins):
+    """
+    Streaming histogram calculation.
+
+    Parameters
+    ----------
+    arrays : iterable of ndarrays
+        Arrays to be combined. This iterable can also a generator. Arrays in this stream
+        can be of any shape; the histogram is computed over the flattened array.
+    bins : iterable
+        Bin edges, including the rightmost edge, allowing for non-uniform bin widths.
+    
+    Yields
+    ------
+    hist : `~numpy.ndarray`
+        Streamed histogram.
+    
+    See Also
+    --------
+    numpy.histogram : 1D histogram of dense arrays.
+    """
+    # TODO: weights
+    bins = np.asarray(bins)
+
+    # np.histogram also returns the bin edges, which we ignore
+    hist_func = lambda arr: np.histogram(arr, bins = bins)[0]
+    hist = hist_func(next(arrays))
+    yield hist
+
+    for arr in arrays:
+        hist += hist_func(arr)
+        yield hist
