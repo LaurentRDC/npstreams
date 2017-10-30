@@ -21,7 +21,6 @@ environment:
 
       - PYTHON_VERSION: "3.6"
       - PYTHON_VERSION: "3.5"
-      - PYTHON_VERSION: "3.4"
 
 matrix:
    fast_finish: true
