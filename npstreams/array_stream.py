@@ -3,18 +3,20 @@
 Utilities
 ---------
 """
+from functools import partial, wraps
+from glob import iglob
+
 import numpy as np
-from functools import wraps, partial
-from .parallel import pmap
+
 from .iter_utils import peek
+from .parallel import pmap
 
 def array_stream(func):
     """ 
     Decorates streaming functions to make sure that the stream
-    is a stream of ndarrays. Objects that are not arrays
-    are transformed into arrays. If the stream 
-    is in fact a single ndarray, this ndarray is repackaged into a sequence of
-    length 1.
+    is a stream of ndarrays. Objects that are not arrays are transformed 
+    into arrays. If the stream is in fact a single ndarray, this ndarray 
+    is repackaged into a sequence of length 1.
     
     Parameters
     ----------
@@ -27,6 +29,30 @@ def array_stream(func):
             arrays = (arrays,)
         return func(map(np.atleast_1d, arrays), *args, **kwargs)
     return decorated
+
+def iload(files, load_func, **kwargs):
+    """
+    Create a stream of arrays from files, which are loaded lazily.
+
+    Parameters
+    ----------
+    pattern : iterable of str or str
+        Either an iterable of filenames or a glob-like pattern str.
+    load_func : callable, optional
+        Function taking a filename as its first arguments
+    kwargs
+        Keyword arguments are passed to ``load_func``.
+    
+    Yields
+    ------
+    arr: `~numpy.ndarray`
+        Loaded data. 
+    """
+    if isinstance(files, str):
+        files = iglob(files)
+    files = iter(files)
+
+    yield from map(partial(load_func, **kwargs), files)
 
 # pmap does not support local functions
 def _pipe(funcs, array):

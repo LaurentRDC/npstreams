@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from .. import array_stream, ipipe, iaverage, last
+from .. import array_stream, ipipe, iaverage, last, iload, isum
 
 @array_stream
 def iden(arrays):
@@ -33,6 +33,24 @@ class TestArrayStream(unittest.TestCase):
         stream = [0, 1, np.array([1])]
         for arr in iden(stream):
             self.assertIsInstance(arr, np.ndarray)
+
+class TestFileStream(unittest.TestCase):
+
+    def test_glob(self):
+        """ Test that iload works on glob-like patterns """
+        stream = iload('npstreams\\tests\\data\\test_data*.npy', load_func = np.load)
+        s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
+        self.assertTrue(np.allclose(s, np.zeros_like(s)))
+    
+    def test_file_list(self):
+        """ Test that iload works on iterable of filenames """
+        files = ['npstreams\\tests\\data\\test_data1.npy',
+                 'npstreams\\tests\\data\\test_data2.npy',
+                 'npstreams\\tests\\data\\test_data3.npy']
+        stream = iload(files, load_func = np.load)
+        s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
+        self.assertTrue(np.allclose(s, np.zeros_like(s)))
+
 
 if __name__ == '__main__':
 	unittest.main()
