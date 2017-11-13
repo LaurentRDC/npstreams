@@ -11,14 +11,12 @@ import numpy as np
 from .iter_utils import peek
 from .parallel import pmap
 
-
 def array_stream(func):
     """ 
     Decorates streaming functions to make sure that the stream
-    is a stream of ndarrays. Objects that are not arrays
-    are transformed into arrays. If the stream 
-    is in fact a single ndarray, this ndarray is repackaged into a sequence of
-    length 1.
+    is a stream of ndarrays. Objects that are not arrays are transformed 
+    into arrays. If the stream is in fact a single ndarray, this ndarray 
+    is repackaged into a sequence of length 1.
     
     Parameters
     ----------
@@ -34,7 +32,7 @@ def array_stream(func):
 
 def iload(files, load_func, **kwargs):
     """
-    Create a stream of arrays from files.
+    Create a stream of arrays from files, which are loaded lazily.
 
     Parameters
     ----------
