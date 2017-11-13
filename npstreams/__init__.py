@@ -4,7 +4,10 @@ __email__ = 'laurent.renedecotret@mail.mcgill.ca'
 __license__ = 'BSD'
 __version__ = '1.0.1' # TODO: automatic versioning?
 
-from .array_stream import array_stream, ipipe
+# Order of import is important
+# because of inter-dependency
+
+from .array_stream import array_stream, ipipe, iload
 from .array_utils import nan_to_num
 from .linalg import idot, itensordot, ieinsum, iinner
 from .parallel import pmap, pmap_unordered, preduce
