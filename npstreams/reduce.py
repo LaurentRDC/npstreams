@@ -182,12 +182,12 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     yield accumulator
     
     for array in arrays:
-        accumulator = ufunc(accumulator, array, out = accumulator, **kwargs)
+        ufunc(accumulator, array, out = accumulator, **kwargs)
         yield accumulator
 
 def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     """
-    Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
+    Reduction operation for arrays, in the direction of an existing axis.
     
     Parameters
     ----------

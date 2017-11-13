@@ -14,14 +14,13 @@ environment:
                         # to the matrix section.
       TEST_CMD: "python -m unittest discover --verbose"
 
-      CONDA_DEPENDENCIES: "numpy scipy"
+      CONDA_DEPENDENCIES: "numpy>=1.12 scipy"
       PIP_DEPENDENCIES: ""
 
   matrix:
 
       - PYTHON_VERSION: "3.6"
       - PYTHON_VERSION: "3.5"
-      - PYTHON_VERSION: "3.4"
 
 matrix:
    fast_finish: true

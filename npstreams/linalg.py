@@ -24,7 +24,7 @@ def _ireduce_linalg(arrays, func, **kwargs):
     for array in arrays:
         # For some reason, np.dot(..., out = accumulator) did not produce results
         # that were equal to numpy.linalg.multi_dot
-        accumulator[:] = func(accumulator, array)
+        func(accumulator, array, out = accumulator)
         yield accumulator
 
 def idot(arrays):

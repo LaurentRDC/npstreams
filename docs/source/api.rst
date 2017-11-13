@@ -10,6 +10,13 @@ Reference/API
 
 Click on any function below to see detailed information.
 
+Creation of Streams
+-------------------
+.. autosummary::
+    :toctree: functions/
+
+    iload
+
 Statistical Functions
 ---------------------
 .. autosummary::
@@ -23,6 +30,7 @@ Statistical Functions
     ivar
     inanvar
     isem
+    ihistogram
 
 Numerics
 --------
@@ -89,6 +97,7 @@ Iterator Utilities
     :toctree: functions/
 
     last
+    itercopy
     chunked
     linspace
     multilinspace
