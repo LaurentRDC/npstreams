@@ -31,6 +31,24 @@ class TestIreduceUfunc(unittest.TestCase):
         source = np.ones( (16, 16), dtype = np.int)
         out = last(ireduce_ufunc(source, np.add, axis = -1))
         self.assertTrue(np.allclose(source, out))
+    
+    def test_out_parameter(self):
+        """ Test that the kwargs ``out`` is correctly passed to reduction function """
+        
+        with self.subTest('axis = -1'):
+            not_out = last(ireduce_ufunc(self.source, np.add, axis = -1))
+            out = np.empty_like(self.source[0])
+            last(ireduce_ufunc(self.source, ufunc = np.add, out = out))
+
+            self.assertTrue(np.allclose(not_out, out))
+        
+        with self.subTest('axis != -1'):
+            not_out = last(ireduce_ufunc(self.source, np.add, axis = 2))
+            out = np.empty_like(self.source[0])
+            from_out = last(ireduce_ufunc(self.source, ufunc = np.add, out = out, axis = 2))
+
+            self.assertTrue(np.allclose(not_out, from_out))
+        
 
     def test_ignore_nan_no_identity(self):
         """ Test ireduce_ufunc on an ufunc with no identity raises

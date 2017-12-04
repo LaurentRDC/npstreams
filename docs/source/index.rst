@@ -17,9 +17,6 @@ in some cases.
 The code presented herein has been in use at some point by the 
 `Siwick research group <http://www.physics.mcgill.ca/siwicklab>`_.
 
-.. warning::
-        This code is in development and may break without warning.
-
 Example
 =======
 

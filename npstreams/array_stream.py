@@ -8,8 +8,8 @@ from glob import iglob
 
 import numpy as np
 
-from .iter_utils import peek
 from .parallel import pmap
+
 
 def array_stream(func):
     """ 
@@ -17,11 +17,9 @@ def array_stream(func):
     is a stream of ndarrays. Objects that are not arrays are transformed 
     into arrays. If the stream is in fact a single ndarray, this ndarray 
     is repackaged into a sequence of length 1.
-    
-    Parameters
-    ----------
-    func : callable
-        The first argument of `func` must be a stream of arrays.
+
+    The first argument of the decorated function is assumed to be an iterable of
+    arrays, or an iterable of objects that can be casted to arrays.
     """
     @wraps(func)    # thanks functools
     def decorated(arrays, *args, **kwargs):

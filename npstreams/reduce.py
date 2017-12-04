@@ -58,8 +58,8 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
         are replaced with this identity. An error is raised if ``ufunc`` has no identity (e.g. ``numpy.maximum.identity`` is ``None``).
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
-        (e.g. ``keepdims``) are not valid for all streaming functions. Note that
-        contrary to NumPy v. 1.10+, ``casting = 'unsafe`` is the default in npstreams.
+        (e.g. ``keepdims``) are not valid for all streaming functions. Also, contrary to NumPy 
+        v. 1.10+, ``casting = 'unsafe`` is the default in npstreams.
     
     Yields 
     ------
@@ -161,7 +161,7 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     ufunc : numpy.ufunc
         Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     kwargs
-        Keyword arguments are passed to ``ufunc``
+        Keyword arguments are passed to ``ufunc``.
     
     Yields 
     ------
@@ -178,7 +178,14 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     else:
         kwargs['casting'] = 'unsafe'
 
-    accumulator = np.array(first, copy = True).astype(dtype)
+    # If the out parameter was already given
+    # we create the accumulator from it
+    # Otherwise, it is a copy of the first array
+    accumulator = kwargs.pop('out', None)
+    if accumulator is not None:
+        accumulator[:] = first
+    else:
+        accumulator = np.array(first, copy = True).astype(dtype)
     yield accumulator
     
     for array in arrays:
@@ -196,7 +203,7 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     ufunc : numpy.ufunc
         Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     kwargs
-        Keyword arguments are passed to ``ufunc``
+        Keyword arguments are passed to ``ufunc``. The ``out`` parameter is ignored.
 
     Yields 
     ------
@@ -207,6 +214,9 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
 
     if kwargs['axis'] not in range(first.ndim):
         raise ValueError('Axis {} not supported on arrays of shape {}.'.format(kwargs['axis'], first.shape))
+    
+    # Remove the out-parameter if provided.
+    kwargs.pop('out', None)
     
     dtype = kwargs.get('dtype')
     if dtype is None:
@@ -241,7 +251,7 @@ def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     ufunc : numpy.ufunc
         Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     kwargs
-        Keyword arguments are passed to ``ufunc``
+        Keyword arguments are passed to ``ufunc``. The ``out`` parameter is ignored.
 
     Yields 
     ------
@@ -251,6 +261,7 @@ def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     first = next(arrays)
 
     kwargs['axis'] = None
+    kwargs.pop('out', None)         # Remove the out-parameter if provided.
     axis_reduce = partial(ufunc.reduce, **kwargs)
 
     accumulator = axis_reduce(first)
