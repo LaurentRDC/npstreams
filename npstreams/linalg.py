@@ -4,8 +4,11 @@ Numerics Functions
 ------------------
 """
 from functools import partial
+
 import numpy as np
+
 from . import array_stream
+
 
 @array_stream
 def _ireduce_linalg(arrays, func, **kwargs):

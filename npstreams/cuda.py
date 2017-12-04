@@ -3,13 +3,13 @@
 CUDA-accelerated streaming operations
 -------------------------------------
 """
-from functools import partial, wraps
+from functools import partial
 from itertools import repeat
-import numpy as np
 from operator import iadd, imul
-from warnings import warn
 
-from . import array_stream, peek, itercopy, nan_to_num
+import numpy as np
+
+from . import array_stream, itercopy, nan_to_num, peek
 
 # Determine if 
 #   1. pycuda is installed;
@@ -21,9 +21,9 @@ try:
     import pycuda.autoinit
 except ImportError:
     raise ImportError('PyCUDA is not installed. CUDA capabilities are not available.')
-
-import pycuda.driver as driver
-from pycuda.compiler import SourceModule
+else:
+    import pycuda.driver as driver
+    from pycuda.compiler import SourceModule
 
 try:
     SourceModule('')
@@ -218,4 +218,3 @@ def caverage(arrays, weights = None, ignore_nan = False):
     
     arr_gpu /= wgt_gpu
     return arr_gpu.get()
-    

@@ -5,7 +5,8 @@ Iterator/Generator utilities
 """
 from collections import deque
 from functools import wraps
-from itertools import islice, chain, tee
+from itertools import chain, islice, tee
+
 
 def chunked(iterable, chunksize = 1):
     """

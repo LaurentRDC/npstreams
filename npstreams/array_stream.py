@@ -6,7 +6,7 @@ Utilities
 from functools import partial, wraps
 from glob import iglob
 
-import numpy as np
+from numpy import asarray, atleast_1d, ndarray
 
 from .parallel import pmap
 
@@ -23,9 +23,9 @@ def array_stream(func):
     """
     @wraps(func)    # thanks functools
     def decorated(arrays, *args, **kwargs):
-        if isinstance(arrays, np.ndarray):
+        if isinstance(arrays, ndarray):
             arrays = (arrays,)
-        return func(map(np.atleast_1d, arrays), *args, **kwargs)
+        return func(map(atleast_1d, arrays), *args, **kwargs)
     return decorated
 
 def iload(files, load_func, **kwargs):
@@ -86,6 +86,6 @@ def ipipe(*args, **kwargs):
     ------
     piped : ndarray
     """
-    arrays = map(np.asarray, args[-1])
+    arrays = map(asarray, args[-1])
     functions = tuple(reversed(args[:-1]))
     yield from pmap(partial(_pipe, functions), arrays, **kwargs)

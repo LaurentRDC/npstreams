@@ -4,8 +4,11 @@ Stacking arrays from a stream
 -----------------------------
 """
 from functools import partial
+
 import numpy as np
+
 from . import array_stream
+
 
 @array_stream
 def istack(arrays, axis = -1):

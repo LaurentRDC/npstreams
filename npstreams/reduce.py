@@ -3,10 +3,12 @@
 General stream reduction
 ------------------------
 """
+from functools import lru_cache, partial
+
 import numpy as np
-from functools import partial, wraps, lru_cache
-from itertools import chain
-from . import peek, array_stream, last, chunked, primed, nan_to_num
+
+from . import array_stream, last, nan_to_num, peek, primed
+
 
 @lru_cache(maxsize = 128)
 def _check_binary_ufunc(ufunc):

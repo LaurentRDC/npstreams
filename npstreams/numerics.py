@@ -4,8 +4,9 @@ Numerics Functions
 ------------------
 """
 import numpy as np
-from functools import partial
-from . import preduce, last, chunked, ireduce_ufunc, array_stream
+
+from . import ireduce_ufunc
+
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 

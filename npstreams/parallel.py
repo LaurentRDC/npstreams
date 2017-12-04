@@ -3,11 +3,12 @@
 Parallelization utilities 
 -------------------------
 """
-import multiprocessing as mp
 from collections.abc import Sized
 from functools import partial, reduce
+from multiprocessing import Pool
 
 from .iter_utils import chunked
+
 
 def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1):
     """
@@ -41,7 +42,7 @@ def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1):
     if processes == 1:
         return reduce(func, iterable)
 
-    with mp.Pool(processes) as pool:
+    with Pool(processes) as pool:
         if isinstance(iterable, Sized):
             chunksize = max(1, int(len(iterable)/pool._processes))
         else:
@@ -92,7 +93,7 @@ def pmap(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal 
         yield from map(func, iterable)
         return
     
-    with mp.Pool(processes) as pool:
+    with Pool(processes) as pool:
         chunksize = 1
         if isinstance(iterable, Sized):
             chunksize = max(1, int(len(iterable)/pool._processes))
@@ -143,7 +144,7 @@ def pmap_unordered(func, iterable, args = tuple(), kwargs = dict(), processes = 
         yield from map(func, iterable)
         return
     
-    with mp.Pool(processes) as pool:
+    with Pool(processes) as pool:
         chunksize = 1
         if isinstance(iterable, Sized):
             chunksize = max(1, int(len(iterable)/pool._processes))
