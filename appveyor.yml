@@ -48,4 +48,6 @@ build: false
 test_script:
   - "%CMD_IN_ENV% %TEST_CMD%"
 
+# Run the benchmarks
 on_success:
+  - "python benchmark.py"

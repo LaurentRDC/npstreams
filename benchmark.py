@@ -12,33 +12,32 @@ else:
 
 if __name__ == '__main__':
 
+    print('Benchmarking...')
     stream = [np.random.random((2048, 2048)) for _ in range(50)]
 
-    print('numpy.sum and numpy.stack:')
     start = time()
-
     s = np.sum(np.stack(stream, axis = -1), axis = 2)
     delay = time() - start
-    print(delay, 's')
+    print('numpy.sum and numpy.stack: ', delay, 's')
 
-    print('Python sum: ')
+    stack = np.stack(stream, axis = -1)
     start = time()
+    s = np.sum(stack, axis = 2)
+    delay = time() - start
+    print('numpy.sum on existing stack: ', delay, 's')
 
+    start = time()
     s = sum(stream)
     delay = time() - start
-    print(delay, 's')
+    print('Builtin sum: ', delay, 's')
 
-    print('npstreams.isum: ')
     start = time()
-
     s = last(isum(stream))
     delay = time() - start
-    print(delay, 's')
+    print('npstreams.isum: ', delay, 's')
 
     if WITH_CUDA:
-        print('npstreams.cuda.csum: ')
         start = time()
-
         s = csum(stream)
         delay = time() - start
-        print(delay, 's')
+        print('npstreams.cuda.csum: ', delay, 's')
