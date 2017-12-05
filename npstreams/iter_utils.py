@@ -53,8 +53,8 @@ def peek(iterable):
 
 def itercopy(iterable, copies = 2):
     """
-    Split iterable into 'copies'. Once this is done, the original iterable should
-    not be used again.
+    Split iterable into 'copies'. Once this is done, the original iterable *should
+    not* be used again.
 
     Parameters
     ----------
@@ -62,7 +62,7 @@ def itercopy(iterable, copies = 2):
         Iterable to be split. Once it is split, the original iterable
         should not be used again.
     copies : int, optional
-        Number of copies. Also determines the number of returned iterables
+        Number of copies. Also determines the number of returned iterables.
     
     Returns
     -------
@@ -74,9 +74,8 @@ def itercopy(iterable, copies = 2):
     By rebinding the name of the original iterable, we make sure that it
     will never be used again.
 
-    >>> from itertools import count
     >>> from npstreams import itercopy
-    >>> evens = (2*n for n in count(0))
+    >>> evens = (2*n for n in range(1000))
     >>> evens, evens_copy = itercopy(evens, copies = 2)
 
     See Also
@@ -166,14 +165,14 @@ def multilinspace(start, stop, num, endpoint = True):
 def last(stream):
     """ 
     Retrieve the last item from a stream/iterator, consuming 
-    iterables in the process. If empty stream, returns None. 
+    iterables in the process. If empty stream, a RuntimeError is raised.
     """
     # Wonderful idea from itertools recipes
     # https://docs.python.org/3.6/library/itertools.html#itertools-recipes
     try:
         return deque(stream, maxlen = 1)[0]
-    except IndexError:	# Empty stream
-        return None
+    except IndexError:
+        raise RuntimeError('Empty stream')
 
 def primed(gen):
     """ 

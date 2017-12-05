@@ -11,9 +11,9 @@ class TestLast(unittest.TestCase):
         self.assertEqual(last(i), 1)
     
     def test_on_empty_iterable(self):
-        """ Test that last() return None for empty iterable """
-        i = list()
-        self.assertIs(last(i), None)
+        """ Test that last() raises RuntimeError for empty iterable """
+        with self.assertRaises(RuntimeError):
+            last(list())
 
 class TestLinspace(unittest.TestCase):
 
