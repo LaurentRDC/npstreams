@@ -1,6 +1,6 @@
 
 import numpy as np
-from time import time
+from timeit import default_timer as timer
 from npstreams import isum, last
 
 try:
@@ -15,29 +15,29 @@ if __name__ == '__main__':
     print('Benchmarking...')
     stream = [np.random.random((2048, 2048)) for _ in range(50)]
 
-    start = time()
+    start = timer()
     s = np.sum(np.stack(stream, axis = -1), axis = 2)
-    delay = time() - start
+    delay = timer() - start
     print('numpy.sum and numpy.stack: ', delay, 's')
 
     stack = np.stack(stream, axis = -1)
-    start = time()
+    start = timer()
     s = np.sum(stack, axis = 2)
-    delay = time() - start
+    delay = timer() - start
     print('numpy.sum on existing stack: ', delay, 's')
 
-    start = time()
+    start = timer()
     s = sum(stream)
-    delay = time() - start
+    delay = timer() - start
     print('Builtin sum: ', delay, 's')
 
-    start = time()
+    start = timer()
     s = last(isum(stream))
-    delay = time() - start
+    delay = timer() - start
     print('npstreams.isum: ', delay, 's')
 
     if WITH_CUDA:
-        start = time()
+        start = timer()
         s = csum(stream)
-        delay = time() - start
+        delay = timer() - start
         print('npstreams.cuda.csum: ', delay, 's')
