@@ -84,6 +84,7 @@ Iterator Utilities
     :toctree: functions/
 
     last
+    cyclic
     itercopy
     chunked
     linspace

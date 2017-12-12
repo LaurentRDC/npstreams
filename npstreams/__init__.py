@@ -11,7 +11,7 @@ from .array_stream import array_stream, ipipe, iload
 from .array_utils import nan_to_num
 from .linalg import idot, itensordot, ieinsum, iinner
 from .parallel import pmap, pmap_unordered, preduce
-from .iter_utils import last, chunked, multilinspace, linspace, peek, itercopy, primed
+from .iter_utils import cyclic, last, chunked, multilinspace, linspace, peek, itercopy, primed
 from .reduce import ireduce_ufunc, reduce_ufunc
 from .stacking import istack, iflatten
 from .stats import iaverage, imean, inanmean, istd, inanstd, isem, ivar, inanvar, ihistogram

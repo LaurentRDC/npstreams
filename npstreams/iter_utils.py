@@ -174,6 +174,19 @@ def last(stream):
     except IndexError:
         raise RuntimeError('Empty stream')
 
+def cyclic(iterable):
+    """ 
+    Yields cyclic permutations of an iterable.
+
+    Examples
+    --------
+    >>> list(cyclic((1,2,3)))
+    [(1,2,3), (2,3,1), (3,1,2)]
+    """
+    iterable = tuple(iterable)
+    n = len(iterable)
+    yield from (tuple(iterable[i - j] for i in range(n)) for j in range(n))
+
 def primed(gen):
     """ 
     Decorator that primes a generator function, i.e. runs the function

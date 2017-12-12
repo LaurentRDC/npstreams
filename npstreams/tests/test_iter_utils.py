@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from itertools import repeat
-from .. import last, chunked, linspace, multilinspace
+from .. import last, chunked, linspace, multilinspace, cyclic
 
 class TestLast(unittest.TestCase):
 
@@ -14,6 +14,16 @@ class TestLast(unittest.TestCase):
         """ Test that last() raises RuntimeError for empty iterable """
         with self.assertRaises(RuntimeError):
             last(list())
+
+class TestCyclic(unittest.TestCase):
+
+    def test_numbers(self):
+        """ """
+        permutations = set(cyclic((1,2,3)))
+        self.assertIn((1,2,3), permutations)
+        self.assertIn((2,3,1), permutations)
+        self.assertIn((3,1,2), permutations)
+        self.assertEqual(len(permutations), 3)
 
 class TestLinspace(unittest.TestCase):
 
