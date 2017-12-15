@@ -10,7 +10,7 @@ from multiprocessing import Pool
 from .iter_utils import chunked
 
 
-def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1):
+def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal = None):
     """
     Parallel application of the reduce function, with keyword arguments.
 
@@ -27,6 +27,10 @@ def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1):
     processes : int or None, optional
         Number of processes to use. If `None`, maximal number of processes
         is used. Default is one.
+    ntotal : int or None, optional
+        If the length of `iterable` is known, but passing `iterable` as a list
+        would take too much memory, the total length `ntotal` can be specified. This
+        allows for `preduce` to chunk better.
 
     Returns
     -------
@@ -43,10 +47,11 @@ def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1):
         return reduce(func, iterable)
 
     with Pool(processes) as pool:
+        chunksize = 1
         if isinstance(iterable, Sized):
             chunksize = max(1, int(len(iterable)/pool._processes))
-        else:
-            chunksize = 1
+        elif ntotal is not None:
+            chunksize = max(1, int(ntotal/pool._processes))
         
         # Some reductions are order-sensitive
         res = pool.imap(partial(reduce, func), tuple(chunked(iterable, chunksize)))

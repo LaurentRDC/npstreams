@@ -1,7 +1,7 @@
 
 import numpy as np
 from timeit import default_timer as timer
-from npstreams import isum, last
+from npstreams import isum, last, preduce_ufunc
 
 try:
     from npstreams.cuda import csum
@@ -35,6 +35,12 @@ if __name__ == '__main__':
     s = last(isum(stream))
     delay = timer() - start
     print('npstreams.isum: ', delay, 's')
+
+    for processes in range(2, 5):
+        start = timer()
+        s = preduce_ufunc(stream, ufunc = np.add, processes = processes, ntotal = len(stream))
+        delay = timer() - start
+        print('npstream.preduce_ufunc ({} proc.): '.format(processes), delay, 's')
 
     if WITH_CUDA:
         start = timer()

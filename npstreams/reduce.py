@@ -4,10 +4,11 @@ General stream reduction
 ------------------------
 """
 from functools import lru_cache, partial
+from multiprocessing import Pool
 
 import numpy as np
 
-from . import array_stream, last, nan_to_num, peek, primed
+from . import array_stream, last, nan_to_num, peek, primed, chunked, preduce
 
 
 @lru_cache(maxsize = 128)
@@ -151,6 +152,55 @@ def reduce_ufunc(*args, **kwargs):
     ValueError: if ``ufunc`` does not have the same input type as output type
     """ 
     return last(ireduce_ufunc(*args, **kwargs))   
+
+@array_stream
+def preduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, processes = 1, ntotal = None, **kwargs):
+    """
+    Parallel reduction of array streams.
+
+    ``ufunc`` must be a NumPy binary Ufunc (i.e. it takes two arguments). Moreover,
+    for performance reasons, ufunc must have the same return types as input types.
+    This precludes the use of ``numpy.greater``, for example.
+
+    Parameters
+    ----------
+    arrays : iterable
+        Arrays to be reduced.
+    ufunc : numpy.ufunc
+        Binary universal function.
+    axis : int or None, optional
+        Reduction axis. Default is to reduce the arrays in the stream as if 
+        they had been stacked along a new axis, then reduce along this new axis.
+        If None, arrays are flattened before reduction. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, arrays are reduced
+        along the new axis. Note that not all of NumPy Ufuncs support 
+        ``axis = None``, e.g. ``numpy.subtract``.
+    dtype : numpy.dtype or None, optional
+        Overrides the dtype of the calculation and output arrays.
+    ignore_nan : bool, optional
+        If True and ufunc has an identity value (e.g. ``numpy.add.identity`` is 0), then NaNs
+        are replaced with this identity. An error is raised if ``ufunc`` has no identity (e.g. ``numpy.maximum.identity`` is ``None``).
+    processes : int or None, optional
+        Number of processes to use. If `None`, maximal number of processes
+        is used. Default is 1.
+    kwargs
+        Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
+        (e.g. ``keepdims``) are not valid for all streaming functions. Also, contrary to NumPy 
+        v. 1.10+, ``casting = 'unsafe`` is the default in npstreams.
+    """
+    if processes == 1:
+        return reduce_ufunc(arrays, ufunc, axis, dtype, ignore_nan, **kwargs)
+
+    kwargs.update({'ufunc': ufunc, 'ignore_nan': ignore_nan, 'dtype': dtype, 'axis': axis})
+    reduce = partial(reduce_ufunc, **kwargs)
+    #return preduce(reduce, arrays, processes = processes, ntotal = ntotal)
+
+    with Pool(processes) as pool:
+        chunksize = 1
+        if ntotal is not None:
+            chunksize = max(1, int(ntotal/pool._processes))
+        res = pool.imap(reduce, chunked(arrays, chunksize))
+        return reduce(res)
 
 def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     """

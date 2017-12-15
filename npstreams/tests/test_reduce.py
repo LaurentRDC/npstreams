@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from .. import ireduce_ufunc, last, nan_to_num
+from .. import ireduce_ufunc, preduce_ufunc, last, nan_to_num, reduce_ufunc
 
 # Only testing binary ufuncs that support floats
 # i.e. leaving bitwise_* and logical_* behind
@@ -96,6 +96,20 @@ class TestIreduceUfunc(unittest.TestCase):
             with self.subTest('axis = {}'.format(axis)):
                 out = last(ireduce_ufunc(self.source, np.add, axis = axis, ignore_nan = True))
                 self.assertFalse(np.any(np.isnan(out)))
+
+class TestPreduceUfunc(unittest.TestCase):
+
+    def test_trivial(self):
+        """ Test preduce_ufunc for a sum of zeroes over two processes""" 
+        stream = [np.zeros((8,8)) for _ in range(10)]
+        s = preduce_ufunc(stream, ufunc = np.add, processes = 2, ntotal = 10)
+        self.assertTrue(np.allclose(s, np.zeros_like(s)))
+
+    def test_correctess(self):
+        """ Test preduce_ufunc is equivalent to reduce_ufunc for random sums""" 
+        stream = [np.random.random((8,8)) for _ in range(20)]
+        s = preduce_ufunc(stream, ufunc = np.add, processes = 3, ntotal = 10)
+        self.assertTrue(np.allclose(s, reduce_ufunc(stream, np.add)))
 
 # Dynamics generation of tests on binary ufuncs
 def test_binary_ufunc(ufunc):
