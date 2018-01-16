@@ -38,7 +38,7 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     
     Yields
     ------
-    avg: `~numpy.ndarray`
+    avg: `~numpy.ndarray`, dtype float
         Weighted average. 
     
     See Also
@@ -64,7 +64,8 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
 
     sum_of_weights = isum(weights1, axis = axis)
     weighted_arrays = map(lambda arr, wgt: arr * wgt, arrays, weights2)
-    weighted_sum = isum(weighted_arrays, axis = axis, ignore_nan = ignore_nan)
+    weighted_sum = isum(weighted_arrays, axis = axis, 
+                        ignore_nan = ignore_nan, dtype = np.float)
     
     yield from map(lambda arr, wgt: arr/wgt, weighted_sum, sum_of_weights)
 
@@ -87,7 +88,7 @@ def imean(arrays, axis = -1, ignore_nan = False):
     
     Yields
     ------
-    mean: `~numpy.ndarray`
+    mean: `~numpy.ndarray`, dtype float
         Online mean array.
     """
     yield from iaverage(arrays, axis = axis, weights = None, ignore_nan = ignore_nan)

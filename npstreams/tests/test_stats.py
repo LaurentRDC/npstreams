@@ -57,6 +57,14 @@ class TestIAverage(unittest.TestCase):
         avg = list(iaverage(source, axis = 0))
         self.assertEqual(len(avg), 5)
     
+    def test_output_dtype(self):
+        """ Test that that yielded arrays are always floats """
+        for dtype in (np.uint8, np.bool, np.int16, np.float16):
+            with self.subTest('Dtype = {}'.format(dtype)):
+                source = (np.zeros((16,), dtype = dtype) for _ in range(5))
+                avg = last(iaverage(source))
+                self.assertEqual(avg.dtype, np.float)
+    
     def test_output_shape(self):
         """ Test output shape """
         source = [np.random.random((16, 12, 5)) for _ in range(10)]
