@@ -2,7 +2,7 @@
 __author__ = 'Laurent P. René de Cotret'
 __email__ = 'laurent.renedecotret@mail.mcgill.ca'
 __license__ = 'BSD'
-__version__ = '1.2.1' # TODO: automatic versioning?
+__version__ = '1.3.0' # TODO: automatic versioning?
 
 # Order of import is important
 # because of inter-dependency
