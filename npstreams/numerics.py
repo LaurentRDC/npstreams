@@ -175,6 +175,7 @@ def iall(arrays, axis = -1):
     ------
     all : ndarray, dtype bool 
     """
+    # TODO: use ``where`` keyword to only check places that are already ``True``
     yield from ireduce_ufunc(arrays, ufunc = np.logical_and, axis = axis)
 
 def iany(arrays, axis = -1):
@@ -195,6 +196,7 @@ def iany(arrays, axis = -1):
     ------
     any : ndarray, dtype bool 
     """
+    # TODO: use ``where`` keyword to only check places that are not already ``True``
     yield from ireduce_ufunc(arrays, ufunc = np.logical_or, axis = axis)
 
 def imax(arrays, axis, ignore_nan = False):

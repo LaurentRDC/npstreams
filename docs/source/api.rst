@@ -23,14 +23,18 @@ Statistical Functions
     :toctree: functions/
 
     imean
-    inanmean
     iaverage
     istd
-    inanstd
     ivar
-    inanvar
     isem
     ihistogram
+
+.. autosummary::
+    :toctree: functions/
+
+    inanmean
+    inanstd
+    inanvar
 
 Numerics
 --------
@@ -38,10 +42,14 @@ Numerics
     :toctree: functions/
 
     isum
-    inansum
     iprod
-    inanprod
     isub
+
+.. autosummary::
+    :toctree: functions/
+
+    inansum
+    inanprod
 
 Linear Algebra
 --------------
