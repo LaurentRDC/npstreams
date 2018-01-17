@@ -62,7 +62,7 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
 
     weights1, weights2 = itercopy(weights)
 
-    sum_of_weights = isum(weights1, axis = axis)
+    sum_of_weights = isum(weights1, axis = axis, dtype = np.float)
     weighted_arrays = map(lambda arr, wgt: arr * wgt, arrays, weights2)
     weighted_sum = isum(weighted_arrays, axis = axis, 
                         ignore_nan = ignore_nan, dtype = np.float)
@@ -332,7 +332,7 @@ def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
     
     Yields
     ------
-    sem: `~numpy.ndarray`
+    sem: `~numpy.ndarray`, dtype float
         Standard error in the mean. 
     
     See Also
@@ -357,9 +357,11 @@ def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
 
     avgs = iaverage(arrays, axis = axis, weights = weights, ignore_nan = ignore_nan)
     avg_of_squares = iaverage(map(np.square, arrays2), axis = axis, weights = weights2, ignore_nan = ignore_nan)
-    sum_of_weights = isum(weights3, axis = axis, ignore_nan = ignore_nan)
+    sum_of_weights = isum(weights3, axis = axis, ignore_nan = ignore_nan, dtype = np.float)
 
     for avg, sq_avg, swgt  in zip(avgs, avg_of_squares, sum_of_weights):
+        # TODO: use in-place operations instead
+        #       The following line uses a lot of intermediate arrays
         yield np.sqrt((sq_avg - avg**2) * (swgt / (swgt - ddof))/swgt)
 
 @array_stream

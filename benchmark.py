@@ -36,11 +36,11 @@ if __name__ == '__main__':
     delay = timer() - start
     print('npstreams.isum: ', delay, 's')
 
-    for processes in range(2, 5):
-        start = timer()
-        s = preduce_ufunc(stream, ufunc = np.add, processes = processes, ntotal = len(stream))
-        delay = timer() - start
-        print('npstream.preduce_ufunc ({} proc.): '.format(processes), delay, 's')
+    #for processes in range(2, 5):
+    #    start = timer()
+    #    s = preduce_ufunc(stream, ufunc = np.add, processes = processes, ntotal = len(stream))
+    #    delay = timer() - start
+    #    print('npstream.preduce_ufunc ({} proc.): '.format(processes), delay, 's')
 
     if WITH_CUDA:
         start = timer()
