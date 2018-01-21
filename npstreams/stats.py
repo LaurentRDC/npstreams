@@ -18,6 +18,13 @@ def _iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     Primitive version of weighted averaging that yields the running sum and running weights sum,
     but avoids the costly division.
     """
+    # Special case: in the easiest case, no need to calculate
+    # weights and ignore nans.
+    # This case is pretty common
+    if (weights is None) and (not ignore_nan) and (axis == -1):
+        yield from zip(isum(arrays, axis = axis, dtype = np.float, ignore_nan = False), count(1))
+        return
+
     first, arrays = peek(arrays)
     
     # We make sure that weights is always an array
