@@ -19,6 +19,16 @@ Creation of Streams
 
 Statistical Functions
 ---------------------
+
+.. autosummary::
+    :toctree: functions/
+
+    mean
+    average
+    std
+    var
+    sem
+    
 .. autosummary::
     :toctree: functions/
 

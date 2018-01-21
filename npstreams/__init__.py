@@ -14,5 +14,6 @@ from .parallel import pmap, pmap_unordered, preduce
 from .iter_utils import cyclic, last, chunked, multilinspace, linspace, peek, itercopy, primed
 from .reduce import ireduce_ufunc, preduce_ufunc, reduce_ufunc
 from .stacking import istack, iflatten
-from .stats import iaverage, imean, inanmean, istd, inanstd, isem, ivar, inanvar, ihistogram
+from .stats import (iaverage, imean, average, mean, inanmean, istd, inanstd, 
+                    var, std, sem, isem, ivar, inanvar, ihistogram)
 from .numerics import isum, inansum, iprod, inanprod, isub, iall, iany, imax, imin
