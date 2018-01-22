@@ -38,14 +38,7 @@ Statistical Functions
     ivar
     isem
     ihistogram
-
-.. autosummary::
-    :toctree: functions/
-
-    inanmean
-    inanstd
-    inanvar
-
+    
 Numerics
 --------
 .. autosummary::
@@ -54,12 +47,6 @@ Numerics
     isum
     iprod
     isub
-
-.. autosummary::
-    :toctree: functions/
-
-    inansum
-    inanprod
 
 Linear Algebra
 --------------
