@@ -9,7 +9,7 @@ from operator import truediv
 
 import numpy as np
 
-from . import array_stream, itercopy, last, nan_to_num, peek
+from . import array_stream, itercopy, last, nan_to_num, peek, deprecated
 from .numerics import isum
 
 @array_stream
@@ -173,6 +173,7 @@ def imean(arrays, axis = -1, ignore_nan = False):
     primitive = _iaverage(arrays, axis, weights = None, ignore_nan = ignore_nan)
     yield from map(lambda element: truediv(*element), primitive)
 
+@deprecated('imean supports the ``ignore_nan`` flag')
 def inanmean(arrays, axis = -1):
     """ 
     Streaming mean of arrays, ignoring NaNs. Equivalent to `imean(ignore_nan = True)`.
@@ -314,6 +315,7 @@ def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     for avg, sq_avg, swgt in primitive:
         yield (sq_avg - avg**2) * (swgt / (swgt - ddof))
 
+@deprecated('ivar supports the ``ignore_nan`` flag')
 def inanvar(arrays, axis = -1, ddof = 0, weights = None):
     """ 
     Streaming variance of arrays. Weights are also supported. NaNs are ignored.
@@ -437,6 +439,7 @@ def istd(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     yield from map(np.sqrt, ivar(arrays, axis = axis, ddof = ddof, 
                                  weights = weights, ignore_nan = ignore_nan))
 
+@deprecated('istd supports the ``ignore_nan`` flag')
 def inanstd(arrays, axis = -1, ddof = 0, weights = None):
     """ 
     Streaming standard deviation of arrays. Weights are also supported.

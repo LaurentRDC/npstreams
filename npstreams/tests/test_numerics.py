@@ -67,14 +67,6 @@ class TestISum(unittest.TestCase):
                 from_numpy = np.sum(stack, axis = axis)
                 from_isum = last(isum(stream, axis = axis))
                 self.assertTrue(np.allclose(from_isum, from_numpy))
-    
-class TestINanSum(unittest.TestCase):
-    
-    def test_trivial(self):
-        """ Test a sum of zeros """
-        source = [np.zeros((16,), dtype = np.float) for _ in range(10)]
-        summed = last(inansum(source))
-        self.assertTrue(np.allclose(summed, np.zeros_like(summed)))
 
 class TestIProd(unittest.TestCase):
 
@@ -122,14 +114,6 @@ class TestIProd(unittest.TestCase):
                 from_numpy = np.prod(stack, axis = axis)
                 from_stream = last(iprod(stream, axis = axis))
                 self.assertTrue(np.allclose(from_stream, from_numpy))        
-    
-class TestINanProd(unittest.TestCase):
-    
-    def test_trivial(self):
-        """ Test a product of ones """
-        source = [np.ones((16,), dtype = np.float) for _ in range(10)]
-        product = last(inanprod(source))
-        self.assertTrue(np.allclose(product, np.ones_like(product)))
 
 class TestISub(unittest.TestCase):
     

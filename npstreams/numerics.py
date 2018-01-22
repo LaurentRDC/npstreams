@@ -5,7 +5,7 @@ Numerics Functions
 """
 import numpy as np
 
-from . import ireduce_ufunc
+from . import deprecated, ireduce_ufunc
 
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
@@ -37,6 +37,7 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """    
     yield from ireduce_ufunc(arrays, ufunc = np.add, axis = axis, ignore_nan = ignore_nan, dtype = dtype)
 
+@deprecated('isum supports the ``ignore_nan`` flag')
 def inansum(arrays, axis = -1, dtype = None):
     """ 
     Streaming sum of array elements. NaNs are ignored (i.e. treated as zero).
@@ -93,6 +94,7 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     """
     yield from ireduce_ufunc(arrays, ufunc = np.multiply, axis = axis, dtype = dtype, ignore_nan = ignore_nan)
 
+@deprecated('iprod supports the ``ignore_nan`` flag')
 def inanprod(arrays, axis = -1, dtype = None):
     """ 
     Streaming product of array elements. NaNs are ignored (i.e. treated as one).
