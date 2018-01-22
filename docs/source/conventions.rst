@@ -28,7 +28,9 @@ Naming Conventions
 In order to facilitate documentation, functions in :mod:`npstreams` follow the following conventions:
 
     * Routines are named after their closest equivalent in :mod:`numpy` and :mod:`scipy`.
-    * Routines with names starting with 'i' (e.g. :func:`iprod`) return a generator.
+    * Routines with names starting with 'i' (e.g. :func:`iprod`) are generator functions; they yield running results
+      as they are being computer. Usually, these functions have a non-generator equivalent that
+      consumes the entire stream (e.g. :func:`iaverage` vs. :func:`average`).
     * Routines with names starting with 'c' (e.g. :func:`csum`) are CUDA-enabled (requires :mod:`pycuda`)
     * Routines with names starting with 'p' (e.g. :func:`pmap`) can be parallelized. The default
       behavior is always to not use multiple cores. For example, the default behavior of :func:`pmap`

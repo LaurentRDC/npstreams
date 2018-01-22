@@ -2,10 +2,11 @@
 __author__ = 'Laurent P. René de Cotret'
 __email__ = 'laurent.renedecotret@mail.mcgill.ca'
 __license__ = 'BSD'
-__version__ = '1.3.0' # TODO: automatic versioning?
+__version__ = '1.3.0'
 
 # Order of import is important
 # because of inter-dependency
+from .utils import deprecated
 
 from .array_stream import array_stream, ipipe, iload
 from .array_utils import nan_to_num
