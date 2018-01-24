@@ -80,8 +80,7 @@ Stacking
 .. autosummary::
     :toctree: functions/
 
-    istack
-    iflatten
+    stack
     
 Iterator Utilities
 ------------------

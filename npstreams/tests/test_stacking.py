@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from .. import last, istack, iflatten
+from .. import stack
 
 class TestIStack(unittest.TestCase):
 
@@ -10,28 +10,18 @@ class TestIStack(unittest.TestCase):
         """ Test against numpy.stack for axis = -1 and """
         stream = [np.random.random((15,7,2,1)) for _ in range(10)]
         with self.subTest('axis = -1'):
-            stack = np.stack(stream, axis = -1)
-            from_istack = last(istack(stream, axis = -1))
-            self.assertSequenceEqual(stack.shape, from_istack.shape)
+            dense = np.stack(stream, axis = -1)
+            from_stack = stack(stream, axis = -1)
+            self.assertTrue(np.allclose(dense, from_stack))
 
     def test_against_numpy_concatenate(self):
         """ Test against numpy.concatenate for existing axes """
         stream = [np.random.random((15,7,2,1)) for _ in range(10)]
         for axis in range(4):
             with self.subTest('axis = {}'.format(axis)):
-                stack = np.concatenate(stream, axis = axis)
-                from_istack = last(istack(stream, axis = axis))
-                self.assertSequenceEqual(stack.shape, from_istack.shape)
-
-class TestIFlatten(unittest.TestCase):
-
-    def test_output_shape(self):
-        stream = [np.random.random((15,7,2,1)) for _ in range(10)]
-        stack = np.stack(stream, axis = -1)
-        flat = np.ravel(stack)
-
-        from_stream = last(iflatten(stream))
-        self.assertSequenceEqual(flat.shape, from_stream.shape)
+                dense = np.concatenate(stream, axis = axis)
+                from_stack = stack(stream, axis = axis)
+                self.assertTrue(np.allclose(dense, from_stack))
 
 if __name__ == '__main__':
 	unittest.main()
