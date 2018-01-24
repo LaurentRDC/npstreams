@@ -4,8 +4,7 @@ from random import randint, random
 
 import numpy as np
 
-from .. import (isum, inansum, iprod, inanprod, 
-                last, isub, iany, iall)
+from .. import isum, iprod, last, isub, iany, iall
 
 class TestISum(unittest.TestCase):
 
@@ -55,7 +54,6 @@ class TestISum(unittest.TestCase):
             summed = last(isum(source, axis = 0))
             self.assertSequenceEqual(summed.shape, (1,10))
     
-    #@unittest.skip('')
     def test_against_numpy(self):
         """ Test that isum() returns the same as numpy.sum() for various axis inputs """
 
@@ -101,8 +99,7 @@ class TestIProd(unittest.TestCase):
         with self.subTest('axis = None'):
             summed = last(iprod(source, axis = None))
             self.assertTrue(np.allclose(summed, np.ones_like(summed)))
-
-    #@unittest.skip('')
+    
     def test_against_numpy(self):
         """ Test that iprod() returns the same as numpy.prod() for various axis inputs """
 

@@ -5,7 +5,7 @@ Numerics Functions
 """
 import numpy as np
 
-from . import deprecated, ireduce_ufunc
+from . import ireduce_ufunc
 
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
@@ -37,34 +37,6 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     """    
     yield from ireduce_ufunc(arrays, ufunc = np.add, axis = axis, ignore_nan = ignore_nan, dtype = dtype)
 
-@deprecated('isum supports the ``ignore_nan`` flag')
-def inansum(arrays, axis = -1, dtype = None):
-    """ 
-    Streaming sum of array elements. NaNs are ignored (i.e. treated as zero).
-
-    Parameters
-    ----------
-    arrays : iterable
-        Arrays to be summed.
-    axis : int or None, optional
-        Reduction axis. Default is to sum the arrays in the stream as if 
-        they had been stacked along a new axis, then sum along this new axis.
-        If None, arrays are flattened before summing. If `axis` is an int larger that
-        the number of dimensions in the arrays of the stream, arrays are summed
-        along the new axis.
-    dtype : numpy.dtype, optional
-        The type of the yielded array and of the accumulator in which the elements 
-        are summed. The dtype of a is used by default unless a has an integer dtype 
-        of less precision than the default platform integer. In that case, if a is 
-        signed then the platform integer is used while if a is unsigned then an 
-        unsigned integer of the same precision as the platform integer is used.
-    
-    Yields
-    ------
-    online_sum : ndarray
-    """
-    yield from isum(arrays, axis = axis, dtype = dtype, ignore_nan = True)
-
 def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     """ 
     Streaming product of array elements.
@@ -93,34 +65,6 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     online_prod : ndarray
     """
     yield from ireduce_ufunc(arrays, ufunc = np.multiply, axis = axis, dtype = dtype, ignore_nan = ignore_nan)
-
-@deprecated('iprod supports the ``ignore_nan`` flag')
-def inanprod(arrays, axis = -1, dtype = None):
-    """ 
-    Streaming product of array elements. NaNs are ignored (i.e. treated as one).
-
-    Parameters
-    ----------
-    arrays : iterable
-        Arrays to be multiplied.
-    axis : int or None, optional
-        Reduction axis. Default is to multiply the arrays in the stream as if 
-        they had been stacked along a new axis, then multiply along this new axis.
-        If None, arrays are flattened before multiplication. If `axis` is an int larger that
-        the number of dimensions in the arrays of the stream, arrays are multiplied
-        along the new axis.
-    dtype : numpy.dtype, optional
-        The type of the yielded array and of the accumulator in which the elements 
-        are summed. The dtype of a is used by default unless a has an integer dtype 
-        of less precision than the default platform integer. In that case, if a is 
-        signed then the platform integer is used while if a is unsigned then an 
-        unsigned integer of the same precision as the platform integer is used.
-    
-    Yields
-    ------
-    online_prod : ndarray
-    """
-    yield from iprod(arrays, axis = axis, dtype = dtype, ignore_nan = True)
 
 def isub(arrays, axis = -1, dtype = None):
     """

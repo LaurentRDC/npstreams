@@ -9,7 +9,7 @@ from operator import truediv
 
 import numpy as np
 
-from . import array_stream, itercopy, last, nan_to_num, peek, deprecated
+from . import array_stream, itercopy, last, nan_to_num, peek
 from .numerics import isum
 
 @array_stream
@@ -173,29 +173,6 @@ def imean(arrays, axis = -1, ignore_nan = False):
     primitive = _iaverage(arrays, axis, weights = None, ignore_nan = ignore_nan)
     yield from map(lambda element: truediv(*element), primitive)
 
-@deprecated('imean supports the ``ignore_nan`` flag')
-def inanmean(arrays, axis = -1):
-    """ 
-    Streaming mean of arrays, ignoring NaNs. Equivalent to `imean(ignore_nan = True)`.
-
-    Parameters
-    ----------
-    arrays : iterable of ndarrays
-        Arrays to be averaged. This iterable can also a generator.
-    axis : int, optional
-        Reduction axis. Default is to average the arrays in the stream as if 
-        they had been stacked along a new axis, then average along this new axis.
-        If None, arrays are flattened before averaging. If `axis` is an int larger that
-        the number of dimensions in the arrays of the stream, arrays are averaged
-        along the new axis.
-    
-    Yields
-    ------
-    mean: `~numpy.ndarray`
-        Online mean array.
-    """
-    yield from imean(arrays, axis = axis, ignore_nan = True)
-
 @array_stream
 def _ivar(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 
@@ -315,49 +292,6 @@ def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     for avg, sq_avg, swgt in primitive:
         yield (sq_avg - avg**2) * (swgt / (swgt - ddof))
 
-@deprecated('ivar supports the ``ignore_nan`` flag')
-def inanvar(arrays, axis = -1, ddof = 0, weights = None):
-    """ 
-    Streaming variance of arrays. Weights are also supported. NaNs are ignored.
-    Equivalent to `ivarignore_nan = True)`.
-    
-    Parameters
-    ----------
-    arrays : iterable of ndarrays
-        Arrays to be combined. This iterable can also a generator.
-    axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
-        they had been stacked along a new axis, then compute the variance along this new axis.
-        If None, arrays are flattened. If `axis` is an int larger that
-        the number of dimensions in the arrays of the stream, variance is computed
-        along the new axis.
-    ddof : int, optional
-        Means Delta Degrees of Freedom.  The divisor used in calculations
-        is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
-    weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the variance 
-        according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
-        then all data in each element of `arrays` are assumed to have a weight equal to one.
-    
-    Yields
-    ------
-    var: `~numpy.ndarray`
-        Variance. 
-    
-    See Also
-    --------
-    numpy.var : variance calculation for dense arrays. Weights are not supported.
-    
-    References
-    ----------
-    .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
-        Communications of the ACM Vol. 22, Issue 9, pp. 532 - 535 (1979)
-    """
-    yield from ivar(arrays, axis = axis, ddof = ddof, weights = weights, ignore_nan = True)
-
 def std(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     """ 
     Total standard deviation of arrays. Weights are also supported. This function
@@ -438,46 +372,6 @@ def istd(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     """
     yield from map(np.sqrt, ivar(arrays, axis = axis, ddof = ddof, 
                                  weights = weights, ignore_nan = ignore_nan))
-
-@deprecated('istd supports the ``ignore_nan`` flag')
-def inanstd(arrays, axis = -1, ddof = 0, weights = None):
-    """ 
-    Streaming standard deviation of arrays. Weights are also supported.
-    NaNs are ignored. Equivalent to `istd(ignore_nan = True)`
-
-    Parameters
-    ----------
-    arrays : iterable of ndarrays
-        Arrays to be combined. This iterable can also a generator.
-    axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
-        they had been stacked along a new axis, then compute the standard deviation along this new axis.
-        If None, arrays are flattened. If `axis` is an int larger that
-        the number of dimensions in the arrays of the stream, standard deviation is computed
-        along the new axis.
-    ddof : int, optional
-        Means Delta Degrees of Freedom.  The divisor used in calculations
-        is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
-    weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the standard deviation 
-        according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
-        then all data in each element of `arrays` are assumed to have a weight equal to one.
-    ignore_nan : bool, optional
-        If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
-    Yields
-    ------
-    std: `~numpy.ndarray`
-        Standard deviation
-
-    See Also
-    --------
-    numpy.std : standard deviation calculation of dense arrays. Weights are not supported.
-    """
-    yield from istd(arrays, axis = axis, ddof = ddof, weights = weights, ignore_nan = True)
 
 def sem(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     """ 
