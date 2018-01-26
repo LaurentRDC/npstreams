@@ -75,6 +75,15 @@ Comparisons
     imax
     imin
 
+Parallelization
+---------------
+.. autosummary::
+    :toctree: functions/
+
+    pmap
+    pmap_unordered
+    preduce
+
 Stacking
 --------
 .. autosummary::
@@ -102,12 +111,3 @@ Array Utilities
     :toctree: functions/
 
     nan_to_num
-
-Parallelization
----------------
-.. autosummary::
-    :toctree: functions/
-
-    pmap
-    pmap_unordered
-    preduce

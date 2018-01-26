@@ -14,37 +14,37 @@ if __name__ == '__main__':
     start = timer()
     s = np.sum(np.stack(stream, axis = -1), axis = 2)
     delay = timer() - start
-    print('numpy.sum and numpy.stack: ', delay, 's')
+    print('numpy.sum and numpy.stack: '.ljust(30), '{:.6f} s'.format(delay))
 
     
     start = timer()
     s = np.sum(stack, axis = 2)
     delay = timer() - start
-    print('numpy.sum on existing stack: ', delay, 's')
+    print('numpy.sum on existing stack: '.ljust(30), '{:.6f} s'.format(delay))
 
     start = timer()
     s = sum(stream)
     delay = timer() - start
-    print('Builtin sum: ', delay, 's')
+    print('Builtin sum: '.ljust(30), '{:.6f} s'.format(delay))
 
     start = timer()
     s = last(isum(stream))
     delay = timer() - start
-    print('npstreams.isum: ', delay, 's')
+    print('npstreams.isum: '.ljust(30), '{:.6f} s'.format(delay))
 
-    print('Benchmarking averages...')
+    print('\nBenchmarking averages...')
 
     start = timer()
     s = last(iaverage(stream))
     delay = timer() - start
-    print('Via iaverage: ', delay, 's')
+    print('Via iaverage: '.ljust(30), '{:.6f} s'.format(delay))
 
     start = timer()
     s = average(stream)
     delay = timer() - start
-    print('Via average: ', delay, 's')
+    print('Via average: '.ljust(30), '{:.6f} s'.format(delay))
 
     start = timer()
     s = np.average( np.stack(stream, axis = -1), axis = 2)
     delay = timer() - start
-    print('numpy.average and numpy.stack: ', delay, 's')
+    print('numpy.average + numpy.stack: '.ljust(30), '{:.6f} s'.format(delay), '\n')

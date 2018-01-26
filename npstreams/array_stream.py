@@ -6,7 +6,7 @@ Utilities
 from functools import partial, wraps
 from glob import iglob
 
-from numpy import asarray, atleast_1d, ndarray
+from numpy import asarray, atleast_1d, ndarray, asarray
 
 from .parallel import pmap
 
@@ -21,11 +21,11 @@ def array_stream(func):
     The first argument of the decorated function is assumed to be an iterable of
     arrays, or an iterable of objects that can be casted to arrays.
     """
-    @wraps(func)    # thanks functools
+    @wraps(func)
     def decorated(arrays, *args, **kwargs):
         if isinstance(arrays, ndarray):
             arrays = (arrays,)
-        return func(map(atleast_1d, arrays), *args, **kwargs)
+        return func(map(asarray, arrays), *args, **kwargs)
     return decorated
 
 def iload(files, load_func, **kwargs):
