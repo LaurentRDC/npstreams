@@ -16,6 +16,7 @@ Creation of Streams
     :toctree: functions/
 
     iload
+    pload
 
 Statistical Functions
 ---------------------

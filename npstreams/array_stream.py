@@ -8,7 +8,7 @@ from glob import iglob
 
 from numpy import asarray, atleast_1d, ndarray, asarray
 
-from .parallel import pmap
+from .parallel import pmap, pmap_unordered
 
 
 def array_stream(func):
@@ -32,6 +32,9 @@ def iload(files, load_func, **kwargs):
     """
     Create a stream of arrays from files, which are loaded lazily.
 
+    In cases where the consumer function is much faster than data loading,
+    consider using :func:`pload` instead.
+
     Parameters
     ----------
     pattern : iterable of str or str
@@ -45,6 +48,10 @@ def iload(files, load_func, **kwargs):
     ------
     arr: `~numpy.ndarray`
         Loaded data. 
+    
+    See Also
+    --------
+    pload : load files from parallel processes.
     
     Examples
     --------
@@ -67,6 +74,45 @@ def iload(files, load_func, **kwargs):
     files = iter(files)
 
     yield from map(partial(load_func, **kwargs), files)
+
+def pload(files, load_func, processes = 1, **kwargs):
+    """
+    Create a stream of arrays from files, which are loaded lazily 
+    from multiple processes. 
+    
+    This function should be preferred to :func:`iload` in cases where 
+    the consumer function is much faster than the data can be loaded.
+
+    Parameters
+    ----------
+    pattern : iterable of str or str
+        Either an iterable of filenames or a glob-like pattern str.
+    load_func : callable, optional
+        Function taking a filename as its first arguments
+    processes : int or None, optional
+        Number of processes to use. If `None`, maximal number of processes
+        is used. Default is one.
+    kwargs
+        Keyword arguments are passed to ``load_func``.
+
+    Yields
+    ------
+    arr: `~numpy.ndarray`
+        Loaded data. 
+
+    See Also
+    --------
+    iload : load files lazily
+    """
+    if processes == 1:
+        yield from iload(files, load_func, **kwargs)
+        return
+
+    if isinstance(files, str):
+        files = iglob(files)
+    files = iter(files)
+
+    yield from pmap_unordered(partial(load_func, **kwargs), files, processes = processes)
 
 # pmap does not support local functions
 def _pipe(funcs, array):

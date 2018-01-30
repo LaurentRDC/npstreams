@@ -8,7 +8,7 @@ __version__ = '1.3.1'
 # because of inter-dependency
 from .utils import deprecated
 
-from .array_stream import array_stream, ipipe, iload
+from .array_stream import array_stream, ipipe, iload, pload
 from .array_utils import nan_to_num
 from .linalg import idot, itensordot, ieinsum, iinner
 from .parallel import pmap, pmap_unordered, preduce

@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from .. import array_stream, ipipe, iaverage, last, iload, isum
+from .. import array_stream, ipipe, iaverage, last, iload, pload, isum
 
 @array_stream
 def iden(arrays):
@@ -34,7 +34,7 @@ class TestArrayStream(unittest.TestCase):
         for arr in iden(stream):
             self.assertIsInstance(arr, np.ndarray)
 
-class TestFileStream(unittest.TestCase):
+class TestILoad(unittest.TestCase):
 
     def test_glob(self):
         """ Test that iload works on glob-like patterns """
@@ -50,6 +50,39 @@ class TestFileStream(unittest.TestCase):
         stream = iload(files, load_func = np.load)
         s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
         self.assertTrue(np.allclose(s, np.zeros_like(s)))
+
+class TestPLoad(unittest.TestCase):
+
+    def test_glob(self):
+        """ Test that pload works on glob-like patterns """
+        with self.subTest('processes = 1'):
+            stream = pload('npstreams\\tests\\data\\test_data*.npy', load_func = np.load)
+            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
+            self.assertTrue(np.allclose(s, np.zeros_like(s)))
+
+        with self.subTest('processes = 2'):
+            stream = pload('npstreams\\tests\\data\\test_data*.npy', load_func = np.load, processes = 2)
+            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
+            self.assertTrue(np.allclose(s, np.zeros_like(s)))
+    
+    def test_file_list(self):
+        """ Test that pload works on iterable of filenames """
+        with self.subTest('processes = 1'):
+            files = ['npstreams\\tests\\data\\test_data1.npy',
+                    'npstreams\\tests\\data\\test_data2.npy',
+                    'npstreams\\tests\\data\\test_data3.npy']
+            stream = pload(files, load_func = np.load)
+            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
+            self.assertTrue(np.allclose(s, np.zeros_like(s)))
+
+        with self.subTest('processes = 2'):
+            files = ['npstreams\\tests\\data\\test_data1.npy',
+                    'npstreams\\tests\\data\\test_data2.npy',
+                    'npstreams\\tests\\data\\test_data3.npy']
+            stream = pload(files, load_func = np.load, processes = 2)
+            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
+            self.assertTrue(np.allclose(s, np.zeros_like(s)))
+
 
 
 if __name__ == '__main__':
