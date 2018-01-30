@@ -45,6 +45,22 @@ def iload(files, load_func, **kwargs):
     ------
     arr: `~numpy.ndarray`
         Loaded data. 
+    
+    Examples
+    --------
+    To load images using scikit-image ::
+
+        from skimage.io import imread
+        ims = iload('images_*.tif', imread)
+
+    Keyword arguments are passed to the ``load_func``; for example, 
+    to specify the scikit-image plugin ``'tifffile'``::
+
+        ims = iload('images_*.tif', imread, plugin = 'tifffile')
+
+    In case the list of images is already known::
+
+        ims = iload(['im1.tif', 'im2.tif', 'im3.tif'], imread)
     """
     if isinstance(files, str):
         files = iglob(files)
