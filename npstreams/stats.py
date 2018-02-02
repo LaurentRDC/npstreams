@@ -63,11 +63,11 @@ def average(arrays, axis = -1, weights = None, ignore_nan = False):
         the number of dimensions in the arrays of the stream, arrays are averaged
         along the new axis.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `images`. 
-        Each value in an element of `images` contributes to the average 
+        Iterable of weights associated with the values in each item of `arrays`. 
+        Each value in an element of `arrays` contributes to the average 
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `images`. If weights=None, 
-        then all data in each element of `images` are assumed to have a weight equal to one.
+        or an array of the same shape as any element of `arrays`. If ``weights=None``, 
+        then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
     
@@ -100,11 +100,11 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
         the number of dimensions in the arrays of the stream, arrays are averaged
         along the new axis.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `images`. 
-        Each value in an element of `images` contributes to the average 
+        Iterable of weights associated with the values in each item of `arrays`. 
+        Each value in an element of `arrays` contributes to the average 
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `images`. If weights=None, 
-        then all data in each element of `images` are assumed to have a weight equal to one.
+        or an array of the same shape as any element of `arrays`. If weights=None, 
+        then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
     
