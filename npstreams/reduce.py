@@ -4,6 +4,7 @@ General stream reduction
 ------------------------
 """
 from functools import lru_cache, partial
+from itertools import repeat
 from multiprocessing import Pool
 
 import numpy as np
@@ -58,7 +59,8 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
         Overrides the dtype of the calculation and output arrays.
     ignore_nan : bool, optional
         If True and ufunc has an identity value (e.g. ``numpy.add.identity`` is 0), then NaNs
-        are replaced with this identity. An error is raised if ``ufunc`` has no identity (e.g. ``numpy.maximum.identity`` is ``None``).
+        are replaced with this identity. An error is raised if ``ufunc`` has no identity 
+        (e.g. ``numpy.maximum.identity`` is ``None``).
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
         (e.g. ``keepdims``) are not valid for all streaming functions. Also, contrary to NumPy 
@@ -72,8 +74,8 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
     ------
     TypeError : if ``ufunc`` is not NumPy ufunc.
     ValueError : if ``ignore_nan`` is True but ``ufunc`` has no identity
-    ValueError: if ``ufunc`` is not a binary ufunc
-    ValueError: if ``ufunc`` does not have the same input type as output type
+    ValueError : if ``ufunc`` is not a binary ufunc
+    ValueError : if ``ufunc`` does not have the same input type as output type
     """
     kwargs.update({'dtype': dtype, 'axis': axis})
 
@@ -83,17 +85,17 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
         raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
     
     if ignore_nan:
-        arrays = map(partial(nan_to_num, fill_value = ufunc.identity), arrays)
+        arrays = map(partial(nan_to_num, fill_value = ufunc.identity, copy = False), arrays)
 
     # Since ireduce_ufunc is primed, we need to wait here
     yield
 
-    if kwargs['axis'] is None:
-        yield from _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs)
-        return
-
     if kwargs['axis'] == -1:
         yield from _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs)
+        return
+
+    if kwargs['axis'] is None:
+        yield from _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs)
         return
 
     first, arrays = peek(arrays)
@@ -267,7 +269,7 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     if kwargs['axis'] not in range(first.ndim):
         raise ValueError('Axis {} not supported on arrays of shape {}.'.format(kwargs['axis'], first.shape))
     
-    # Remove the out-parameter if provided.
+    # Remove parameters that will not be used.
     kwargs.pop('out', None)
     
     dtype = kwargs.get('dtype')
@@ -312,8 +314,9 @@ def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     arrays = iter(arrays)
     first = next(arrays)
 
+    kwargs.pop('out', None)
+
     kwargs['axis'] = None
-    kwargs.pop('out', None)         # Remove the out-parameter if provided.
     axis_reduce = partial(ufunc.reduce, **kwargs)
 
     accumulator = axis_reduce(first)
