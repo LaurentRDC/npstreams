@@ -16,7 +16,7 @@ from .numerics import isum
 def _iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 
     Primitive version of weighted averaging that yields the running sum and running weights sum,
-    but avoids the costly division.
+    but avoids the costly division at every step.
     """
     # Special case: in the easiest case, no need to calculate
     # weights and ignore nans.
@@ -177,7 +177,7 @@ def imean(arrays, axis = -1, ignore_nan = False):
 def _ivar(arrays, axis = -1, weights = None, ignore_nan = False):
     """ 
     Primitive version of weighted variance that yields the running average, running average of squares and running weights sum,
-    but avoids the costly division and squaring.
+    but avoids the costly division and squaring at every step.
     """
     first, arrays = peek(arrays)
     

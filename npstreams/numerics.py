@@ -100,7 +100,7 @@ def isub(arrays, axis = -1, dtype = None):
     """
     if axis is None:
         raise ValueError('Subtraction is not a reorderable operation, and \
-                          therefore a specific axis must be give.')
+                          therefore a specific axis must be given.')
     yield from ireduce_ufunc(arrays, ufunc = np.subtract, axis = axis, dtype = dtype)
 
 def iall(arrays, axis = -1):
