@@ -17,4 +17,4 @@ from .reduce import ireduce_ufunc, preduce_ufunc, reduce_ufunc
 from .stacking import stack
 from .stats import (iaverage, average, imean, mean, istd, std, 
                     ivar, var, isem, sem, ihistogram)
-from .numerics import isum, iprod, isub, iall, iany, imax, imin
+from .numerics import isum, sum, iprod, prod, isub, iall, iany, imax, imin
