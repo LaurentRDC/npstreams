@@ -45,6 +45,12 @@ Numerics
 .. autosummary::
     :toctree: functions/
 
+    sum
+    prod
+
+.. autosummary::
+    :toctree: functions/
+
     isum
     iprod
     isub
