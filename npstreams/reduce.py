@@ -4,7 +4,7 @@ General stream reduction
 ------------------------
 """
 from functools import lru_cache, partial
-from itertools import repeat
+from itertools import repeat, islice
 from multiprocessing import Pool
 
 import numpy as np
@@ -151,11 +151,8 @@ def reduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **k
     ValueError : if ``ignore_nan`` is True but ``ufunc`` has no identity
     ValueError: if ``ufunc`` is not a binary ufunc
     ValueError: if ``ufunc`` does not have the same input type as output type
-    """ 
-    kwargs.update({'axis' : axis, 
-                   'dtype' : dtype, 
-                   'ignore_nan' : ignore_nan})
-    return last(ireduce_ufunc(arrays, ufunc, **kwargs))
+    """
+    return last(ireduce_ufunc(arrays, ufunc, axis = axis, dtype = dtype, ignore_nan = ignore_nan, **kwargs))
 
 @array_stream
 def preduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, processes = 1, ntotal = None, **kwargs):

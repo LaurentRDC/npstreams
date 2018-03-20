@@ -4,6 +4,7 @@ from timeit import default_timer as timer
 import numpy as np
 
 from npstreams import average, iaverage, isum, last
+from npstreams import sum as ns_sum
 
 if __name__ == '__main__':
 
@@ -31,6 +32,11 @@ if __name__ == '__main__':
     s = last(isum(stream))
     delay = timer() - start
     print('npstreams.isum: '.ljust(30), '{:.6f} s'.format(delay))
+
+    start = timer()
+    s = ns_sum(stream)
+    delay = timer() - start
+    print('npstreams.sum: '.ljust(30), '{:.6f} s'.format(delay))
 
     print('\nBenchmarking averages...')
 
