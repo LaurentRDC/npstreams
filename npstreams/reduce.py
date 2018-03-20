@@ -81,10 +81,9 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
 
     _check_binary_ufunc(ufunc)
 
-    if ignore_nan and (ufunc.identity is None):
-        raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
-    
     if ignore_nan:
+        if ufunc.identity is None:
+            raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
         arrays = map(partial(nan_to_num, fill_value = ufunc.identity, copy = False), arrays)
 
     # Since ireduce_ufunc is primed, we need to wait here
@@ -107,7 +106,7 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
 
     yield from _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs)
 
-def reduce_ufunc(*args, **kwargs):
+def reduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **kwargs):
     """
     Streaming reduction generator function from a binary NumPy ufunc. Essentially the
     function equivalent to `ireduce_ufunc`.
@@ -153,7 +152,10 @@ def reduce_ufunc(*args, **kwargs):
     ValueError: if ``ufunc`` is not a binary ufunc
     ValueError: if ``ufunc`` does not have the same input type as output type
     """ 
-    return last(ireduce_ufunc(*args, **kwargs))   
+    kwargs.update({'axis' : axis, 
+                   'dtype' : dtype, 
+                   'ignore_nan' : ignore_nan})
+    return last(ireduce_ufunc(arrays, ufunc, **kwargs))
 
 @array_stream
 def preduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, processes = 1, ntotal = None, **kwargs):
