@@ -17,7 +17,7 @@ def _check_binary_ufunc(ufunc):
     """ Check that ufunc is suitable for ``ireduce_ufunc`` """
     if not isinstance(ufunc, np.ufunc):
         raise TypeError('{} is not a NumPy Ufunc'.format(ufunc.__name__))
-    if not ufunc.nin == 2:
+    if ufunc.nin != 2:
         raise ValueError('Only binary ufuncs are supported, and {} is \
                           not one of them'.format(ufunc.__name__))
     
@@ -81,10 +81,9 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
 
     _check_binary_ufunc(ufunc)
 
-    if ignore_nan and (ufunc.identity is None):
-        raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
-    
     if ignore_nan:
+        if ufunc.identity is None:
+            raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
         arrays = map(partial(nan_to_num, fill_value = ufunc.identity, copy = False), arrays)
 
     # Since ireduce_ufunc is primed, we need to wait here
@@ -109,7 +108,7 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
 
 def reduce_ufunc(*args, **kwargs):
     """
-    Reduction function from a binary NumPy ufunc. 
+    Reduce a stream using a binary NumPy ufunc. Function version of ``ireduce_ufunc``.
 
     ``ufunc`` must be a NumPy binary Ufunc (i.e. it takes two arguments). Moreover,
     for performance reasons, ufunc must have the same return types as input types.
