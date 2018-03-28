@@ -25,8 +25,6 @@ def _ireduce_linalg(arrays, func, **kwargs):
     yield accumulator
 
     for array in arrays:
-        # For some reason, np.dot(..., out = accumulator) did not produce results
-        # that were equal to numpy.linalg.multi_dot
         func(accumulator, array, out = accumulator)
         yield accumulator
 

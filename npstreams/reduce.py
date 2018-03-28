@@ -17,7 +17,7 @@ def _check_binary_ufunc(ufunc):
     """ Check that ufunc is suitable for ``ireduce_ufunc`` """
     if not isinstance(ufunc, np.ufunc):
         raise TypeError('{} is not a NumPy Ufunc'.format(ufunc.__name__))
-    if not ufunc.nin == 2:
+    if ufunc.nin != 2:
         raise ValueError('Only binary ufuncs are supported, and {} is \
                           not one of them'.format(ufunc.__name__))
     
@@ -108,8 +108,7 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
 
 def reduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **kwargs):
     """
-    Streaming reduction generator function from a binary NumPy ufunc. Essentially the
-    function equivalent to `ireduce_ufunc`.
+    Reduce a stream using a binary NumPy ufunc. Function version of ``ireduce_ufunc``.
 
     ``ufunc`` must be a NumPy binary Ufunc (i.e. it takes two arguments). Moreover,
     for performance reasons, ufunc must have the same return types as input types.
@@ -141,8 +140,8 @@ def reduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **k
         (e.g. ``keepdims``) are not valid for all streaming functions. Note that
         contrary to NumPy v. 1.10+, ``casting = 'unsafe`` is the default in npstreams.
     
-    Yields 
-    ------
+    Returns 
+    -------
     reduced : ndarray or scalar
 
     Raises
