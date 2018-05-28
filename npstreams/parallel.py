@@ -10,7 +10,7 @@ from multiprocessing import Pool
 from .iter_utils import chunked
 
 
-def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal = None):
+def preduce(func, iterable, args = None, kwargs = None, processes = 1, ntotal = None):
     """
     Parallel application of the reduce function, with keyword arguments.
 
@@ -20,9 +20,9 @@ def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntot
         Function to be applied to every element of `iterable`.
     iterable : iterable
         Iterable of items to be reduced. Generators are consumed.
-    args : tuple
+    args : tuple or None, optional
         Positional arguments of `function`.
-    kwargs : dictionary, optional
+    kwargs : dictionary or None, optional
         Keyword arguments of `function`.
     processes : int or None, optional
         Number of processes to use. If `None`, maximal number of processes
@@ -41,6 +41,12 @@ def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntot
     If `processes` is 1, `preduce` is equivalent to functools.reduce with the
     added benefit of using `args` and `kwargs`, but `initializer` is not supported.
     """
+    if kwargs is None:
+        kwargs = dict()
+    
+    if args is None:
+        args = tuple()
+
     func = partial(func, *args, **kwargs)
 
     if processes == 1:
@@ -57,7 +63,7 @@ def preduce(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntot
         res = pool.imap(partial(reduce, func), tuple(chunked(iterable, chunksize)))
         return reduce(func, res)
 
-def pmap(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal = None):
+def pmap(func, iterable, args = None, kwargs = None, processes = 1, ntotal = None):
     """
     Parallel application of a function with keyword arguments.
 
@@ -67,9 +73,9 @@ def pmap(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal 
         Function to be applied to every element of `iterable`.
     iterable : iterable
         Iterable of items to be mapped.
-    args : tuple, optional
+    args : tuple or None, optional
         Positional arguments of `function`.
-    kwargs : dictionary, optional
+    kwargs : dictionary or None, optional
         Keyword arguments of `function`.
     processes : int or None, optional
         Number of processes to use. If `None`, maximal number of processes
@@ -92,6 +98,12 @@ def pmap(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal 
     If `processes` is 1, `pmap` reduces to `map`, with the added benefit of
     of using `kwargs`
     """
+    if kwargs is None:
+        kwargs = dict()
+    
+    if args is None:
+        args = tuple()
+
     func = partial(func, *args, **kwargs)
 
     if processes == 1:
@@ -107,7 +119,7 @@ def pmap(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal 
 
         yield from pool.imap(func = func, iterable = iterable, chunksize = chunksize)
 
-def pmap_unordered(func, iterable, args = tuple(), kwargs = dict(), processes = 1, ntotal = None):
+def pmap_unordered(func, iterable, args = None, kwargs = None, processes = 1, ntotal = None):
     """
     Parallel application of a function with keyword arguments in no particular order. 
     This can reduce memory usage because results are not accumulated so that the order is preserved.
@@ -118,9 +130,9 @@ def pmap_unordered(func, iterable, args = tuple(), kwargs = dict(), processes = 
         Function to be applied to every element of `iterable`.
     iterable : iterable
         Iterable of items to be mapped.
-    args : tuple, optional
+    args : tuple or None, optional
         Positional arguments of `function`.
-    kwargs : dictionary, optional
+    kwargs : dictionary or None, optional
         Keyword arguments of `function`.
     processes : int or None, optional
         Number of processes to use. If `None`, maximal number of processes
@@ -143,6 +155,12 @@ def pmap_unordered(func, iterable, args = tuple(), kwargs = dict(), processes = 
     If `processes` is 1, `pmap_unordered` reduces to `map`, with the added benefit of
     of using `kwargs`
     """
+    if kwargs is None:
+        kwargs = dict()
+    
+    if args is None:
+        args = tuple()
+    
     func = partial(func, *args, **kwargs)
 
     if processes == 1:
