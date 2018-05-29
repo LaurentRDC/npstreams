@@ -57,6 +57,7 @@ if __name__ == '__main__':
 #                                compiler_directives = {'language_level':3,
 #                                                       'boundscheck': False}),
         test_suite = 'setup.test_suite', 
+        python_requires = '>= 3.5',
         classifiers = ['Environment :: Console',
                        'Intended Audience :: Science/Research',
                        'Topic :: Scientific/Engineering',
@@ -64,7 +65,6 @@ if __name__ == '__main__':
                        'Natural Language :: English',
                        'Operating System :: OS Independent',
                        'Programming Language :: Python',
-                       'Programming Language :: Python :: 3.4',
                        'Programming Language :: Python :: 3.5',
                        'Programming Language :: Python :: 3.6']
     )
