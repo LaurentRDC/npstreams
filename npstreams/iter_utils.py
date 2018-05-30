@@ -21,7 +21,7 @@ def primed(gen):
     return primed_gen
 
 @primed
-def chunked(iterable, chunksize = 1):
+def chunked(iterable, chunksize):
     """
     Generator yielding multiple iterables of length 'chunksize'.
 
@@ -29,14 +29,18 @@ def chunked(iterable, chunksize = 1):
     ----------
     iterable : iterable
         Iterable to be chunked. 
-    chunksize : int, optional
+    chunksize : int
         Chunk size. 
 
     Yields
     ------
     chunk : iterable
         Iterable of size `chunksize`. In special case of iterable not being
-        divisible by `chunksize`, the last `chunk` might be smaller.
+        divisible by `chunksize`, the last `chunk` will be smaller.
+    
+    Raises
+    ------
+    TypeError : if `chunksize` is not an integer.
     """
     if not isinstance(chunksize, int):
         raise TypeError('Expected `chunksize` to be an integer, but received {}'.format(chunksize))
