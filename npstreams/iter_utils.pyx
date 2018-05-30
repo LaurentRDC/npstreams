@@ -7,6 +7,8 @@ from collections import deque
 from functools import wraps
 from itertools import chain, islice, tee
 
+from cpython.sequence cimport PySequence_Check
+
 def primed(gen):
     """ 
     Decorator that primes a generator function, i.e. runs the function
@@ -54,7 +56,7 @@ def chunked(iterable, chunksize):
         yield next_chunk
         next_chunk = tuple(islice(iterable, chunksize))
 
-def peek(iterable):
+cpdef object peek(object iterable):
     """  
     Peek ahead in an iterable. 
     
@@ -69,9 +71,9 @@ def peek(iterable):
     stream : iterable
         Iterable containing ``first`` and all other elements from ``iterable``
     """
-    iterable = iter(iterable)
-    ahead = next(iterable)
-    return ahead, chain([ahead], iterable)
+    it = iter(iterable)
+    ahead = next(it)
+    return ahead, chain((ahead,), it)
 
 def itercopy(iterable, copies = 2):
     """
@@ -184,17 +186,26 @@ def multilinspace(start, stop, num, endpoint = True):
     spaces = tuple(linspace(a, b, num = num, endpoint = endpoint) for a, b in zip(start, stop))
     yield from zip(*spaces)
 
-def last(stream):
+no_default = '__no__default__'
+
+cpdef object last(object stream):
     """ 
     Retrieve the last item from a stream/iterator, consuming 
     iterables in the process. If empty stream, a RuntimeError is raised.
     """
-    # Wonderful idea from itertools recipes
-    # https://docs.python.org/3.6/library/itertools.html#itertools-recipes
-    try:
-        return deque(stream, maxlen = 1)[0]
-    except IndexError:
-        raise RuntimeError('Empty stream')
+    cdef object val
+    if PySequence_Check(stream):
+        if len(stream) == 0:
+            raise RuntimeError
+        return stream[-1]
+    
+    # Not a sequence (e.g. generator)
+    val = no_default
+    for val in stream:
+        pass
+    if val is no_default:
+        raise RuntimeError
+    return val
 
 def cyclic(iterable):
     """ 
