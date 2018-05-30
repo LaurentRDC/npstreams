@@ -84,6 +84,12 @@ class TestChunked(unittest.TestCase):
         chunks = chunked(i, chunksize = 15)
         for _ in range(10):
             self.assertEqual(len(next(chunks)), 15)
+    
+    def test_chunked_nonint_chunksize(self):
+        """ Test that chunked raises a TypeError immediately if `chunksize` is not an integer """
+        with self.assertRaises(TypeError):
+            i = repeat(1)
+            chunks = chunked(i, chunksize = 15.0)
 		
 if __name__ == '__main__':
 	unittest.main()

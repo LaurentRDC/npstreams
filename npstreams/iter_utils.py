@@ -7,7 +7,20 @@ from collections import deque
 from functools import wraps
 from itertools import chain, islice, tee
 
+def primed(gen):
+    """ 
+    Decorator that primes a generator function, i.e. runs the function
+    until the first ``yield`` statement. Useful in cases where there 
+    are preliminary checks when creating the generator.
+    """
+    @wraps(gen)
+    def primed_gen(*args, **kwargs):
+        generator = gen(*args, **kwargs)
+        next(generator)
+        return generator
+    return primed_gen
 
+@primed
 def chunked(iterable, chunksize = 1):
     """
     Generator yielding multiple iterables of length 'chunksize'.
@@ -25,6 +38,11 @@ def chunked(iterable, chunksize = 1):
         Iterable of size `chunksize`. In special case of iterable not being
         divisible by `chunksize`, the last `chunk` might be smaller.
     """
+    if not isinstance(chunksize, int):
+        raise TypeError('Expected `chunksize` to be an integer, but received {}'.format(chunksize))
+    
+    yield
+
     iterable = iter(iterable)
 
     next_chunk = tuple(islice(iterable, chunksize))
@@ -186,16 +204,3 @@ def cyclic(iterable):
     iterable = tuple(iterable)
     n = len(iterable)
     yield from (tuple(iterable[i - j] for i in range(n)) for j in range(n))
-
-def primed(gen):
-    """ 
-    Decorator that primes a generator function, i.e. runs the function
-    until the first ``yield`` statement. Useful in cases where there 
-    are preliminary checks when creating the generator.
-    """
-    @wraps(gen)
-    def primed_gen(*args, **kwargs):
-        generator = gen(*args, **kwargs)
-        next(generator)
-        return generator
-    return primed_gen
