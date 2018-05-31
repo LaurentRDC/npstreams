@@ -14,7 +14,7 @@ environment:
                         # to the matrix section.
       TEST_CMD: "python -m unittest discover --verbose"
 
-      CONDA_DEPENDENCIES: "numpy>=1.12 scipy"
+      CONDA_DEPENDENCIES: "numpy>=1.12 scipy cython"
       PIP_DEPENDENCIES: ""
 
   matrix:
@@ -41,6 +41,9 @@ install:
     # Test that PATH is set correctly
     - "conda --version"
     - "python --version"
+
+    # Cythonize
+    - "python setup.py build_ext --inplace"
 
 # Not a .NET project, we build in the install step instead
 build: false
