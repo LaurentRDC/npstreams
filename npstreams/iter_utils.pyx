@@ -22,8 +22,7 @@ def primed(gen):
         return generator
     return primed_gen
 
-@primed
-def chunked(iterable, chunksize):
+cdef class chunked:
     """
     Generator yielding multiple iterables of length 'chunksize'.
 
@@ -44,19 +43,23 @@ def chunked(iterable, chunksize):
     ------
     TypeError : if `chunksize` is not an integer.
     """
-    if not isinstance(chunksize, int):
-        raise TypeError('Expected `chunksize` to be an integer, but received {}'.format(chunksize))
-    
-    yield
+    cdef object iterable
+    cdef Py_ssize_t chunksize
 
-    iterable = iter(iterable)
+    def __cinit__(self, object iterable, Py_ssize_t chunksize):
+        self.iterable = iter(iterable)
+        self.chunksize = chunksize
 
-    next_chunk = tuple(islice(iterable, chunksize))
-    while next_chunk:	
-        yield next_chunk
-        next_chunk = tuple(islice(iterable, chunksize))
+    def __iter__(self):
+        return self
 
-cpdef object peek(object iterable):
+    def __next__(self):
+        next_chunk = tuple(islice(self.iterable, self.chunksize))
+        if len(next_chunk) == 0:
+            raise StopIteration
+        return next_chunk
+
+cpdef tuple peek(object iterable):
     """  
     Peek ahead in an iterable. 
     
