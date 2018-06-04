@@ -8,7 +8,7 @@ from collections import Sized
 
 import numpy as np
 
-from . import array_stream
+from .array_stream import array_stream
 
 @array_stream
 def stack(arrays, axis = -1):

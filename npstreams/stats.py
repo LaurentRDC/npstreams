@@ -9,8 +9,11 @@ from operator import truediv
 
 import numpy as np
 
-from . import array_stream, itercopy, last, nan_to_num, peek
+from .array_stream import array_stream
+from .array_utils import nan_to_num
+from .iter_utils import itercopy, last, peek
 from .numerics import isum
+
 
 @array_stream
 def _iaverage(arrays, axis = -1, weights = None, ignore_nan = False):

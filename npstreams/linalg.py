@@ -7,7 +7,7 @@ from functools import partial
 
 import numpy as np
 
-from . import array_stream
+from .array_stream import array_stream
 
 
 @array_stream

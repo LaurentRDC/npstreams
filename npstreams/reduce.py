@@ -4,12 +4,15 @@ General stream reduction
 ------------------------
 """
 from functools import lru_cache, partial
-from itertools import repeat, islice
+from itertools import islice, repeat
 from multiprocessing import Pool
 
 import numpy as np
 
-from . import array_stream, last, nan_to_num, peek, primed, chunked, preduce
+from .array_stream import array_stream
+from .array_utils import nan_to_num
+from .iter_utils import chunked, last, peek, primed
+from .parallel import preduce
 
 
 @lru_cache(maxsize = 128)

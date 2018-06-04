@@ -5,7 +5,7 @@ Numerics Functions
 """
 import numpy as np
 
-from . import ireduce_ufunc, reduce_ufunc
+from .reduce import ireduce_ufunc, reduce_ufunc
 
 
 def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
