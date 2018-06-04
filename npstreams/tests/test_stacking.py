@@ -4,7 +4,7 @@ import numpy as np
 
 from .. import stack
 
-class TestIStack(unittest.TestCase):
+class TestStack(unittest.TestCase):
 
     def test_against_numpy_stack(self):
         """ Test against numpy.stack for axis = -1 and """
@@ -13,6 +13,12 @@ class TestIStack(unittest.TestCase):
             dense = np.stack(stream, axis = -1)
             from_stack = stack(stream, axis = -1)
             self.assertTrue(np.allclose(dense, from_stack))
+
+    def test_on_single_array(self):
+        """ Test that npstreams.stack works with a single array """
+        arr = np.random.random((16,16))
+        stacked = stack(arr)
+        self.assertTrue(np.allclose(arr[..., np.newaxis], stacked))
 
     def test_against_numpy_concatenate(self):
         """ Test against numpy.concatenate for existing axes """

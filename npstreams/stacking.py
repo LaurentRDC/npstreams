@@ -4,6 +4,7 @@ Stacking arrays from a stream
 -----------------------------
 """
 from functools import partial
+from collections import Sized
 
 import numpy as np
 
@@ -23,12 +24,19 @@ def stack(arrays, axis = -1):
         Stacking direction. If ``axis = -1``, arrays are stacked along a
         new dimension.
     
-    Yields
-    ------
-    online_stack : ndarray
+    Returns
+    -------
+    stacked : ndarray
         Cumulative stacked array.
     """
     arrays = iter(arrays)
+
+    # Shortcut if we already know the stream length
+    # Note : we are guaranteed that `arrays` is a stream of arrays
+    # at worst a tuple (arr,)
+    if isinstance(arrays, Sized):
+        return np.stack(arrays, axis = axis)
+
     first = next(arrays)
     stack = np.array(first, copy = True)
 
