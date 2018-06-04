@@ -51,6 +51,7 @@ if __name__ == '__main__':
         keywords = ['streaming', 'numpy', 'math'],
         packages = packages,
         include_package_data = True,
+        python_requires = '>=3.6, <4', 
         zip_safe = False,
 #        include_dirs = [numpy.get_include()],
 #        ext_modules = cythonize("npstreams/*.pyx",
@@ -64,7 +65,6 @@ if __name__ == '__main__':
                        'Natural Language :: English',
                        'Operating System :: OS Independent',
                        'Programming Language :: Python',
-                       'Programming Language :: Python :: 3.4',
                        'Programming Language :: Python :: 3.5',
                        'Programming Language :: Python :: 3.6']
     )
