@@ -13,12 +13,15 @@ Click on any function below to see detailed information.
 Creation of Streams
 -------------------
 
+Decorator for streaming functions which guarantees that the stream elements will be converted to arrays.
+
 .. autosummary::
     :toctree: functions/
 
     array_stream
 
-The :func:`array_stream` decorator wraps iterables into an :class:`ArrayStream` iterator:
+The :func:`array_stream` decorator wraps iterables into an :class:`ArrayStream` iterator. This is not 
+required to use the functions defined here, but it provides some nice guarantees.
 
 .. autosummary::
     :toctree: classes/
