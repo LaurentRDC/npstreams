@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Utilities
----------
-"""
+
 from collections.abc import Iterator
-from functools import partial, wraps
+from functools import wraps
 from numpy import asanyarray
 
 import numpy as np
