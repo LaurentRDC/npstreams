@@ -12,11 +12,18 @@ Click on any function below to see detailed information.
 
 Creation of Streams
 -------------------
+
 .. autosummary::
     :toctree: functions/
 
-    iload
-    pload
+    array_stream
+
+The :func:`array_stream` decorator wraps iterables into an :class:`ArrayStream` iterator:
+
+.. autosummary::
+    :toctree: classes/
+
+    ArrayStream
 
 Statistical Functions
 ---------------------
@@ -71,6 +78,8 @@ Control Flow
     :toctree: functions/
 
     ipipe
+    iload
+    pload
 
 Comparisons
 -----------

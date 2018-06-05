@@ -2,88 +2,26 @@
 import unittest
 import numpy as np
 
-from .. import array_stream, ipipe, iaverage, last, iload, pload, isum
+from ..array_stream import array_stream, ArrayStream
+
 
 @array_stream
 def iden(arrays):
     yield from arrays
 
-class TestIPipe(unittest.TestCase):
-    
-    def test_order(self):
-        """ Test that ipipe(f, g, h, arrays) -> f(g(h(arr))) for arr in arrays """
-        stream = [np.random.random((15,7,2,1)) for _ in range(10)]
-        squared = [np.cbrt(np.square(arr)) for arr in stream]
-        pipeline = ipipe(np.cbrt, np.square, stream)
-
-        self.assertTrue(all(np.allclose(s, p) for s, p in zip(pipeline, squared)))
-
-    def test_multiprocessing(self):
-        """ Test that ipipe(f, g, h, arrays) -> f(g(h(arr))) for arr in arrays """
-        stream = [np.random.random((15,7,2,1)) for _ in range(10)]
-        squared = [np.cbrt(np.square(arr)) for arr in stream]
-        pipeline = ipipe(np.cbrt, np.square, stream, processes = 2)
-
-        self.assertTrue(all(np.allclose(s, p) for s, p in zip(pipeline, squared)))
-
-class TestArrayStream(unittest.TestCase):
+class TestArrayStreamDecorator(unittest.TestCase):
 
     def test_type(self):
         """ Test that all object from an array stream are ndarrays """
-        stream = [0, 1, np.array([1])]
+
+        stream = [0, 1, np.array([1]), 'a']
         for arr in iden(stream):
             self.assertIsInstance(arr, np.ndarray)
-
-class TestILoad(unittest.TestCase):
-
-    def test_glob(self):
-        """ Test that iload works on glob-like patterns """
-        stream = iload('npstreams\\tests\\data\\test_data*.npy', load_func = np.load)
-        s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
-        self.assertTrue(np.allclose(s, np.zeros_like(s)))
-    
-    def test_file_list(self):
-        """ Test that iload works on iterable of filenames """
-        files = ['npstreams\\tests\\data\\test_data1.npy',
-                 'npstreams\\tests\\data\\test_data2.npy',
-                 'npstreams\\tests\\data\\test_data3.npy']
-        stream = iload(files, load_func = np.load)
-        s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
-        self.assertTrue(np.allclose(s, np.zeros_like(s)))
-
-class TestPLoad(unittest.TestCase):
-
-    def test_glob(self):
-        """ Test that pload works on glob-like patterns """
-        with self.subTest('processes = 1'):
-            stream = pload('npstreams\\tests\\data\\test_data*.npy', load_func = np.load)
-            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
-            self.assertTrue(np.allclose(s, np.zeros_like(s)))
-
-        with self.subTest('processes = 2'):
-            stream = pload('npstreams\\tests\\data\\test_data*.npy', load_func = np.load, processes = 2)
-            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
-            self.assertTrue(np.allclose(s, np.zeros_like(s)))
-    
-    def test_file_list(self):
-        """ Test that pload works on iterable of filenames """
-        with self.subTest('processes = 1'):
-            files = ['npstreams\\tests\\data\\test_data1.npy',
-                    'npstreams\\tests\\data\\test_data2.npy',
-                    'npstreams\\tests\\data\\test_data3.npy']
-            stream = pload(files, load_func = np.load)
-            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
-            self.assertTrue(np.allclose(s, np.zeros_like(s)))
-
-        with self.subTest('processes = 2'):
-            files = ['npstreams\\tests\\data\\test_data1.npy',
-                    'npstreams\\tests\\data\\test_data2.npy',
-                    'npstreams\\tests\\data\\test_data3.npy']
-            stream = pload(files, load_func = np.load, processes = 2)
-            s = last(isum(stream)).astype(np.float)     # Cast to float for np.allclose
-            self.assertTrue(np.allclose(s, np.zeros_like(s)))
-
-
+        
+    def test_single_array(self):
+        """ Test that a 'stream' consisting of a single array is repackaged into an iterable """
+        stream = np.array([1,2,3])
+        self.assertEqual(len(list(iden(stream))), 1)
 
 if __name__ == '__main__':
 	unittest.main()

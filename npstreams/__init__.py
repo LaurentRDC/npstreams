@@ -8,10 +8,11 @@ __version__ = '1.6.0'
 # because of inter-dependency
 from .utils import deprecated
 
-from .array_stream import array_stream, ipipe, iload, pload
+from .array_stream import array_stream, ArrayStream
 from .array_utils import nan_to_num
 from .linalg import idot, itensordot, ieinsum, iinner
 from .parallel import pmap, pmap_unordered, preduce
+from .flow import ipipe, iload, pload
 from .iter_utils import cyclic, last, chunked, multilinspace, linspace, peek, itercopy, primed
 from .reduce import ireduce_ufunc, preduce_ufunc, reduce_ufunc
 from .stacking import stack
