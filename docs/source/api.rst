@@ -27,15 +27,6 @@ The :func:`array_stream` decorator wraps iterables into an :class:`ArrayStream` 
 
 Statistical Functions
 ---------------------
-
-.. autosummary::
-    :toctree: functions/
-
-    mean
-    average
-    std
-    var
-    sem
     
 .. autosummary::
     :toctree: functions/
@@ -46,14 +37,21 @@ Statistical Functions
     ivar
     isem
     ihistogram
-    
-Numerics
---------
+
+The following functions consume entire streams. By avoiding costly intermediate steps,
+they can perform much faster than their generator versions.
+
 .. autosummary::
     :toctree: functions/
 
-    sum
-    prod
+    mean
+    average
+    std
+    var
+    sem
+    
+Numerics
+--------
 
 .. autosummary::
     :toctree: functions/
@@ -61,6 +59,12 @@ Numerics
     isum
     iprod
     isub
+
+.. autosummary::
+    :toctree: functions/
+
+    sum
+    prod
 
 Linear Algebra
 --------------
