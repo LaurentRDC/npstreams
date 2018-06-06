@@ -54,7 +54,7 @@ We can also use :func:`last` to get at the final average::
 
 	from npstreams import last
 
-	total = last(averaged) # average of the entire stream
+	total = last(averaged) # average of the entire stream. See also npstreams.average
 
 Making your own streaming functions
 ===================================
