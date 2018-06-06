@@ -72,6 +72,8 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
 
     All benchmarks compare a reduction operation on a stream of arrays of varying sizes. The sequence length is fixed.
     
+    .. versionadded:: 1.5.2
+    
     Parameters
     ----------
     funcs : iterable of NumPy functions, optional
@@ -82,8 +84,6 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     shapes : iterable of tuples, optional
         Shapes of arrays to test. Streams of random numbers will be generated with arrays of those shapes.
         The sequence lengths are fixed.
-
-    .. versionadded:: 1.5.2
     """
     # Preliminaries
     console_width = min(get_terminal_size().columns, 80)

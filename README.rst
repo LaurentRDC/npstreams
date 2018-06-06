@@ -10,6 +10,8 @@ npstreams
 .. image:: https://img.shields.io/pypi/v/npstreams.svg
     :target: https://pypi.python.org/pypi/npstreams
     :alt: PyPI Version
+.. image:: https://img.shields.io/pypi/pyversions/npstreams.svg
+    :alt: Supported Python Versions
 
 npstreams is an open-source Python package for streaming NumPy array operations. 
 The goal is to provide tested routines that operate on streams (or generators) of arrays instead of dense arrays.
@@ -115,7 +117,7 @@ To install the latest development version from `Github <https://github.com/Laure
 
     python -m pip install git+git://github.com/LaurentRDC/npstreams.git
 
-Each version is tested against Python 3.4, 3.5 and 3.6. If you are using a different version, tests can be run
+Each version is tested against Python 3.6. If you are using a different version, tests can be run
 using the standard library's `unittest` module.
 
 Support / Report Issues
