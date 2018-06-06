@@ -12,7 +12,7 @@ class ArrayStream(Iterator):
     NumPy arrays. If ``stream`` is a single array, it will be 
     repackaged as a length 1 iterable.
 
-    .. versionadded:: 1.6
+    .. versionadded:: 1.5.2
     """
 
     def __init__(self, stream):

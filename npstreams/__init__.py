@@ -8,6 +8,7 @@ __version__ = '1.5.2'
 # because of inter-dependency
 from .utils import deprecated
 
+from .benchmarks import benchmark
 from .array_stream import array_stream, ArrayStream
 from .array_utils import nan_to_num
 from .linalg import idot, itensordot, ieinsum, iinner
