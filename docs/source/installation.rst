@@ -19,6 +19,15 @@ PyCUDA_ must be installed as well.
 Install npstreams
 =================
 
+npstreams is available on PyPI; it can be installed with `pip <https://pip.pypa.io>`_::
+
+    python -m pip install npstreams
+
+npstreams can also be installed with the conda package manager, from the conda-forge channel::
+
+    conda config --add channels conda-forge
+    conda install npstreams
+
 You can install the latest developer version of npstreams by cloning the git
 repository::
 

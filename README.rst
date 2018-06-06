@@ -113,6 +113,11 @@ installed. npstreams is available on PyPI; it can be installed with `pip <https:
 
     python -m pip install npstreams
 
+npstreams can also be installed with the conda package manager, from the conda-forge channel::
+
+    conda config --add channels conda-forge
+    conda install npstreams
+
 To install the latest development version from `Github <https://github.com/LaurentRDC/npstreams>`_::
 
     python -m pip install git+git://github.com/LaurentRDC/npstreams.git
