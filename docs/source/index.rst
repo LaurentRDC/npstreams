@@ -90,30 +90,18 @@ However, :func:`streaming_prod` will work on 100 GB of data in a single line of 
 Benchmark
 =========
 
-Let's look at a simple benchmark. Let compare the two snippets to sum the following data::
+npstreams provides a function for benchmarking common use cases.
 
-    def stream():
-        for _ in range(50):
-            yield np.empty((2048, 2048), dtype = np.int)
+To run the benchmark with default parameters, from the interpreter::
 
-Snippet 1: dense arrays only. Note that I count the creation of the dense array::
+    from npstreams import benchmark
+    benchmark()
 
-    import numpy as np
+From a command-line terminal::
 
-    stack = np.stack(list(stream()), axis = -1)
-    s = np.sum(stack, axis = -1)
+    python -c 'import npstreams; npstreams.benchmark()'
 
-On my machine, this takes 4.93s and ~3G of memory.
-
-Snippet 2: streaming arrays. This also includes the creation of the stream::
-
-    # snippet 2
-    import npstreams as nps
-    s = nps.last(nps.isum(stream(), axis = -1))
-
-On my machine, this takes 2.93s seconds and 95 MB of memory.
-
-Bottom line: If your data is not already in memory, the routines of npstreams will be faster.
+The results will be printed to the screen.
 
 Links
 =====

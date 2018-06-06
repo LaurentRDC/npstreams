@@ -141,11 +141,26 @@ like :code:`numpy.ndarray.max()` using the :code:`npstreams.last` function::
         """
         return last(imax(*args, **kwargs)
 
+Benchmarking
+------------
+
+npstreams provides a function for benchmarking common use cases.
+
+To run the benchmark with default parameters, from the interpreter::
+
+    from npstreams import benchmark
+    benchmark()
+
+From a command-line terminal::
+
+    python -c 'import npstreams; npstreams.benchmark()'
+
+The results will be printed to the screen.
+
 Future Work
 -----------
 Some of the features I want to implement in this package in the near future:
 
-* Benchmark section : how does the performance compare with NumPy functions, as array size increases?
 * Optimize the CUDA-enabled routines
 * More functions : more streaming functions borrowed from NumPy and SciPy.
 

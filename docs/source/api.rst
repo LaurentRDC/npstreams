@@ -134,3 +134,10 @@ Array Utilities
     :toctree: functions/
 
     nan_to_num
+
+Benchmarking
+------------
+.. autosummary::
+    :toctree: functions/
+
+    benchmark

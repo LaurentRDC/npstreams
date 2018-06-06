@@ -64,7 +64,13 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
               ufuncs = [np.add, np.multiply, np.power, np.true_divide, np.mod], 
               shapes = [(4,4), (8,8), (16,16), (64,64)]):
     """ 
-    Execute benchmarks and print the results.
+    Benchmark npstreams against numpy and print the results.
+
+    There are two categories of benchmarks. The first category compares NumPy functions against
+    npstreams versions of the same functions. The second category compares NumPy universal functions
+    against dynamically-generated npstreams versions of those same universal functions.
+
+    All benchmarks compare a reduction operation on a stream of arrays of varying sizes. The sequence length is fixed.
     
     Parameters
     ----------
@@ -114,15 +120,15 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     # Start benchmarks --------------------------------------------------------
     print('')
     print(''.ljust(console_width, '*'))
-    print('npstreams performance benchmark')
-    print("    npstreams {}".format(__version__))
-    print("    NumPy {}".format(np.__version__))
+    print('npstreams performance benchmark'.center(console_width))
+    print("    npstreams".ljust(15), "{}".format(__version__))
+    print("    NumPy".ljust(15), "{}".format(np.__version__))
     print("    Speedup is NumPy time divided by npstreams time (Higher is better)")
     print(''.ljust(console_width, '*'))
 
     # Benchmarking functions --------------------------------------------------
     for func in sorted(valid_funcs, key = lambda fn: fn.__name__):
-        print("   ", func_test_name(f = func))
+        print(func_test_name(f = func).center(console_width))
         for shape in shapes:
 
             numpy_statement     = 'np_{}(stack(stream()), axis = -1)'.format(func.__name__)
@@ -132,13 +138,13 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
                 np_time = autotimeit(numpy_statement, FUNC_SETUP.format(func = func, shape = shape))
                 ns_time = autotimeit(npstreams_statement, FUNC_SETUP.format(func = func, shape = shape))
 
-            print("        ", "shape = {}".format(shape).ljust(sh_just), "speedup = {:.4f}x".format(np_time / ns_time))
+            print("    ", "shape = {}".format(shape).ljust(sh_just), "speedup = {:.4f}x".format(np_time / ns_time))
 
         print(''.ljust(console_width, '-'))
 
     # Benchmarking universal functions ----------------------------------------
     for ufunc in sorted(valid_ufuncs, key = lambda fn: fn.__name__):
-        print("   ", ufunc_test_name(f = ufunc))
+        print(ufunc_test_name(f = ufunc).center(console_width))
         for shape in shapes:
             
             numpy_statement     = '{ufunc}.reduce(stack(stream()), axis = -1)'.format(ufunc = ufunc.__name__)
@@ -148,6 +154,6 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
                 np_time = autotimeit(numpy_statement, UFUNC_SETUP.format(ufunc = ufunc, shape = shape))
                 ns_time = autotimeit(npstreams_statement, UFUNC_SETUP.format(ufunc = ufunc, shape = shape))
             
-            print("        ", "shape = {}".format(shape).ljust(sh_just), "speedup = {:.4f}x".format(np_time / ns_time))
+            print("    ", "shape = {}".format(shape).ljust(sh_just), "speedup = {:.4f}x".format(np_time / ns_time))
         
         print(''.ljust(console_width, '-'))
