@@ -55,4 +55,4 @@ test_script:
 
 # Run the benchmarks
 on_success:
-  - "python -c 'import npstreams; npstreams.benchmark()'
+  - "python -c 'import npstreams; npstreams.benchmark()'"
