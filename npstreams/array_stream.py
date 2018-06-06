@@ -21,7 +21,7 @@ class ArrayStream(Iterator):
         self._iterator = iter(stream)
     
     def __next__(self):
-        n = next(self._iterator)
+        n = self._iterator.__next__()
         return asanyarray(n)
 
 def array_stream(func):
@@ -33,8 +33,13 @@ def array_stream(func):
 
     The first argument of the decorated function is assumed to be an iterable of
     arrays, or an iterable of objects that can be casted to arrays.
+
+    Note that using this decorator also ensures that the stream is only wrapped once
+    by the conversion function.
     """
     @wraps(func)
     def decorated(arrays, *args, **kwargs):
+        if isinstance(arrays, ArrayStream):
+            return func(arrays, *args, **kwargs)
         return func(ArrayStream(arrays), *args, **kwargs)
     return decorated
