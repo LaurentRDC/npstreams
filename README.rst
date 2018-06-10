@@ -10,6 +10,9 @@ npstreams
 .. image:: https://img.shields.io/pypi/v/npstreams.svg
     :target: https://pypi.python.org/pypi/npstreams
     :alt: PyPI Version
+.. image:: https://img.shields.io/conda/vn/conda-forge/npstreams.svg
+    :target: https://anaconda.org/conda-forge/npstreams
+    :alt: Conda-forge Version
 .. image:: https://img.shields.io/pypi/pyversions/npstreams.svg
     :alt: Supported Python Versions
 
