@@ -87,8 +87,8 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     """
     # Preliminaries
     console_width = min(get_terminal_size().columns, 80)
-    func_test_name = 'np.{f.__name__} vs ns.{f.__name__}'.format
-    ufunc_test_name = 'np.{f.__name__} vs ns.reduce_ufunc(np.{f.__name__}, ...)'.format
+    func_test_name = 'numpy.{f.__name__} vs npstreams.{f.__name__}'.format
+    ufunc_test_name = 'numpy.{f.__name__} vs npstreams.reduce_ufunc(numpy.{f.__name__}, ...)'.format
 
     # Determine justification based on maximal shape functions
     sh_just = max(map(lambda s : len(str(s)), shapes)) + 10
@@ -120,7 +120,8 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     # Start benchmarks --------------------------------------------------------
     print('')
     print(''.ljust(console_width, '*'))
-    print('npstreams performance benchmark'.center(console_width))
+    print('npstreams performance benchmark'.upper().center(console_width))
+    print('')
     print("    npstreams".ljust(15), "{}".format(__version__))
     print("    NumPy".ljust(15), "{}".format(np.__version__))
     print("    Speedup is NumPy time divided by npstreams time (Higher is better)")
@@ -129,6 +130,7 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     # Benchmarking functions --------------------------------------------------
     for func in sorted(valid_funcs, key = lambda fn: fn.__name__):
         print(func_test_name(f = func).center(console_width))
+        print('')
         for shape in shapes:
 
             numpy_statement     = 'np_{}(stack(stream()), axis = -1)'.format(func.__name__)
@@ -145,6 +147,7 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     # Benchmarking universal functions ----------------------------------------
     for ufunc in sorted(valid_ufuncs, key = lambda fn: fn.__name__):
         print(ufunc_test_name(f = ufunc).center(console_width))
+        print('')
         for shape in shapes:
             
             numpy_statement     = '{ufunc}.reduce(stack(stream()), axis = -1)'.format(ufunc = ufunc.__name__)
