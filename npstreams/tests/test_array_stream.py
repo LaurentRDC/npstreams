@@ -14,7 +14,7 @@ class TestArrayStreamDecorator(unittest.TestCase):
     def test_type(self):
         """ Test that all object from an array stream are ndarrays """
 
-        stream = [0, 1, np.array([1]), 'a']
+        stream = [0, 1, np.array([1])]
         for arr in iden(stream):
             self.assertIsInstance(arr, np.ndarray)
         

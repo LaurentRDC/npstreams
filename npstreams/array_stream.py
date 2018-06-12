@@ -15,6 +15,9 @@ class ArrayStream(Iterator):
     NumPy arrays. If ``stream`` is a single array, it will be 
     repackaged as a length 1 iterable.
 
+    Arrays in the stream will be cast to the same data-type as the first
+    array in the stream. The stream data-type is located in the `dtype` attribute.
+
     .. versionadded:: 1.5.2
     """
 
@@ -23,12 +26,13 @@ class ArrayStream(Iterator):
             stream = (stream,)
         
         self._sequence_length = length_hint(stream, default = NotImplemented)
+
+        # Once length_hint has been determined, we can peek into the stream
+        first, stream = peek(stream)
         self._iterator = iter(stream)
 
-        # We peek into the stream after creating the iterator
-        # so as to not modify the stream before _iterator is created
-        first, _ = peek(stream)
-        self.dtype = asanyarray(first).dtype
+        first = asanyarray(first)
+        self.dtype = first.dtype
 
     def __repr__(self):
         """ Verbose string representation """
@@ -51,7 +55,7 @@ class ArrayStream(Iterator):
     
     def __next__(self):
         n = self._iterator.__next__()
-        return asanyarray(n)
+        return asanyarray(n, dtype = self.dtype)
 
 def array_stream(func):
     """ 
