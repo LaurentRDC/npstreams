@@ -14,7 +14,7 @@ from .array_utils import nan_to_num
 from .linalg import idot, itensordot, ieinsum, iinner
 from .parallel import pmap, pmap_unordered, preduce
 from .flow import ipipe, iload, pload
-from .iter_utils import cyclic, last, chunked, multilinspace, linspace, peek, itercopy, primed
+from .iter_utils import cyclic, last, chunked, multilinspace, linspace, peek, itercopy, primed, length_hint
 from .reduce import ireduce_ufunc, preduce_ufunc, reduce_ufunc
 from .stacking import stack
 from .stats import (iaverage, average, imean, mean, istd, std, 

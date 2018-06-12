@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Sized
 from functools import wraps
-from numpy import asanyarray
 
 import numpy as np
+from numpy import asanyarray
+
+from .iter_utils import length_hint
+
 
 class ArrayStream(Iterator):
     """ 
@@ -18,7 +21,16 @@ class ArrayStream(Iterator):
     def __init__(self, stream):
         if isinstance(stream, np.ndarray):
             stream = (stream,)
+        
+        self._sequence_length = length_hint(stream, default = NotImplemented)
         self._iterator = iter(stream)
+    
+    def __length_hint__(self):
+        """ 
+        In certain cases, and ArrayStream can have a definite size. 
+        See https://www.python.org/dev/peps/pep-0424/ 
+        """
+        return self._sequence_length
     
     def __next__(self):
         n = self._iterator.__next__()

@@ -23,5 +23,22 @@ class TestArrayStreamDecorator(unittest.TestCase):
         stream = np.array([1,2,3])
         self.assertEqual(len(list(iden(stream))), 1)
 
+class TestArrayStream(unittest.TestCase):
+
+    def test_length_hint_sized_iterable(self):
+        """ Test the accuracy of __length_hint__ for ArrayStream constructed
+        from a sized iterable """
+        iterable = [1,2,3,4,5]
+        a = ArrayStream(iterable)
+        self.assertEqual(len(iterable), a.__length_hint__())
+
+    def test_length_hint_not_sized_iterable(self):
+        """ Test that __length_hint__ returns NotImplemented for ArrayStream constructed
+        from an unsized iterable """
+        iterable = (0 for _ in range(10))
+        a = ArrayStream(iterable)
+        self.assertIs(a.__length_hint__(), NotImplemented)
+
+
 if __name__ == '__main__':
 	unittest.main()

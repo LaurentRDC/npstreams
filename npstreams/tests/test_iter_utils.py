@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from itertools import repeat
-from .. import last, chunked, linspace, multilinspace, cyclic
+from .. import last, chunked, linspace, multilinspace, cyclic, length_hint
 
 class TestLast(unittest.TestCase):
 
@@ -90,6 +90,27 @@ class TestChunked(unittest.TestCase):
         with self.assertRaises(TypeError):
             i = repeat(1)
             chunks = chunked(i, chunksize = 15.0)
+
+class TestLengthHint(unittest.TestCase):
+
+    def test_on_sized(self):
+        """ Test length_hint on a sized iterable """
+        l = [1,2,3,4,5]
+        self.assertEqual(length_hint(l), len(l))
+
+    def test_on_unsized(self):
+        """ Test length_hint on an unsized iterable returns the default """
+        l = (0 for _ in range(10))
+        self.assertEqual(length_hint(l, default = 0), 0)
+
+    def test_on_method_if_implemented(self):
+        """ Test length_hint returns the same as __length_hint__ if implemented """
+        
+        class WithHint:
+            """ Some dummy class with a length hint """
+            def __length_hint__(self): return 1
+
+        self.assertEqual(length_hint(WithHint(), default = 0), 1)
 		
 if __name__ == '__main__':
 	unittest.main()
