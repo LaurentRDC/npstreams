@@ -127,6 +127,7 @@ Iterator Utilities
     multilinspace
     peek
     primed
+    length_hint
 
 Array Utilities
 ---------------
