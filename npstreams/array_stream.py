@@ -6,7 +6,7 @@ from functools import wraps
 import numpy as np
 from numpy import asanyarray
 
-from .iter_utils import length_hint
+from .iter_utils import length_hint, peek
 
 
 class ArrayStream(Iterator):
@@ -24,6 +24,23 @@ class ArrayStream(Iterator):
         
         self._sequence_length = length_hint(stream, default = NotImplemented)
         self._iterator = iter(stream)
+
+        # We peek into the stream after creating the iterator
+        # so as to not modify the stream before _iterator is created
+        first, _ = peek(stream)
+        self.dtype = asanyarray(first).dtype
+
+    def __repr__(self):
+        """ Verbose string representation """
+        representation =  '< {clsname} object'.format(clsname = self.__class__.__name__)
+        representation += ' of data-type {dtype}'.format(dtype   = self.dtype)
+
+        if not (self._sequence_length is NotImplemented):
+            representation += ' and a sequence length of {length}'.format(length = self._sequence_length)
+        else:
+            representation += ' of unknown length'
+        
+        return representation + ' >'
     
     def __length_hint__(self):
         """ 
