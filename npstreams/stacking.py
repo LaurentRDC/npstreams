@@ -31,11 +31,10 @@ def stack(arrays, axis = -1):
     """
     arrays = iter(arrays)
 
-    # Shortcut if we already know the stream length
+    # TODO: Shortcut if we already know the stream length
     # Note : we are guaranteed that `arrays` is a stream of arrays
     # at worst a tuple (arr,)
-    if isinstance(arrays, Sized):
-        return np.stack(arrays, axis = axis)
+    # Use npstreams.length_hint
 
     first = next(arrays)
     stack = np.array(first, copy = True)
