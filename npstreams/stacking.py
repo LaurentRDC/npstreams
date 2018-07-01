@@ -29,21 +29,18 @@ def stack(arrays, axis = -1):
     stacked : ndarray
         Cumulative stacked array.
     """
-    arrays = iter(arrays)
+    # Shortcut : if axis == -1, this is exactly what ArrayStream.__array__
+    if axis == -1:
+        return np.array(arrays)
 
     # TODO: Shortcut if we already know the stream length
     # Note : we are guaranteed that `arrays` is a stream of arrays
     # at worst a tuple (arr,)
     # Use npstreams.length_hint
-
+    arrays = iter(arrays)
     first = next(arrays)
     stack = np.array(first, copy = True)
 
-    if axis == -1:
-        axis = stack.ndim
-        stack = np.expand_dims(stack, axis = axis)
-        arrays = map(partial(np.expand_dims, axis = axis), arrays)
-    
     for array in arrays:
         stack = np.concatenate([stack, array], axis = axis)
 

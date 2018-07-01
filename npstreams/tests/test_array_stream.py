@@ -38,6 +38,12 @@ class TestArrayStream(unittest.TestCase):
         iterable = (0 for _ in range(10))
         a = ArrayStream(iterable)
         self.assertIs(a.__length_hint__(), NotImplemented)
+    
+    def test_conversion_to_array(self):
+        """ Test that numpy.array(Arraystream(...)) returns an array built as a stack of arrays """
+        a = ArrayStream([np.random.random((16,16)) for _ in range(10)])
+        arr = np.array(a)
+        self.assertEqual(arr.shape, (16,16,10))
 
 
 if __name__ == '__main__':

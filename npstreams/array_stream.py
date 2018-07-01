@@ -46,9 +46,16 @@ class ArrayStream(Iterator):
         
         return representation + ' >'
     
+    def __array__(self):
+        """ Returns a dense array created from this stream. """
+        # As of numpy version 1.14, arrays are expanded into a list before contatenation
+        # Therefore, it's ok to build that list first
+        arraylist = list(self)
+        return np.stack(arraylist, axis = -1)
+    
     def __length_hint__(self):
         """ 
-        In certain cases, and ArrayStream can have a definite size. 
+        In certain cases, an ArrayStream can have a definite size. 
         See https://www.python.org/dev/peps/pep-0424/ 
         """
         return self._sequence_length
