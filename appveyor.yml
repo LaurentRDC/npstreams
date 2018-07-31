@@ -13,8 +13,8 @@ environment:
                         # of 32 bit and 64 bit builds are needed, move this
                         # to the matrix section.
       TEST_CMD: "python -m unittest discover --verbose"
-
-      CONDA_DEPENDENCIES: "numpy>=1.12 scipy cython"
+      NUMPY_VERSION: "1.14"
+      CONDA_DEPENDENCIES: "numpy scipy cython"
       PIP_DEPENDENCIES: ""
 
   matrix:
@@ -39,8 +39,10 @@ install:
     - "activate test"
 
     # Test that PATH is set correctly
+    # Also show the numpy version
     - "conda --version"
     - "python --version"
+    - "conda list --full-name numpy"
 
     # Cythonize
     # This also works if there are no cython extensions
@@ -55,4 +57,4 @@ test_script:
 
 # Run the benchmarks
 on_success:
-  - python -c "import npstreams; npstreams.benchmark()"
+  #- python -c "import npstreams; npstreams.benchmark()"
