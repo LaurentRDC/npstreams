@@ -6,6 +6,7 @@ CUDA-accelerated streaming operations
 from functools import partial
 from itertools import repeat
 from operator import iadd, imul
+from subprocess import run, PIPE
 
 import numpy as np
 
@@ -25,10 +26,17 @@ else:
     import pycuda.driver as driver
     from pycuda.compiler import SourceModule
 
+# Check if nvcc compiler is installed at all
+nvcc_installed = run(['nvcc', '-h'], stdout = PIPE).returncode == 0
+if not nvcc_installed:
+    raise ImportError('CUDA compiler `nvcc` not installed.')
+
+# Check that nvcc is at least set up properly
+# For example, if nvcc is installed but C++ compiler is not in path
 try:
     SourceModule('')
 except driver.CompileError:
-    raise ImportError('CUDA compiler not availble.')
+    raise ImportError('CUDA compiler `nvcc` is not properly set up.')
 
 if driver.Device.count() == 0:
     raise ImportError('No GPU is available.')
