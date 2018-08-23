@@ -2,10 +2,10 @@
 """ 
 Reliably benchmarking npstreams performance.
 """
-
 import inspect
 import timeit
 from collections import namedtuple
+from functools import partial
 from shutil import get_terminal_size
 
 import numpy as np
@@ -69,7 +69,8 @@ def autotimeit(statement, setup = 'pass', repeat = 3):
 
 def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod], 
               ufuncs = [np.add, np.multiply, np.power, np.true_divide, np.mod],
-              shapes = [(4,4), (8,8), (16,16), (64,64)]):
+              shapes = [(4,4), (8,8), (16,16), (64,64)],
+              file = None):
     """ 
     Benchmark npstreams against numpy and print the results.
 
@@ -91,8 +92,12 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     shapes : iterable of tuples, optional
         Shapes of arrays to test. Streams of random numbers will be generated with arrays of those shapes.
         The sequence lengths are fixed.
+    file : file-like or None, optional
+        File to which the benchmark results will be written. 
+        The file argument must be an object with a `write(string)` method; if None, sys.stdout will be used.
     """
     # Preliminaries
+    printf = partial(print, file = file)
     console_width = min(get_terminal_size().columns, 80)
     func_test_name = 'numpy.{f.__name__} vs npstreams.{f.__name__}'.format
     ufunc_test_name = 'numpy.{f.__name__} vs npstreams.reduce_ufunc(numpy.{f.__name__}, ...)'.format
@@ -101,44 +106,44 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     sh_just = max(map(lambda s : len(str(s)), shapes)) + 10
 
     # Start benchmarks --------------------------------------------------------
-    print(''.ljust(console_width, '*'), 
-          'npstreams performance benchmark'.upper().center(console_width),
-          '', 
-          "    npstreams".ljust(15) + " {}".format(__version__),
-          "    NumPy".ljust(15) +  " {}".format(np.__version__),
-          '',
-          "    Speedup is NumPy time divided by npstreams time (Higher is better)",
-          ''.ljust(console_width, '*'), sep = '\n')
+    printf(''.ljust(console_width, '*'), 
+           'npstreams performance benchmark'.upper().center(console_width),
+           '', 
+           "    npstreams".ljust(15) + " {}".format(__version__),
+           "    NumPy".ljust(15) +  " {}".format(np.__version__),
+           '',
+           "    Speedup is NumPy time divided by npstreams time (Higher is better)",
+           ''.ljust(console_width, '*'), sep = '\n')
 
     # Determine valid ufuncs and funcs first ----------------------------------
-    valid_ufuncs = comparable_ufuncs(ufuncs)
-    valid_funcs  = comparable_funcs(funcs)
+    valid_ufuncs = comparable_ufuncs(ufuncs, file)
+    valid_funcs  = comparable_funcs(funcs, file)
 
 
     # Benchmarking functions --------------------------------------------------
     for func in sorted(valid_funcs, key = lambda fn: fn.__name__):
-        print(func_test_name(f = func).center(console_width), '\n')
+        printf(func_test_name(f = func).center(console_width), '\n')
 
         for (np_time, ns_time, shape) in benchmark_func(func, shapes):
             speedup = np_time / ns_time
-            print("    ", 
-                  "shape = {}".format(shape).ljust(sh_just), 
-                  "speedup = {:.4f}x".format(speedup))
+            printf("    ", 
+                   "shape = {}".format(shape).ljust(sh_just), 
+                   "speedup = {:.4f}x".format(speedup))
         
 
-        print(''.ljust(console_width, '-'))
+        printf(''.ljust(console_width, '-'))
 
     # Benchmarking universal functions ----------------------------------------
     for ufunc in sorted(valid_ufuncs, key = lambda fn: fn.__name__):
-        print(ufunc_test_name(f = ufunc).center(console_width), '\n')
+        printf(ufunc_test_name(f = ufunc).center(console_width), '\n')
 
         for (np_time, ns_time, shape) in benchmark_ufunc(ufunc, shapes):
             speedup = np_time / ns_time
-            print("    ", 
-                  "shape = {}".format(shape).ljust(sh_just), 
-                  "speedup = {:.4f}x".format(speedup))
+            printf("    ", 
+                   "shape = {}".format(shape).ljust(sh_just), 
+                   "speedup = {:.4f}x".format(speedup))
         
-        print(''.ljust(console_width, '-'))
+        printf(''.ljust(console_width, '-'))
 
 def benchmark_ufunc(ufunc, shapes):
     """ 
@@ -194,7 +199,7 @@ def benchmark_func(func, shapes):
         
         yield BenchmarkResults(np_time, ns_time, shape)
 
-def comparable_ufuncs(ufuncs):
+def comparable_ufuncs(ufuncs, file):
     """ 
     Yields ufuncs that can be compared between numpy and npstreams. 
     
@@ -220,7 +225,7 @@ def comparable_ufuncs(ufuncs):
         else:
             yield ufunc
 
-def comparable_funcs(funcs):
+def comparable_funcs(funcs, file):
     """ 
     Yields NumPy functions that have npstreams equivalents. 
     
