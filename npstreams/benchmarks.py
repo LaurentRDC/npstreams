@@ -5,9 +5,10 @@ Reliably benchmarking npstreams performance.
 
 import inspect
 import timeit
-from shutil import get_terminal_size
-import numpy as np
 from collections import namedtuple
+from shutil import get_terminal_size
+
+import numpy as np
 
 from . import __version__
 from .reduce import _check_binary_ufunc
@@ -26,7 +27,7 @@ def stream():
 FUNC_SETUP = """
 from npstreams import stack
 import numpy as np
-from numpy import {func.__name__} as np_{func.__name__}
+from numpy     import {func.__name__} as np_{func.__name__}
 from npstreams import {func.__name__} as ns_{func.__name__}
 
 np.random.seed(42056)
