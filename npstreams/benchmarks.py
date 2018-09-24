@@ -95,8 +95,7 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
         Shapes of arrays to test. Streams of random numbers will be generated with arrays of those shapes.
         The sequence lengths are fixed.
     file : file-like or None, optional
-        File to which the benchmark results will be written. 
-        The file argument must be an object with a `write(string)` method; if None, sys.stdout will be used.
+        File to which the benchmark results will be written. If None, sys.stdout will be used.
     """    
     # Preliminaries
     console_width = min(get_terminal_size().columns, 80)
@@ -107,9 +106,7 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
     sh_just = max(map(lambda s : len(str(s)), shapes)) + 10
 
     # To make it easy to either write the results in a file or print to stdout,
-    # We actually redirect stdout.
-    # Take a look at this thread:
-    #     https://stackoverflow.com/questions/4675728/redirect-stdout-to-a-file-in-python
+    # We actually redirect stdout.        
     if file is None:
         file = sys.stdout
         
