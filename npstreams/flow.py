@@ -9,6 +9,7 @@ from glob import iglob
 from .array_stream import ArrayStream
 from .parallel import pmap, pmap_unordered
 
+
 def iload(files, load_func, **kwargs):
     """
     Create a stream of arrays from files, which are loaded lazily.
@@ -56,7 +57,8 @@ def iload(files, load_func, **kwargs):
 
     yield from map(partial(load_func, **kwargs), files)
 
-def pload(files, load_func, processes = 1, **kwargs):
+
+def pload(files, load_func, processes=1, **kwargs):
     """
     Create a stream of arrays from files, which are loaded lazily 
     from multiple processes. 
@@ -93,13 +95,15 @@ def pload(files, load_func, processes = 1, **kwargs):
         files = iglob(files)
     files = iter(files)
 
-    yield from pmap_unordered(partial(load_func, **kwargs), files, processes = processes)
+    yield from pmap_unordered(partial(load_func, **kwargs), files, processes=processes)
+
 
 # pmap does not support local functions
 def _pipe(funcs, array):
     for func in funcs:
         array = func(array)
     return array
+
 
 def ipipe(*args, **kwargs):
     """

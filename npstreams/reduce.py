@@ -15,25 +15,34 @@ from .iter_utils import chunked, last, peek, primed
 from .parallel import preduce
 
 
-@lru_cache(maxsize = 128)
+@lru_cache(maxsize=128)
 def _check_binary_ufunc(ufunc):
     """ Check that ufunc is suitable for ``ireduce_ufunc`` """
     if not isinstance(ufunc, np.ufunc):
-        raise TypeError('{} is not a NumPy Ufunc'.format(ufunc.__name__))
+        raise TypeError("{} is not a NumPy Ufunc".format(ufunc.__name__))
     if ufunc.nin != 2:
-        raise ValueError('Only binary ufuncs are supported, and {} is \
-                          not one of them'.format(ufunc.__name__))
-    
+        raise ValueError(
+            "Only binary ufuncs are supported, and {} is \
+                          not one of them".format(
+                ufunc.__name__
+            )
+        )
+
     # Ufuncs that always return bool are problematic because they can be reduced
     # but not be accumulated.
     # Recall: numpy.dtype('?') == np.bool
-    if all(type_signature[-1] == '?' for type_signature in ufunc.types):
-        raise ValueError('Only binary ufuncs that preserve type are supported, \
-                          and {} is not one of them'.format(ufunc.__name__))
+    if all(type_signature[-1] == "?" for type_signature in ufunc.types):
+        raise ValueError(
+            "Only binary ufuncs that preserve type are supported, \
+                          and {} is not one of them".format(
+                ufunc.__name__
+            )
+        )
+
 
 @primed
 @array_stream
-def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **kwargs):
+def ireduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs):
     """
     Streaming reduction generator function from a binary NumPy ufunc. Generator
     version of `reduce_ufunc`.
@@ -80,36 +89,41 @@ def ireduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **
     ValueError : if ``ufunc`` is not a binary ufunc
     ValueError : if ``ufunc`` does not have the same input type as output type
     """
-    kwargs.update({'dtype': dtype, 'axis': axis})
+    kwargs.update({"dtype": dtype, "axis": axis})
 
     _check_binary_ufunc(ufunc)
 
     if ignore_nan:
         if ufunc.identity is None:
-            raise ValueError('Cannot ignore NaNs because {} has no identity value'.format(ufunc.__name__))
-        arrays = map(partial(nan_to_num, fill_value = ufunc.identity, copy = False), arrays)
+            raise ValueError(
+                "Cannot ignore NaNs because {} has no identity value".format(
+                    ufunc.__name__
+                )
+            )
+        arrays = map(partial(nan_to_num, fill_value=ufunc.identity, copy=False), arrays)
 
     # Since ireduce_ufunc is primed, we need to wait here
     yield
 
-    if kwargs['axis'] == -1:
+    if kwargs["axis"] == -1:
         yield from _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs)
         return
 
-    if kwargs['axis'] is None:
+    if kwargs["axis"] is None:
         yield from _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs)
         return
 
     first, arrays = peek(arrays)
-    
-    if kwargs['axis'] >= first.ndim:
-        kwargs['axis'] = -1
+
+    if kwargs["axis"] >= first.ndim:
+        kwargs["axis"] = -1
         yield from ireduce_ufunc(arrays, ufunc, **kwargs)
         return
 
     yield from _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs)
 
-def reduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **kwargs):
+
+def reduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs):
     """
     Reduce a stream using a binary NumPy ufunc. Function version of ``ireduce_ufunc``.
 
@@ -154,10 +168,24 @@ def reduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, **k
     ValueError: if ``ufunc`` is not a binary ufunc
     ValueError: if ``ufunc`` does not have the same input type as output type
     """
-    return last(ireduce_ufunc(arrays, ufunc, axis = axis, dtype = dtype, ignore_nan = ignore_nan, **kwargs))
+    return last(
+        ireduce_ufunc(
+            arrays, ufunc, axis=axis, dtype=dtype, ignore_nan=ignore_nan, **kwargs
+        )
+    )
+
 
 @array_stream
-def preduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, processes = 1, ntotal = None, **kwargs):
+def preduce_ufunc(
+    arrays,
+    ufunc,
+    axis=-1,
+    dtype=None,
+    ignore_nan=False,
+    processes=1,
+    ntotal=None,
+    **kwargs
+):
     """
     Parallel reduction of array streams.
 
@@ -194,16 +222,19 @@ def preduce_ufunc(arrays, ufunc, axis = -1, dtype = None, ignore_nan = False, pr
     if processes == 1:
         return reduce_ufunc(arrays, ufunc, axis, dtype, ignore_nan, **kwargs)
 
-    kwargs.update({'ufunc': ufunc, 'ignore_nan': ignore_nan, 'dtype': dtype, 'axis': axis})
+    kwargs.update(
+        {"ufunc": ufunc, "ignore_nan": ignore_nan, "dtype": dtype, "axis": axis}
+    )
     reduce = partial(reduce_ufunc, **kwargs)
-    #return preduce(reduce, arrays, processes = processes, ntotal = ntotal)
+    # return preduce(reduce, arrays, processes = processes, ntotal = ntotal)
 
     with Pool(processes) as pool:
         chunksize = 1
         if ntotal is not None:
-            chunksize = max(1, int(ntotal/pool._processes))
+            chunksize = max(1, int(ntotal / pool._processes))
         res = pool.imap(reduce, chunked(arrays, chunksize))
         return reduce(res)
+
 
 def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     """
@@ -225,27 +256,28 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     arrays = iter(arrays)
     first = next(arrays)
 
-    kwargs.pop('axis')
-                
-    dtype = kwargs.get('dtype', None)
+    kwargs.pop("axis")
+
+    dtype = kwargs.get("dtype", None)
     if dtype is None:
         dtype = first.dtype
     else:
-        kwargs['casting'] = 'unsafe'
+        kwargs["casting"] = "unsafe"
 
     # If the out parameter was already given
     # we create the accumulator from it
     # Otherwise, it is a copy of the first array
-    accumulator = kwargs.pop('out', None)
+    accumulator = kwargs.pop("out", None)
     if accumulator is not None:
         accumulator[:] = first
     else:
-        accumulator = np.array(first, copy = True).astype(dtype)
+        accumulator = np.array(first, copy=True).astype(dtype)
     yield accumulator
-    
+
     for array in arrays:
-        ufunc(accumulator, array, out = accumulator, **kwargs)
+        ufunc(accumulator, array, out=accumulator, **kwargs)
         yield accumulator
+
 
 def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     """
@@ -267,16 +299,20 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     arrays = iter(arrays)
     first = next(arrays)
 
-    if kwargs['axis'] not in range(first.ndim):
-        raise ValueError('Axis {} not supported on arrays of shape {}.'.format(kwargs['axis'], first.shape))
-    
+    if kwargs["axis"] not in range(first.ndim):
+        raise ValueError(
+            "Axis {} not supported on arrays of shape {}.".format(
+                kwargs["axis"], first.shape
+            )
+        )
+
     # Remove parameters that will not be used.
-    kwargs.pop('out', None)
-    
-    dtype = kwargs.get('dtype')
+    kwargs.pop("out", None)
+
+    dtype = kwargs.get("dtype")
     if dtype is None:
         dtype = first.dtype
-    
+
     axis_reduce = partial(ufunc.reduce, **kwargs)
 
     accumulator = np.atleast_1d(axis_reduce(first))
@@ -285,16 +321,19 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     # On the first pass of the following loop, accumulator is missing a dimensions
     # therefore, the stacking function cannot be 'concatenate'
     second = next(arrays)
-    accumulator = np.stack([accumulator, np.atleast_1d(axis_reduce(second))], axis = -1)
+    accumulator = np.stack([accumulator, np.atleast_1d(axis_reduce(second))], axis=-1)
     yield accumulator
 
     # On the second pass, the new dimensions exists, and thus we switch to
     # using concatenate.
     for array in arrays:
-        reduced = np.expand_dims(np.atleast_1d(axis_reduce(array)), axis = accumulator.ndim - 1)
-        accumulator = np.concatenate([accumulator, reduced], axis = accumulator.ndim - 1)
+        reduced = np.expand_dims(
+            np.atleast_1d(axis_reduce(array)), axis=accumulator.ndim - 1
+        )
+        accumulator = np.concatenate([accumulator, reduced], axis=accumulator.ndim - 1)
         yield accumulator
-    
+
+
 def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, over all axes.
@@ -315,14 +354,14 @@ def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     arrays = iter(arrays)
     first = next(arrays)
 
-    kwargs.pop('out', None)
+    kwargs.pop("out", None)
 
-    kwargs['axis'] = None
+    kwargs["axis"] = None
     axis_reduce = partial(ufunc.reduce, **kwargs)
 
     accumulator = axis_reduce(first)
     yield accumulator
-    
+
     for array in arrays:
         accumulator = axis_reduce([accumulator, axis_reduce(array)])
         yield accumulator

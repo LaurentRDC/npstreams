@@ -12,7 +12,7 @@ import numpy as np
 
 from . import array_stream, itercopy, nan_to_num, peek
 
-# Determine if 
+# Determine if
 #   1. pycuda is installed;
 #   2. pycuda can compile with nvcc
 #   3. a GPU is available
@@ -21,28 +21,29 @@ try:
     import pycuda.gpuarray as gpuarray
     import pycuda.autoinit
 except ImportError:
-    raise ImportError('PyCUDA is not installed. CUDA capabilities are not available.')
+    raise ImportError("PyCUDA is not installed. CUDA capabilities are not available.")
 else:
     import pycuda.driver as driver
     from pycuda.compiler import SourceModule
 
 # Check if nvcc compiler is installed at all
-nvcc_installed = run(['nvcc', '-h'], stdout = PIPE).returncode == 0
+nvcc_installed = run(["nvcc", "-h"], stdout=PIPE).returncode == 0
 if not nvcc_installed:
-    raise ImportError('CUDA compiler `nvcc` not installed.')
+    raise ImportError("CUDA compiler `nvcc` not installed.")
 
 # Check that nvcc is at least set up properly
 # For example, if nvcc is installed but C++ compiler is not in path
 try:
-    SourceModule('')
+    SourceModule("")
 except driver.CompileError:
-    raise ImportError('CUDA compiler `nvcc` is not properly set up.')
+    raise ImportError("CUDA compiler `nvcc` is not properly set up.")
 
 if driver.Device.count() == 0:
-    raise ImportError('No GPU is available.')
+    raise ImportError("No GPU is available.")
+
 
 @array_stream
-def cuda_inplace_reduce(arrays, operator, dtype = None, ignore_nan = False, identity = 0):
+def cuda_inplace_reduce(arrays, operator, dtype=None, ignore_nan=False, identity=0):
     """
     Inplace reduce on GPU arrays.
 
@@ -71,17 +72,18 @@ def cuda_inplace_reduce(arrays, operator, dtype = None, ignore_nan = False, iden
         arrays = map(lambda arr: arr.astype(dtype), arrays)
 
     if ignore_nan:
-        arrays = map(partial(nan_to_num, fill_value = identity), arrays)
+        arrays = map(partial(nan_to_num, fill_value=identity), arrays)
 
     acc_gpu = gpuarray.to_gpu(next(arrays))  # Accumulator
-    arr_gpu = gpuarray.empty_like(acc_gpu)        # GPU memory location for each array
+    arr_gpu = gpuarray.empty_like(acc_gpu)  # GPU memory location for each array
     for arr in arrays:
         arr_gpu.set(arr)
         operator(acc_gpu, arr_gpu)
 
     return acc_gpu.get()
 
-def csum(arrays, dtype = None, ignore_nan = False):
+
+def csum(arrays, dtype=None, ignore_nan=False):
     """ 
     CUDA-enabled sum of stream of arrays. Arrays are summed along 
     the streaming axis for performance reasons. 
@@ -101,10 +103,12 @@ def csum(arrays, dtype = None, ignore_nan = False):
     --------
     isum : streaming sum of array elements, possibly along different axes
     """
-    return cuda_inplace_reduce(arrays, operator = iadd, dtype = dtype, 
-                               ignore_nan = ignore_nan, identity = 0)
+    return cuda_inplace_reduce(
+        arrays, operator=iadd, dtype=dtype, ignore_nan=ignore_nan, identity=0
+    )
 
-def cprod(arrays, dtype = None, ignore_nan = False):
+
+def cprod(arrays, dtype=None, ignore_nan=False):
     """ 
     CUDA-enabled product of a stream of arrays. Arrays are multiplied
     along the streaming axis for performance reasons.
@@ -126,11 +130,13 @@ def cprod(arrays, dtype = None, ignore_nan = False):
     ------
     online_prod : ndarray
     """
-    return cuda_inplace_reduce(arrays, operator = imul, dtype = dtype, 
-                               ignore_nan = ignore_nan, identity = 1)
+    return cuda_inplace_reduce(
+        arrays, operator=imul, dtype=dtype, ignore_nan=ignore_nan, identity=1
+    )
+
 
 @array_stream
-def cmean(arrays, ignore_nan = False):
+def cmean(arrays, ignore_nan=False):
     """
     CUDA-enabled mean of stream of arrays (i.e. unweighted average). Arrays are averaged
     along the streaming axis for performance reasons.
@@ -156,10 +162,12 @@ def cmean(arrays, ignore_nan = False):
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
         arrays, arrays2 = itercopy(arrays)
-        weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
+        weights = map(
+            lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights
+        )
         arrays = map(np.nan_to_num, arrays)
-        return caverage(arrays, weights, ignore_nan = False)
-    
+        return caverage(arrays, weights, ignore_nan=False)
+
     accumulator = gpuarray.to_gpu(next(arrays))
     array_gpu = gpuarray.empty_like(accumulator)
     num_arrays = 1
@@ -167,11 +175,12 @@ def cmean(arrays, ignore_nan = False):
         num_arrays += 1
         array_gpu.set(arr)
         accumulator += array_gpu
-    
+
     return accumulator.get() / num_arrays
 
+
 @array_stream
-def caverage(arrays, weights = None, ignore_nan = False):
+def caverage(arrays, weights=None, ignore_nan=False):
     """
     CUDA-enabled average of stream of arrays, possibly weighted. Arrays are averaged
     along the streaming axis for performance reasons.
@@ -201,28 +210,32 @@ def caverage(arrays, weights = None, ignore_nan = False):
         return cmean(arrays, ignore_nan)
 
     first, arrays = peek(arrays)
-    
+
     # We make sure that weights is always an array
     # This simplifies the handling of NaNs.
     if weights is None:
         weights = repeat(1)
-    weights = map(partial(np.broadcast_to, shape = first.shape), weights)
-    weights = map(lambda arr: arr.astype(first.dtype), weights)  # Won't work without this
+    weights = map(partial(np.broadcast_to, shape=first.shape), weights)
+    weights = map(
+        lambda arr: arr.astype(first.dtype), weights
+    )  # Won't work without this
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
         arrays, arrays2 = itercopy(arrays)
-        weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
+        weights = map(
+            lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights
+        )
         arrays = map(np.nan_to_num, arrays)
-    
+
     first = next(arrays)
     fst_wgt = next(weights)
 
     arr_gpu = gpuarray.to_gpu(first * fst_wgt)
     wgt_gpu = gpuarray.to_gpu(fst_wgt)
     for arr, wgt in zip(arrays, weights):
-        arr_gpu += (gpuarray.to_gpu(arr) * gpuarray.to_gpu(wgt))
+        arr_gpu += gpuarray.to_gpu(arr) * gpuarray.to_gpu(wgt)
         wgt_gpu += gpuarray.to_gpu(wgt)
-    
+
     arr_gpu /= wgt_gpu
     return arr_gpu.get()

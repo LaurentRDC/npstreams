@@ -10,7 +10,7 @@ from multiprocessing import Pool
 from .iter_utils import chunked
 
 
-def preduce(func, iterable, args = None, kwargs = None, processes = 1, ntotal = None):
+def preduce(func, iterable, args=None, kwargs=None, processes=1, ntotal=None):
     """
     Parallel application of the reduce function, with keyword arguments.
 
@@ -43,7 +43,7 @@ def preduce(func, iterable, args = None, kwargs = None, processes = 1, ntotal = 
     """
     if kwargs is None:
         kwargs = dict()
-    
+
     if args is None:
         args = tuple()
 
@@ -55,15 +55,16 @@ def preduce(func, iterable, args = None, kwargs = None, processes = 1, ntotal = 
     with Pool(processes) as pool:
         chunksize = 1
         if isinstance(iterable, Sized):
-            chunksize = max(1, int(len(iterable)/pool._processes))
+            chunksize = max(1, int(len(iterable) / pool._processes))
         elif ntotal is not None:
-            chunksize = max(1, int(ntotal/pool._processes))
-        
+            chunksize = max(1, int(ntotal / pool._processes))
+
         # Some reductions are order-sensitive
         res = pool.imap(partial(reduce, func), tuple(chunked(iterable, chunksize)))
         return reduce(func, res)
 
-def pmap(func, iterable, args = None, kwargs = None, processes = 1, ntotal = None):
+
+def pmap(func, iterable, args=None, kwargs=None, processes=1, ntotal=None):
     """
     Parallel application of a function with keyword arguments.
 
@@ -100,7 +101,7 @@ def pmap(func, iterable, args = None, kwargs = None, processes = 1, ntotal = Non
     """
     if kwargs is None:
         kwargs = dict()
-    
+
     if args is None:
         args = tuple()
 
@@ -109,17 +110,18 @@ def pmap(func, iterable, args = None, kwargs = None, processes = 1, ntotal = Non
     if processes == 1:
         yield from map(func, iterable)
         return
-    
+
     with Pool(processes) as pool:
         chunksize = 1
         if isinstance(iterable, Sized):
-            chunksize = max(1, int(len(iterable)/pool._processes))
+            chunksize = max(1, int(len(iterable) / pool._processes))
         elif ntotal is not None:
-            chunksize = max(1, int(ntotal/pool._processes))
+            chunksize = max(1, int(ntotal / pool._processes))
 
-        yield from pool.imap(func = func, iterable = iterable, chunksize = chunksize)
+        yield from pool.imap(func=func, iterable=iterable, chunksize=chunksize)
 
-def pmap_unordered(func, iterable, args = None, kwargs = None, processes = 1, ntotal = None):
+
+def pmap_unordered(func, iterable, args=None, kwargs=None, processes=1, ntotal=None):
     """
     Parallel application of a function with keyword arguments in no particular order. 
     This can reduce memory usage because results are not accumulated so that the order is preserved.
@@ -157,21 +159,23 @@ def pmap_unordered(func, iterable, args = None, kwargs = None, processes = 1, nt
     """
     if kwargs is None:
         kwargs = dict()
-    
+
     if args is None:
         args = tuple()
-    
+
     func = partial(func, *args, **kwargs)
 
     if processes == 1:
         yield from map(func, iterable)
         return
-    
+
     with Pool(processes) as pool:
         chunksize = 1
         if isinstance(iterable, Sized):
-            chunksize = max(1, int(len(iterable)/pool._processes))
+            chunksize = max(1, int(len(iterable) / pool._processes))
         elif ntotal is not None:
-            chunksize = max(1, int(ntotal/pool._processes))
+            chunksize = max(1, int(ntotal / pool._processes))
 
-        yield from pool.imap_unordered(func = func, iterable = iterable, chunksize = chunksize)
+        yield from pool.imap_unordered(
+            func=func, iterable=iterable, chunksize=chunksize
+        )

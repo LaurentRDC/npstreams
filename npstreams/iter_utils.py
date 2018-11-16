@@ -7,18 +7,22 @@ from collections import deque
 from functools import wraps
 from itertools import chain, islice, tee
 
+
 def primed(gen):
     """ 
     Decorator that primes a generator function, i.e. runs the function
     until the first ``yield`` statement. Useful in cases where there 
     are preliminary checks when creating the generator.
     """
+
     @wraps(gen)
     def primed_gen(*args, **kwargs):
         generator = gen(*args, **kwargs)
         next(generator)
         return generator
+
     return primed_gen
+
 
 @primed
 def chunked(iterable, chunksize):
@@ -43,16 +47,19 @@ def chunked(iterable, chunksize):
     TypeError : if `chunksize` is not an integer.
     """
     if not isinstance(chunksize, int):
-        raise TypeError('Expected `chunksize` to be an integer, but received {}'.format(chunksize))
-    
+        raise TypeError(
+            "Expected `chunksize` to be an integer, but received {}".format(chunksize)
+        )
+
     yield
 
     iterable = iter(iterable)
 
     next_chunk = tuple(islice(iterable, chunksize))
-    while next_chunk:	
+    while next_chunk:
         yield next_chunk
         next_chunk = tuple(islice(iterable, chunksize))
+
 
 def peek(iterable):
     """  
@@ -73,7 +80,8 @@ def peek(iterable):
     ahead = next(iterable)
     return ahead, chain([ahead], iterable)
 
-def itercopy(iterable, copies = 2):
+
+def itercopy(iterable, copies=2):
     """
     Split iterable into 'copies'. Once this is done, the original iterable *should
     not* be used again.
@@ -108,7 +116,8 @@ def itercopy(iterable, copies = 2):
     # to everyone
     return tee(iterable, copies)
 
-def linspace(start, stop, num, endpoint = True):
+
+def linspace(start, stop, num, endpoint=True):
     """ 
     Generate linear space. This is sometimes more appropriate than
     using `range`.
@@ -137,7 +146,7 @@ def linspace(start, stop, num, endpoint = True):
     if endpoint:
         num -= 1
 
-    step = (stop - start)/num
+    step = (stop - start) / num
 
     val = start
     for _ in range(num):
@@ -147,7 +156,8 @@ def linspace(start, stop, num, endpoint = True):
     if endpoint:
         yield stop
 
-def multilinspace(start, stop, num, endpoint = True):
+
+def multilinspace(start, stop, num, endpoint=True):
     """ 
     Generate multilinear space, for joining the values in two iterables.
 
@@ -176,13 +186,16 @@ def multilinspace(start, stop, num, endpoint = True):
     See also
     --------
     linspace : generate a linear space between two numbers
-    """	
+    """
     start, stop = tuple(start), tuple(stop)
     if len(start) != len(stop):
-        raise ValueError('start and stop must have the same length')
+        raise ValueError("start and stop must have the same length")
 
-    spaces = tuple(linspace(a, b, num = num, endpoint = endpoint) for a, b in zip(start, stop))
+    spaces = tuple(
+        linspace(a, b, num=num, endpoint=endpoint) for a, b in zip(start, stop)
+    )
     yield from zip(*spaces)
+
 
 def last(stream):
     """ 
@@ -192,9 +205,10 @@ def last(stream):
     # Wonderful idea from itertools recipes
     # https://docs.python.org/3.6/library/itertools.html#itertools-recipes
     try:
-        return deque(stream, maxlen = 1)[0]
+        return deque(stream, maxlen=1)[0]
     except IndexError:
-        raise RuntimeError('Empty stream')
+        raise RuntimeError("Empty stream")
+
 
 def cyclic(iterable):
     """ 
@@ -209,7 +223,8 @@ def cyclic(iterable):
     n = len(iterable)
     yield from (tuple(iterable[i - j] for i in range(n)) for j in range(n))
 
-def length_hint(obj, default = 0):
+
+def length_hint(obj, default=0):
     """
     Return an estimate of the number of items in ``obj``.
 
@@ -245,8 +260,7 @@ def length_hint(obj, default = 0):
         if hint is NotImplemented:
             return default
         if not isinstance(hint, int):
-            raise TypeError("Length hint must be an integer, not %r" %
-                            type(hint))
+            raise TypeError("Length hint must be an integer, not %r" % type(hint))
         if hint < 0:
             raise ValueError("__length_hint__() should return >= 0")
         return hint

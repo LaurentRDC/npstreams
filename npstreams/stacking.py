@@ -10,8 +10,9 @@ import numpy as np
 
 from .array_stream import array_stream
 
+
 @array_stream
-def stack(arrays, axis = -1):
+def stack(arrays, axis=-1):
     """ 
     Stack of all arrays from a stream. Generalization of numpy.stack
     and numpy.concatenate. 
@@ -39,9 +40,9 @@ def stack(arrays, axis = -1):
     # Use npstreams.length_hint
     arrays = iter(arrays)
     first = next(arrays)
-    stack = np.array(first, copy = True)
+    stack = np.array(first, copy=True)
 
     for array in arrays:
-        stack = np.concatenate([stack, array], axis = axis)
+        stack = np.concatenate([stack, array], axis=axis)
 
     return stack

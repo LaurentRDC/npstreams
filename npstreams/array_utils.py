@@ -5,7 +5,8 @@ Array utilities
 """
 import numpy as np
 
-def nan_to_num(array, fill_value = 0.0, copy = True):
+
+def nan_to_num(array, fill_value=0.0, copy=True):
     """
     Replace NaNs with another fill value. 
 
@@ -36,15 +37,15 @@ def nan_to_num(array, fill_value = 0.0, copy = True):
     --------
     numpy.nan_to_num : replace NaNs and Infs with zeroes.
     """
-    array = np.array(array, subok = True, copy = copy)
+    array = np.array(array, subok=True, copy=copy)
     dtype = array.dtype.type
 
     # Non-inexact types do not have NaNs
     if not np.issubdtype(dtype, np.inexact):
         return array
-    
+
     iscomplex = np.issubdtype(dtype, np.complexfloating)
     dest = (array.real, array.imag) if iscomplex else (array,)
     for d in dest:
-        np.copyto(d, fill_value, where = np.isnan(d))
+        np.copyto(d, fill_value, where=np.isnan(d))
     return array

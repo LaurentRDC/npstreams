@@ -18,15 +18,16 @@ def _ireduce_linalg(arrays, func, **kwargs):
     arrays = iter(arrays)
     first = next(arrays)
     second = next(arrays)
-    
+
     func = partial(func, **kwargs)
 
-    accumulator = func(first,  second)
+    accumulator = func(first, second)
     yield accumulator
 
     for array in arrays:
-        func(accumulator, array, out = accumulator)
+        func(accumulator, array, out=accumulator)
         yield accumulator
+
 
 def idot(arrays):
     """
@@ -48,7 +49,8 @@ def idot(arrays):
     """
     yield from _ireduce_linalg(arrays, np.dot)
 
-def itensordot(arrays, axes = 2):
+
+def itensordot(arrays, axes=2):
     """
     Yields the cumulative array inner product (dot product) of arrays.
 
@@ -70,7 +72,8 @@ def itensordot(arrays, axes = 2):
     --------
     numpy.tensordot : Compute the tensordot on two tensors.
     """
-    yield from _ireduce_linalg(arrays, np.tensordot, axes = axes)
+    yield from _ireduce_linalg(arrays, np.tensordot, axes=axes)
+
 
 def iinner(arrays):
     """
@@ -86,6 +89,7 @@ def iinner(arrays):
     online_inner : ndarray or scalar
     """
     yield from _ireduce_linalg(arrays, np.inner)
+
 
 def ieinsum(arrays, subscripts, **kwargs):
     """

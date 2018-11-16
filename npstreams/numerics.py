@@ -8,7 +8,7 @@ import numpy as np
 from .reduce import ireduce_ufunc, reduce_ufunc
 
 
-def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
+def isum(arrays, axis=-1, dtype=None, ignore_nan=False):
     """ 
     Streaming sum of array elements.
 
@@ -34,10 +34,13 @@ def isum(arrays, axis = -1, dtype = None, ignore_nan = False):
     Yields
     ------
     online_sum : ndarray
-    """    
-    yield from ireduce_ufunc(arrays, ufunc = np.add, axis = axis, ignore_nan = ignore_nan, dtype = dtype)
+    """
+    yield from ireduce_ufunc(
+        arrays, ufunc=np.add, axis=axis, ignore_nan=ignore_nan, dtype=dtype
+    )
 
-def sum(arrays, axis = -1, dtype = None, ignore_nan = False):
+
+def sum(arrays, axis=-1, dtype=None, ignore_nan=False):
     """ 
     Sum of arrays in a stream.
 
@@ -63,10 +66,13 @@ def sum(arrays, axis = -1, dtype = None, ignore_nan = False):
     Returns
     -------
     sum : ndarray
-    """  
-    return reduce_ufunc(arrays, ufunc = np.add, axis = axis, dtype = dtype, ignore_nan = ignore_nan)
+    """
+    return reduce_ufunc(
+        arrays, ufunc=np.add, axis=axis, dtype=dtype, ignore_nan=ignore_nan
+    )
 
-def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
+
+def iprod(arrays, axis=-1, dtype=None, ignore_nan=False):
     """ 
     Streaming product of array elements.
 
@@ -93,9 +99,12 @@ def iprod(arrays, axis = -1, dtype = None, ignore_nan = False):
     ------
     online_prod : ndarray
     """
-    yield from ireduce_ufunc(arrays, ufunc = np.multiply, axis = axis, dtype = dtype, ignore_nan = ignore_nan)
+    yield from ireduce_ufunc(
+        arrays, ufunc=np.multiply, axis=axis, dtype=dtype, ignore_nan=ignore_nan
+    )
 
-def prod(arrays, axis = -1, dtype = None, ignore_nan = False):
+
+def prod(arrays, axis=-1, dtype=None, ignore_nan=False):
     """ 
     Product of arrays in a stream.
 
@@ -122,9 +131,12 @@ def prod(arrays, axis = -1, dtype = None, ignore_nan = False):
     -------
     product : ndarray
     """
-    return reduce_ufunc(arrays, ufunc = np.multiply, axis = axis, dtype = dtype, ignore_nan = ignore_nan)
+    return reduce_ufunc(
+        arrays, ufunc=np.multiply, axis=axis, dtype=dtype, ignore_nan=ignore_nan
+    )
 
-def isub(arrays, axis = -1, dtype = None):
+
+def isub(arrays, axis=-1, dtype=None):
     """
     Subtract elements in a reduction fashion. Equivalent to ``numpy.subtract.reduce`` on a dense array.
 
@@ -157,11 +169,14 @@ def isub(arrays, axis = -1, dtype = None):
         `axis` must be specified as an int.
     """
     if axis is None:
-        raise ValueError('Subtraction is not a reorderable operation, and \
-                          therefore a specific axis must be given.')
-    yield from ireduce_ufunc(arrays, ufunc = np.subtract, axis = axis, dtype = dtype)
+        raise ValueError(
+            "Subtraction is not a reorderable operation, and \
+                          therefore a specific axis must be given."
+        )
+    yield from ireduce_ufunc(arrays, ufunc=np.subtract, axis=axis, dtype=dtype)
 
-def iall(arrays, axis = -1):
+
+def iall(arrays, axis=-1):
     """ 
     Test whether all array elements along a given axis evaluate to True 
     
@@ -180,9 +195,10 @@ def iall(arrays, axis = -1):
     all : ndarray, dtype bool 
     """
     # TODO: use ``where`` keyword to only check places that are already ``True``
-    yield from ireduce_ufunc(arrays, ufunc = np.logical_and, axis = axis)
+    yield from ireduce_ufunc(arrays, ufunc=np.logical_and, axis=axis)
 
-def iany(arrays, axis = -1):
+
+def iany(arrays, axis=-1):
     """ 
     Test whether any array elements along a given axis evaluate to True.
     
@@ -201,9 +217,10 @@ def iany(arrays, axis = -1):
     any : ndarray, dtype bool 
     """
     # TODO: use ``where`` keyword to only check places that are not already ``True``
-    yield from ireduce_ufunc(arrays, ufunc = np.logical_or, axis = axis)
+    yield from ireduce_ufunc(arrays, ufunc=np.logical_or, axis=axis)
 
-def imax(arrays, axis, ignore_nan = False):
+
+def imax(arrays, axis, ignore_nan=False):
     """ 
     Maximum of a stream of arrays along an axis.
 
@@ -227,7 +244,8 @@ def imax(arrays, axis, ignore_nan = False):
     ufunc = np.fmax if ignore_nan else np.maximum
     yield from ireduce_ufunc(arrays, ufunc, axis)
 
-def imin(arrays, axis, ignore_nan = False):
+
+def imin(arrays, axis, ignore_nan=False):
     """ 
     Minimum of a stream of arrays along an axis.
 

@@ -24,8 +24,8 @@ class ArrayStream(Iterator):
     def __init__(self, stream):
         if isinstance(stream, np.ndarray):
             stream = (stream,)
-        
-        self._sequence_length = length_hint(stream, default = NotImplemented)
+
+        self._sequence_length = length_hint(stream, default=NotImplemented)
 
         # Once length_hint has been determined, we can peek into the stream
         first, stream = peek(stream)
@@ -36,33 +36,36 @@ class ArrayStream(Iterator):
 
     def __repr__(self):
         """ Verbose string representation """
-        representation =  '< {clsname} object'.format(clsname = self.__class__.__name__)
-        representation += ' of data-type {dtype}'.format(dtype   = self.dtype)
+        representation = "< {clsname} object".format(clsname=self.__class__.__name__)
+        representation += " of data-type {dtype}".format(dtype=self.dtype)
 
         if not (self._sequence_length is NotImplemented):
-            representation += ' and a sequence length of {length}'.format(length = self._sequence_length)
+            representation += " and a sequence length of {length}".format(
+                length=self._sequence_length
+            )
         else:
-            representation += ' of unknown length'
-        
-        return representation + ' >'
-    
+            representation += " of unknown length"
+
+        return representation + " >"
+
     def __array__(self):
         """ Returns a dense array created from this stream. """
         # As of numpy version 1.14, arrays are expanded into a list before contatenation
         # Therefore, it's ok to build that list first
         arraylist = list(self)
-        return np.stack(arraylist, axis = -1)
-    
+        return np.stack(arraylist, axis=-1)
+
     def __length_hint__(self):
         """ 
         In certain cases, an ArrayStream can have a definite size. 
         See https://www.python.org/dev/peps/pep-0424/ 
         """
         return self._sequence_length
-    
+
     def __next__(self):
         n = self._iterator.__next__()
-        return asanyarray(n, dtype = self.dtype)
+        return asanyarray(n, dtype=self.dtype)
+
 
 def array_stream(func):
     """ 
@@ -77,9 +80,11 @@ def array_stream(func):
     Note that using this decorator also ensures that the stream is only wrapped once
     by the conversion function.
     """
+
     @wraps(func)
     def decorated(arrays, *args, **kwargs):
         if isinstance(arrays, ArrayStream):
             return func(arrays, *args, **kwargs)
         return func(ArrayStream(arrays), *args, **kwargs)
+
     return decorated

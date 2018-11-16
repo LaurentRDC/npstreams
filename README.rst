@@ -15,6 +15,9 @@ npstreams
     :alt: Conda-forge Version
 .. image:: https://img.shields.io/pypi/pyversions/npstreams.svg
     :alt: Supported Python Versions
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :alt: Code formatting style
+    :target: https://github.com/ambv/black
 
 npstreams is an open-source Python package for streaming NumPy array operations. 
 The goal is to provide tested routines that operate on streams (or generators) of arrays instead of dense arrays.

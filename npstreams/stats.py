@@ -16,7 +16,7 @@ from .numerics import isum
 
 
 @array_stream
-def _iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
+def _iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
     """ 
     Primitive version of weighted averaging that yields the running sum and running weights sum,
     but avoids the costly division at every step.
@@ -25,32 +25,38 @@ def _iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     # weights and ignore nans.
     # This case is pretty common
     if (weights is None) and (not ignore_nan) and (axis == -1):
-        yield from zip(isum(arrays, axis = axis, dtype = np.float, ignore_nan = False), count(1))
+        yield from zip(
+            isum(arrays, axis=axis, dtype=np.float, ignore_nan=False), count(1)
+        )
         return
 
     first, arrays = peek(arrays)
-    
+
     # We make sure that weights is always an array
     # This simplifies the handling of NaNs.
     if weights is None:
         weights = repeat(1)
-    weights = map(partial(np.broadcast_to, shape = first.shape), weights)
+    weights = map(partial(np.broadcast_to, shape=first.shape), weights)
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
         arrays, arrays2 = itercopy(arrays)
-        weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
+        weights = map(
+            lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights
+        )
 
     weights1, weights2 = itercopy(weights)
 
-    sum_of_weights = isum(weights1, axis = axis, dtype = np.float)
+    sum_of_weights = isum(weights1, axis=axis, dtype=np.float)
     weighted_arrays = map(lambda arr, wgt: arr * wgt, arrays, weights2)
-    weighted_sum = isum(weighted_arrays, axis = axis, 
-                        ignore_nan = ignore_nan, dtype = np.float)
-    
+    weighted_sum = isum(
+        weighted_arrays, axis=axis, ignore_nan=ignore_nan, dtype=np.float
+    )
+
     yield from zip(weighted_sum, sum_of_weights)
 
-def average(arrays, axis = -1, weights = None, ignore_nan = False):
+
+def average(arrays, axis=-1, weights=None, ignore_nan=False):
     """ 
     Average (weighted) of a stream of arrays. This function consumes the
     entire stream.
@@ -86,9 +92,10 @@ def average(arrays, axis = -1, weights = None, ignore_nan = False):
     mean : non-weighted average of a stream.
     """
     total_sum, total_weight = last(_iaverage(arrays, axis, weights, ignore_nan))
-    return total_sum/total_weight
+    return total_sum / total_weight
 
-def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
+
+def iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
     """ 
     Streaming (weighted) average of arrays.
 
@@ -124,7 +131,8 @@ def iaverage(arrays, axis = -1, weights = None, ignore_nan = False):
     primitive = _iaverage(arrays, axis, weights, ignore_nan)
     yield from map(lambda element: truediv(*element), primitive)
 
-def mean(arrays, axis = -1, ignore_nan = False):
+
+def mean(arrays, axis=-1, ignore_nan=False):
     """ 
     Mean of a stream of arrays. This function consumes the
     entire stream.
@@ -147,10 +155,13 @@ def mean(arrays, axis = -1, ignore_nan = False):
     mean: `~numpy.ndarray`, dtype float
         Total mean array.
     """
-    total_sum, total_count = last(_iaverage(arrays, axis, weights = None, ignore_nan = ignore_nan))
-    return total_sum/total_count
+    total_sum, total_count = last(
+        _iaverage(arrays, axis, weights=None, ignore_nan=ignore_nan)
+    )
+    return total_sum / total_count
 
-def imean(arrays, axis = -1, ignore_nan = False):
+
+def imean(arrays, axis=-1, ignore_nan=False):
     """ 
     Streaming mean of arrays. Equivalent to `iaverage(arrays, weights = None)`.
 
@@ -173,38 +184,44 @@ def imean(arrays, axis = -1, ignore_nan = False):
         Online mean array.
     """
     # Primitive stream is composed of tuples (running_sum, running_count)
-    primitive = _iaverage(arrays, axis, weights = None, ignore_nan = ignore_nan)
+    primitive = _iaverage(arrays, axis, weights=None, ignore_nan=ignore_nan)
     yield from map(lambda element: truediv(*element), primitive)
 
+
 @array_stream
-def _ivar(arrays, axis = -1, weights = None, ignore_nan = False):
+def _ivar(arrays, axis=-1, weights=None, ignore_nan=False):
     """ 
     Primitive version of weighted variance that yields the running average, running average of squares and running weights sum,
     but avoids the costly division and squaring at every step.
     """
     first, arrays = peek(arrays)
-    
+
     # We make sure that weights is always an array
     # This simplifies the handling of NaNs.
     if weights is None:
         weights = repeat(1)
-    weights = map(partial(np.broadcast_to, shape = first.shape), weights)
+    weights = map(partial(np.broadcast_to, shape=first.shape), weights)
 
     # Need to know which array has NaNs, and modify the weights stream accordingly
     if ignore_nan:
         arrays, arrays2 = itercopy(arrays)
-        weights = map(lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights)
+        weights = map(
+            lambda arr, wgt: np.logical_not(np.isnan(arr)) * wgt, arrays2, weights
+        )
 
     arrays, arrays2 = itercopy(arrays)
     weights, weights2, weights3 = itercopy(weights, 3)
 
-    avgs = iaverage(arrays, axis = axis, weights = weights, ignore_nan = ignore_nan)
-    avg_of_squares = iaverage(map(np.square, arrays2), axis = axis, weights = weights2, ignore_nan = ignore_nan)
-    sum_of_weights = isum(weights3, axis = axis, ignore_nan = ignore_nan)
+    avgs = iaverage(arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
+    avg_of_squares = iaverage(
+        map(np.square, arrays2), axis=axis, weights=weights2, ignore_nan=ignore_nan
+    )
+    sum_of_weights = isum(weights3, axis=axis, ignore_nan=ignore_nan)
 
     yield from zip(avgs, avg_of_squares, sum_of_weights)
 
-def var(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
+
+def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Total variance of a stream of arrays. Weights are also supported. This function
     consumes the input stream.
@@ -248,9 +265,10 @@ def var(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
         Communications of the ACM Vol. 22, Issue 9, pp. 532 - 535 (1979)
     """
     avg, sq_avg, swgt = last(_ivar(arrays, axis, weights, ignore_nan))
-    return (sq_avg - avg**2) * (swgt / (swgt - ddof))
+    return (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
 
-def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
+
+def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Streaming variance of arrays. Weights are also supported.
     
@@ -293,9 +311,10 @@ def ivar(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     """
     primitive = _ivar(arrays, axis, weights, ignore_nan)
     for avg, sq_avg, swgt in primitive:
-        yield (sq_avg - avg**2) * (swgt / (swgt - ddof))
+        yield (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
 
-def std(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
+
+def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Total standard deviation of arrays. Weights are also supported. This function
     consumes the input stream.
@@ -335,7 +354,8 @@ def std(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     """
     return np.sqrt(var(arrays, axis, ddof, weights, ignore_nan))
 
-def istd(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
+
+def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Streaming standard deviation of arrays. Weights are also supported.
     This is equivalent to calling `numpy.std(axis = 2)` on a stack of images.
@@ -373,10 +393,13 @@ def istd(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     std : total standard deviation.
     numpy.std : standard deviation calculation of dense arrays. Weights are not supported.
     """
-    yield from map(np.sqrt, ivar(arrays, axis = axis, ddof = ddof, 
-                                 weights = weights, ignore_nan = ignore_nan))
+    yield from map(
+        np.sqrt,
+        ivar(arrays, axis=axis, ddof=ddof, weights=weights, ignore_nan=ignore_nan),
+    )
 
-def sem(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
+
+def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Standard error in the mean (SEM) of a stream of arrays. This function consumes
     the entire stream.
@@ -414,9 +437,10 @@ def sem(arrays, axis = -1, ddof = 0, weights = None, ignore_nan = False):
     scipy.stats.sem : standard error in the mean of dense arrays.
     """
     avg, sq_avg, swgt = last(_ivar(arrays, axis, weights, ignore_nan))
-    return np.sqrt((sq_avg - avg**2) * (1 / (swgt - ddof)))
+    return np.sqrt((sq_avg - avg ** 2) * (1 / (swgt - ddof)))
 
-def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
+
+def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
     """ 
     Streaming standard error in the mean (SEM) of arrays. This is equivalent to
     calling `scipy.stats.sem(axis = 2)` on a stack of images.
@@ -455,7 +479,8 @@ def isem(arrays, axis = -1, ddof = 1, weights = None, ignore_nan = False):
     """
     primitive = _ivar(arrays, axis, weights, ignore_nan)
     for avg, sq_avg, swgt in primitive:
-        yield np.sqrt((sq_avg - avg**2) * (1 / (swgt - ddof)))
+        yield np.sqrt((sq_avg - avg ** 2) * (1 / (swgt - ddof)))
+
 
 @array_stream
 def ihistogram(arrays, bins):
@@ -483,7 +508,7 @@ def ihistogram(arrays, bins):
     bins = np.asarray(bins)
 
     # np.histogram also returns the bin edges, which we ignore
-    hist_func = lambda arr: np.histogram(arr, bins = bins)[0]
+    hist_func = lambda arr: np.histogram(arr, bins=bins)[0]
     hist = hist_func(next(arrays))
     yield hist
 

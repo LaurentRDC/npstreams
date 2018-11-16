@@ -38,13 +38,12 @@ def stream():
     return (np.random.random({shape}) for _ in range(10))
 """
 
-BenchmarkResults = namedtuple('BenchmarkResults', 
-                              field_names = ['numpy_time', 
-                                             'npstreams_time', 
-                                             'shape'])
+BenchmarkResults = namedtuple(
+    "BenchmarkResults", field_names=["numpy_time", "npstreams_time", "shape"]
+)
 
 
-def autotimeit(statement, setup = 'pass', repeat = 3):
+def autotimeit(statement, setup="pass", repeat=3):
     """ 
     Time a statement, automatically determining the number of times to
     run the statement so that the total excecution time is not too short. 
@@ -65,14 +64,17 @@ def autotimeit(statement, setup = 'pass', repeat = 3):
     time : float
         Minimal time per execution of `statement` [seconds].
     """
-    timer = timeit.Timer(stmt = statement, setup = setup)
+    timer = timeit.Timer(stmt=statement, setup=setup)
     number, _ = timer.autorange()
-    return min(timer.repeat(repeat = repeat, number = number))/number
+    return min(timer.repeat(repeat=repeat, number=number)) / number
 
-def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod], 
-              ufuncs = [np.add, np.multiply, np.power, np.true_divide, np.mod],
-              shapes = [(4,4), (8,8), (16,16), (64,64)],
-              file = None):
+
+def benchmark(
+    funcs=[np.average, np.mean, np.std, np.sum, np.prod],
+    ufuncs=[np.add, np.multiply, np.power, np.true_divide, np.mod],
+    shapes=[(4, 4), (8, 8), (16, 16), (64, 64)],
+    file=None,
+):
     """ 
     Benchmark npstreams against numpy and print the results.
 
@@ -96,60 +98,68 @@ def benchmark(funcs =  [np.average, np.mean, np.std, np.sum, np.prod],
         The sequence lengths are fixed.
     file : file-like or None, optional
         File to which the benchmark results will be written. If None, sys.stdout will be used.
-    """    
+    """
     # Preliminaries
     console_width = min(get_terminal_size().columns, 80)
-    func_test_name = 'numpy.{f.__name__} vs npstreams.{f.__name__}'.format
-    ufunc_test_name = 'numpy.{f.__name__} vs npstreams.reduce_ufunc(numpy.{f.__name__}, ...)'.format
+    func_test_name = "numpy.{f.__name__} vs npstreams.{f.__name__}".format
+    ufunc_test_name = (
+        "numpy.{f.__name__} vs npstreams.reduce_ufunc(numpy.{f.__name__}, ...)".format
+    )
 
     # Determine justification based on maximal shape functions
-    sh_just = max(map(lambda s : len(str(s)), shapes)) + 10
+    sh_just = max(map(lambda s: len(str(s)), shapes)) + 10
 
     # To make it easy to either write the results in a file or print to stdout,
-    # We actually redirect stdout.        
+    # We actually redirect stdout.
     if file is None:
         file = sys.stdout
-        
+
     with redirect_stdout(file):
         # Start benchmarks --------------------------------------------------------
-        print(''.ljust(console_width, '*'), 
-              'npstreams performance benchmark'.upper().center(console_width),
-              '', 
-              "    npstreams".ljust(15) + " {}".format(__version__),
-              "    NumPy".ljust(15) +  " {}".format(np.__version__),
-              '',
-              "    Speedup is NumPy time divided by npstreams time (Higher is better)",
-              ''.ljust(console_width, '*'), sep = '\n')
+        print(
+            "".ljust(console_width, "*"),
+            "npstreams performance benchmark".upper().center(console_width),
+            "",
+            "    npstreams".ljust(15) + " {}".format(__version__),
+            "    NumPy".ljust(15) + " {}".format(np.__version__),
+            "",
+            "    Speedup is NumPy time divided by npstreams time (Higher is better)",
+            "".ljust(console_width, "*"),
+            sep="\n",
+        )
 
         # Determine valid ufuncs and funcs first ----------------------------------
         valid_ufuncs = comparable_ufuncs(ufuncs, file)
-        valid_funcs  = comparable_funcs(funcs, file)
-
+        valid_funcs = comparable_funcs(funcs, file)
 
         # Benchmarking functions --------------------------------------------------
-        for func in sorted(valid_funcs, key = lambda fn: fn.__name__):
-            print(func_test_name(f = func).center(console_width), '\n')
+        for func in sorted(valid_funcs, key=lambda fn: fn.__name__):
+            print(func_test_name(f=func).center(console_width), "\n")
 
             for (np_time, ns_time, shape) in benchmark_func(func, shapes):
                 speedup = np_time / ns_time
-                print("    ", 
-                      "shape = {}".format(shape).ljust(sh_just), 
-                      "speedup = {:.4f}x".format(speedup))
-            
+                print(
+                    "    ",
+                    "shape = {}".format(shape).ljust(sh_just),
+                    "speedup = {:.4f}x".format(speedup),
+                )
 
-            print(''.ljust(console_width, '-'))
+            print("".ljust(console_width, "-"))
 
         # Benchmarking universal functions ----------------------------------------
-        for ufunc in sorted(valid_ufuncs, key = lambda fn: fn.__name__):
-            print(ufunc_test_name(f = ufunc).center(console_width), '\n')
+        for ufunc in sorted(valid_ufuncs, key=lambda fn: fn.__name__):
+            print(ufunc_test_name(f=ufunc).center(console_width), "\n")
 
             for (np_time, ns_time, shape) in benchmark_ufunc(ufunc, shapes):
                 speedup = np_time / ns_time
-                print("    ", 
-                      "shape = {}".format(shape).ljust(sh_just), 
-                      "speedup = {:.4f}x".format(speedup))
-            
-            print(''.ljust(console_width, '-'))
+                print(
+                    "    ",
+                    "shape = {}".format(shape).ljust(sh_just),
+                    "speedup = {:.4f}x".format(speedup),
+                )
+
+            print("".ljust(console_width, "-"))
+
 
 def benchmark_ufunc(ufunc, shapes):
     """ 
@@ -168,15 +178,24 @@ def benchmark_ufunc(ufunc, shapes):
     results : BenchmarkResults
     """
     for shape in shapes:
-        
-        numpy_statement     = '{ufunc}.reduce(stack(stream()), axis = -1)'.format(ufunc = ufunc.__name__)
-        npstreams_statement = 'reduce_ufunc(stream(), {ufunc}, axis = -1)'.format(ufunc = ufunc.__name__)
 
-        with np.errstate(invalid = 'ignore'):
-            np_time = autotimeit(numpy_statement, UFUNC_SETUP.format(ufunc = ufunc, shape = shape))
-            ns_time = autotimeit(npstreams_statement, UFUNC_SETUP.format(ufunc = ufunc, shape = shape))
-        
+        numpy_statement = "{ufunc}.reduce(stack(stream()), axis = -1)".format(
+            ufunc=ufunc.__name__
+        )
+        npstreams_statement = "reduce_ufunc(stream(), {ufunc}, axis = -1)".format(
+            ufunc=ufunc.__name__
+        )
+
+        with np.errstate(invalid="ignore"):
+            np_time = autotimeit(
+                numpy_statement, UFUNC_SETUP.format(ufunc=ufunc, shape=shape)
+            )
+            ns_time = autotimeit(
+                npstreams_statement, UFUNC_SETUP.format(ufunc=ufunc, shape=shape)
+            )
+
         yield BenchmarkResults(np_time, ns_time, shape)
+
 
 def benchmark_func(func, shapes):
     """ 
@@ -196,14 +215,19 @@ def benchmark_func(func, shapes):
     """
     for shape in shapes:
 
-        numpy_statement     = 'np_{}(stack(stream()), axis = -1)'.format(func.__name__)
-        npstreams_statement = 'ns_{}(stream(), axis = -1)'.format(func.__name__)
+        numpy_statement = "np_{}(stack(stream()), axis = -1)".format(func.__name__)
+        npstreams_statement = "ns_{}(stream(), axis = -1)".format(func.__name__)
 
-        with np.errstate(invalid = 'ignore'):
-            np_time = autotimeit(numpy_statement, FUNC_SETUP.format(func = func, shape = shape))
-            ns_time = autotimeit(npstreams_statement, FUNC_SETUP.format(func = func, shape = shape))
-        
+        with np.errstate(invalid="ignore"):
+            np_time = autotimeit(
+                numpy_statement, FUNC_SETUP.format(func=func, shape=shape)
+            )
+            ns_time = autotimeit(
+                npstreams_statement, FUNC_SETUP.format(func=func, shape=shape)
+            )
+
         yield BenchmarkResults(np_time, ns_time, shape)
+
 
 def comparable_ufuncs(ufuncs, file):
     """ 
@@ -221,15 +245,24 @@ def comparable_ufuncs(ufuncs, file):
     """
     for ufunc in ufuncs:
         if not isinstance(ufunc, np.ufunc):
-            print('Skipping function {func} as it is not a NumPy Universal Function'.format(func = ufunc.__name__))
+            print(
+                "Skipping function {func} as it is not a NumPy Universal Function".format(
+                    func=ufunc.__name__
+                )
+            )
             continue
-        
+
         try:
             _check_binary_ufunc(ufunc)
         except ValueError:
-            print('Skipping function {func} as it is not a valid binary ufunc'.format(func = ufunc.__name__))
+            print(
+                "Skipping function {func} as it is not a valid binary ufunc".format(
+                    func=ufunc.__name__
+                )
+            )
         else:
             yield ufunc
+
 
 def comparable_funcs(funcs, file):
     """ 
@@ -246,9 +279,16 @@ def comparable_funcs(funcs, file):
         NumPy funcs that have npstreams equivalents. 
     """
     import npstreams
-    npstreams_functions = set(name for name, value in inspect.getmembers(npstreams, inspect.isfunction))
+
+    npstreams_functions = set(
+        name for name, value in inspect.getmembers(npstreams, inspect.isfunction)
+    )
     for func in funcs:
         if func.__name__ not in npstreams_functions:
-            print('Skipping function {func} as there is no npstreams equivalent'.format(func = func.__name__))
+            print(
+                "Skipping function {func} as there is no npstreams equivalent".format(
+                    func=func.__name__
+                )
+            )
         else:
             yield func
