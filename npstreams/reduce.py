@@ -17,7 +17,24 @@ from .parallel import preduce
 
 @lru_cache(maxsize=128)
 def _check_binary_ufunc(ufunc):
-    """ Check that ufunc is suitable for ``ireduce_ufunc`` """
+    """ 
+    Check that ufunc is suitable for ``ireduce_ufunc``. 
+    
+    Specifically, a binary ``numpy.ufunc`` function is required. Functions 
+    that returns a boolean are also not suitable because they cannot be accumulated.
+
+    This function does not return anything. 
+
+    Parameters
+    ----------
+    ufunc : callable
+        Function to check.
+
+    Raises
+    ------
+    TypeError : if ``ufunc`` is not a ``numpy.ufunc``
+    ValueError: if ``ufunc`` is not binary or the return type is boolean.
+    """
     if not isinstance(ufunc, np.ufunc):
         raise TypeError("{} is not a NumPy Ufunc".format(ufunc.__name__))
     if ufunc.nin != 2:
@@ -103,6 +120,8 @@ def ireduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs
         arrays = map(partial(nan_to_num, fill_value=ufunc.identity, copy=False), arrays)
 
     # Since ireduce_ufunc is primed, we need to wait here
+    # Priming is a way to start error checking before actually running
+    # any computations.
     yield
 
     if kwargs["axis"] == -1:
