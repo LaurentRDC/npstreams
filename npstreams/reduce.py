@@ -14,6 +14,7 @@ from .array_utils import nan_to_num
 from .iter_utils import chunked, last, peek, primed
 from .parallel import preduce
 
+identity = lambda i: i
 
 @lru_cache(maxsize=128)
 def _check_binary_ufunc(ufunc):
@@ -44,18 +45,6 @@ def _check_binary_ufunc(ufunc):
                 ufunc.__name__
             )
         )
-
-    # Ufuncs that always return bool are problematic because they can be reduced
-    # but not be accumulated.
-    # Recall: numpy.dtype('?') == np.bool
-    if all(type_signature[-1] == "?" for type_signature in ufunc.types):
-        raise ValueError(
-            "Only binary ufuncs that preserve type are supported, \
-                          and {} is not one of them".format(
-                ufunc.__name__
-            )
-        )
-
 
 @primed
 @array_stream

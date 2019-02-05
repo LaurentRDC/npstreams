@@ -83,12 +83,6 @@ class TestIreduceUfunc(unittest.TestCase):
         with self.assertRaises(ValueError):
             ireduce_ufunc(range(10), ufunc=np.absolute)
 
-    def test_non_type_preserving_ufunc(self):
-        """ Test that ireduce_ufunc raises ValueError if binary ufunc that doesn't preserve type
-        is used """
-        with self.assertRaises(ValueError):
-            ireduce_ufunc(range(10), ufunc=np.greater)
-
     def test_output_shape(self):
         """ Test output shape """
         for axis in (0, 1, 2, 3, None):
