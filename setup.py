@@ -32,7 +32,7 @@ with open("README.rst") as f:
 with open("requirements.txt") as f:
     requirements = [line for line in f.read().split("\n") if len(line.strip())]
 
-exclude = {"exclude": ["external*", "docs", "*cache"]}
+exclude = {"exclude": ["external*", "docs", "tests", "*cache"]}
 packages = [
     BASE_PACKAGE + "." + x
     for x in find_packages(os.path.join(base_path, BASE_PACKAGE), **exclude)
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         keywords=["streaming", "numpy", "math"],
         packages=packages,
         include_package_data=True,
-        python_requires=">=3.6, <4",
+        python_requires=">=3.6",
         zip_safe=False,
         #        include_dirs = [numpy.get_include()],
         #        ext_modules = cythonize("npstreams/*.pyx",
