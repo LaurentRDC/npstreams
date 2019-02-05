@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collections.abc import Iterator, Sized
+from collections.abc import Iterator
 from functools import wraps
 
 import numpy as np
