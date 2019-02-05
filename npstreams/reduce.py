@@ -16,6 +16,7 @@ from .parallel import preduce
 
 identity = lambda i: i
 
+
 @lru_cache(maxsize=128)
 def _check_binary_ufunc(ufunc):
     """ 
@@ -45,6 +46,7 @@ def _check_binary_ufunc(ufunc):
                 ufunc.__name__
             )
         )
+
 
 @primed
 @array_stream
