@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from glob import glob
 import os
 import re
-from setuptools import setup, find_packages, Extension
+from glob import glob
 from unittest import TestLoader
+
+from setuptools import Extension, find_packages, setup
 
 # from Cython.Build import cythonize
 # import numpy
