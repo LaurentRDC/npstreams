@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from ..array_stream import array_stream, ArrayStream
+from npstreams.array_stream import array_stream, ArrayStream
 
 
 @array_stream

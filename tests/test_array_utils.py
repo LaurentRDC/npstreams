@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from .. import nan_to_num
+from npstreams import nan_to_num
 
 
 class TestNanToNum(unittest.TestCase):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .. import pmap, pmap_unordered, preduce
+from npstreams import pmap, pmap_unordered, preduce
 from functools import reduce
 import numpy as np
 from operator import add

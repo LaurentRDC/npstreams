@@ -4,7 +4,7 @@ from random import randint, random
 
 import numpy as np
 
-from .. import idot, itensordot, iinner, ieinsum, last
+from npstreams import idot, itensordot, iinner, ieinsum, last
 
 
 class TestIDot(unittest.TestCase):

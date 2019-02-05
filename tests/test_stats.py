@@ -13,7 +13,7 @@ try:
 except ImportError:
     WITH_SCIPY = False
 
-from .. import (
+from npstreams import (
     iaverage,
     imean,
     isem,

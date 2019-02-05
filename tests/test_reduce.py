@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from .. import ireduce_ufunc, preduce_ufunc, last, nan_to_num, reduce_ufunc
+from npstreams import ireduce_ufunc, preduce_ufunc, last, nan_to_num, reduce_ufunc
 
 # Only testing binary ufuncs that support floats
 # i.e. leaving bitwise_* and logical_* behind

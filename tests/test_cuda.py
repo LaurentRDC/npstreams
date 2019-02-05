@@ -5,7 +5,7 @@ import numpy as np
 import unittest
 
 try:
-    from ..cuda import csum, cprod, caverage, cmean
+    from npstreams.cuda import csum, cprod, caverage, cmean
 
     WITH_CUDA = True
 except ImportError:

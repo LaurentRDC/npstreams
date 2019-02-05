@@ -4,8 +4,8 @@ from random import randint, random
 
 import numpy as np
 
-from .. import isum, iprod, last, isub, iany, iall, prod
-from .. import sum as nssum  # avoiding name clashes
+from npstreams import isum, iprod, last, isub, iany, iall, prod
+from npstreams import sum as nssum  # avoiding name clashes
 
 
 class TestISum(unittest.TestCase):

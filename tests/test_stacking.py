@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from .. import stack
+from npstreams import stack
 
 
 class TestStack(unittest.TestCase):

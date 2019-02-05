@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from itertools import repeat
-from .. import last, chunked, linspace, multilinspace, cyclic, length_hint
+from npstreams import last, chunked, linspace, multilinspace, cyclic, length_hint
 
 
 class TestLast(unittest.TestCase):

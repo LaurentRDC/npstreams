@@ -56,37 +56,6 @@ We can also use :func:`last` to get at the final average::
 
 	total = last(averaged) # average of the entire stream. See also npstreams.average
 
-Making your own streaming functions
-===================================
-
-Any **binary** NumPy Ufunc function can be transformed into a streaming function using the
-:func:`ireduce_ufunc` function. For example::
-
-    from npstreams import stream_ufunc
-    from numpy import prod
-
-    def streaming_prod(stream, **kwargs):
-        """ Streaming product along axis """
-        yield from stream_ufunc(stream, ufunc = np.multiply, **kwargs)
-
-The above :func:`streaming_prod` will accumulate (and yield) the result of the operation
-as arrays come in the stream. 
-
-The two following snippets should return the same result::
-
-    from numpy import prod, stack
-    
-    dense = stack(stream, axis = -1) 
-    from_numpy = prod(dense, axis = 0)  # numpy.prod = numpy.multiply.reduce
-
-.. code::
-
-    from npstreams import last
-
-    from_stream = last(streaming_prod(stream, axis = 0))
-
-However, :func:`streaming_prod` will work on 100 GB of data in a single line of code.
-
 Benchmark
 =========
 
