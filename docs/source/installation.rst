@@ -46,3 +46,14 @@ If you want to check that all the tests are running correctly with your Python
 configuration, type::
 
     python setup.py test
+
+
+Embedding in applications
+=========================
+
+`npstreams` is designed to be used in conjuction with multiprocessing libraries, such as the standard 
+`multiprocessing` library. `npstreams` even uses `multiprocessing` directly in certain functions. 
+
+In order to use the multicore functionality of `npstreams` in applications frozen with `py2exe`, `PyInstaller`, or `cx_Freeze`, 
+you will need to activate the ``multiprocessing.freeze_support()`` function. `You can read more 
+about it here. <https://docs.python.org/library/multiprocessing.html#multiprocessing.freeze_support>`_
