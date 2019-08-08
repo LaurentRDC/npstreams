@@ -26,7 +26,7 @@ from an iterable :data:`source`::
 	import numpy as np
 
 	images = np.empty( shape = (2048, 2048, 50) )
-	from index, im in enumerate(source):
+	for index, im in enumerate(source):
 	    images[:,:,index] = im
 	
 	avg = np.average(images, axis = 2)
