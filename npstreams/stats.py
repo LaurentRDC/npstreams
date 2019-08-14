@@ -483,7 +483,7 @@ def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
 
 
 @array_stream
-def ihistogram(arrays, bins, weights=None):
+def ihistogram(arrays, bins, range=None, weights=None):
     """
     Streaming histogram calculation.
 
@@ -494,6 +494,7 @@ def ihistogram(arrays, bins, weights=None):
         can be of any shape; the histogram is computed over the flattened array.
     bins : iterable
         Bin edges, including the rightmost edge, allowing for non-uniform bin widths.
+        To determine the appropriate bins automatically, see ``numpy.histogram_bin_edges``.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
         Each value in a only contributes its associated weight towards the 
@@ -511,6 +512,7 @@ def ihistogram(arrays, bins, weights=None):
     See Also
     --------
     numpy.histogram : 1D histogram of dense arrays.
+    numpy.histogram_bin_edges : automatic selection of bins
     """
     bins = np.asarray(bins)
     first, arrays = peek(arrays)

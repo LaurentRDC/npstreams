@@ -108,6 +108,7 @@ def ireduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs
                     ufunc.__name__
                 )
             )
+        # TODO: use the ``where`` keyword in ufuncs instead
         arrays = map(partial(nan_to_num, fill_value=ufunc.identity, copy=False), arrays)
 
     # Since ireduce_ufunc is primed, we need to wait here
