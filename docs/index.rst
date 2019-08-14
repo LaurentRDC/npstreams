@@ -88,6 +88,7 @@ General Documentation
     :maxdepth: 3
     
     installation
+    whatsnew
     conventions
     api
     cuda

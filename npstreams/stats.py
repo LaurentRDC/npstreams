@@ -4,7 +4,7 @@ Statistical functions
 ---------------------
 """
 from functools import partial
-from itertools import count, repeat
+from itertools import count, repeat, starmap
 from operator import truediv
 
 import numpy as np
@@ -483,7 +483,7 @@ def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
 
 
 @array_stream
-def ihistogram(arrays, bins):
+def ihistogram(arrays, bins, weights=None):
     """
     Streaming histogram calculation.
 
@@ -494,7 +494,15 @@ def ihistogram(arrays, bins):
         can be of any shape; the histogram is computed over the flattened array.
     bins : iterable
         Bin edges, including the rightmost edge, allowing for non-uniform bin widths.
-    
+    weights : iterable of ndarray, iterable of floats, or None, optional
+        Iterable of weights associated with the values in each item of `arrays`. 
+        Each value in a only contributes its associated weight towards the 
+        bin count (instead of 1). The weights array can either be a float
+        or an array of the same shape as any element of `arrays`. If ``weights=None``, 
+        then all data in each element of `arrays` are assumed to have a weight equal to one.
+
+        .. versionadded:: 1.6.1
+
     Yields
     ------
     hist : `~numpy.ndarray`
@@ -504,14 +512,14 @@ def ihistogram(arrays, bins):
     --------
     numpy.histogram : 1D histogram of dense arrays.
     """
-    # TODO: weights
     bins = np.asarray(bins)
+    first, arrays = peek(arrays)
+
+    if weights is None:
+        weights = repeat(None)
+    else:
+        weights = map(partial(np.broadcast_to, shape=first.shape), weights)
 
     # np.histogram also returns the bin edges, which we ignore
-    hist_func = lambda arr: np.histogram(arr, bins=bins)[0]
-    hist = hist_func(next(arrays))
-    yield hist
-
-    for arr in arrays:
-        hist += hist_func(arr)
-        yield hist
+    hist_func = lambda arr, wgt: np.histogram(arr, bins=bins, weights=wgt)[0]
+    yield from isum(starmap(hist_func, zip(arrays, weights)))

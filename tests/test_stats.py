@@ -401,7 +401,8 @@ class TestISem(unittest.TestCase):
 
 
 class TestIHistogram(unittest.TestCase):
-    def test_against_numpy(self):
+    def test_against_numpy_no_weights(self):
+        """ Test ihistogram against numpy.histogram with no weights """
         source = [np.random.random((16, 12, 5)) for _ in range(10)]
         stack = np.stack(source, axis=-1)
 
@@ -411,6 +412,17 @@ class TestIHistogram(unittest.TestCase):
 
         # Since histogram output is int, cannot use allclose
         self.assertTrue(np.all(np.equal(from_numpy, from_ihistogram)))
+
+    def test_trivial_weights(self):
+        """ Test ihistogram with weights being all 1s vs. weights=None """
+        source = [np.random.random((16, 12, 5)) for _ in range(10)]
+        weights = [np.array([1]) for _ in source]
+
+        bins = np.linspace(0, 1, num=10)
+        none_weights = last(ihistogram(source, bins=bins, weights=None))
+        trivial_weights = last(ihistogram(source, bins=bins, weights=weights))
+
+        self.assertTrue(np.all(np.equal(none_weights, trivial_weights)))
 
 
 if __name__ == "__main__":
