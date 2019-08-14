@@ -29,6 +29,9 @@ environment:
       - PYTHON_VERSION: "3.6"
         NUMPY_VERSION: "1.16"
 
+      - PYTHON_VERSION: "3.6"
+        NUMPY_VERSION: "1.17"
+
         # Python 3.7
       - PYTHON_VERSION: "3.7"
         NUMPY_VERSION: "1.14"
@@ -38,6 +41,9 @@ environment:
 
       - PYTHON_VERSION: "3.7"
         NUMPY_VERSION: "1.16"
+
+      - PYTHON_VERSION: "3.7"
+        NUMPY_VERSION: "1.17"
 
 matrix:
    fast_finish: true
