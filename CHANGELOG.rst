@@ -3,6 +3,7 @@ Release 1.6.1
 
 * Added a changelog.
 * Added the possibility to use weights in ``ihistogram``.
+* Documentation regarding the ``ddof`` keyword in many statistical wrongly stated that the default value was 1. This has been corrected. 
 
 Release 1.6
 -----------
