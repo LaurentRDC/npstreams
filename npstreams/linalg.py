@@ -47,7 +47,7 @@ def idot(arrays):
     numpy.linalg.multi_dot : Compute the dot product of two or more arrays in a single function call, 
                              while automatically selecting the fastest evaluation order.
     """
-    yield from _ireduce_linalg(arrays, np.dot)
+    yield from _ireduce_linalg(arrays=arrays, func=np.dot)
 
 
 def itensordot(arrays, axes=2):
@@ -72,7 +72,7 @@ def itensordot(arrays, axes=2):
     --------
     numpy.tensordot : Compute the tensordot on two tensors.
     """
-    yield from _ireduce_linalg(arrays, np.tensordot, axes=axes)
+    yield from _ireduce_linalg(arrays=arrays, func=np.tensordot, axes=axes)
 
 
 def iinner(arrays):
@@ -88,7 +88,7 @@ def iinner(arrays):
     ------
     online_inner : ndarray or scalar
     """
-    yield from _ireduce_linalg(arrays, np.inner)
+    yield from _ireduce_linalg(arrays=arrays, func=np.inner)
 
 
 def ieinsum(arrays, subscripts, **kwargs):
@@ -140,4 +140,6 @@ def ieinsum(arrays, subscripts, **kwargs):
     online_einsum : ndarray
         Cumulative Einstein summation
     """
-    yield from _ireduce_linalg(arrays, partial(np.einsum, subscripts), **kwargs)
+    yield from _ireduce_linalg(
+        arrays=arrays, func=partial(np.einsum, subscripts), **kwargs
+    )
