@@ -264,7 +264,9 @@ def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
         Communications of the ACM Vol. 22, Issue 9, pp. 532 - 535 (1979)
     """
-    avg, sq_avg, swgt = last(_ivar(arrays, axis, weights, ignore_nan))
+    avg, sq_avg, swgt = last(
+        _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
+    )
     return (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
 
 
@@ -285,7 +287,6 @@ def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     ddof : int, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
         Each value in an element of `arrays` contributes to the variance 
@@ -309,7 +310,7 @@ def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
         Communications of the ACM Vol. 22, Issue 9, pp. 532 - 535 (1979)
     """
-    primitive = _ivar(arrays, axis, weights, ignore_nan)
+    primitive = _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
     for avg, sq_avg, swgt in primitive:
         yield (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
 
@@ -332,7 +333,6 @@ def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     ddof : int, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
         Each value in an element of `arrays` contributes to the standard deviation 
@@ -352,7 +352,9 @@ def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     istd : streaming standard deviation.
     numpy.std : standard deviation calculation of dense arrays. Weights are not supported.
     """
-    return np.sqrt(var(arrays, axis, ddof, weights, ignore_nan))
+    return np.sqrt(
+        var(arrays=arrays, axis=axis, ddof=ddof, weights=weights, ignore_nan=ignore_nan)
+    )
 
 
 def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
@@ -395,7 +397,9 @@ def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """
     yield from map(
         np.sqrt,
-        ivar(arrays, axis=axis, ddof=ddof, weights=weights, ignore_nan=ignore_nan),
+        ivar(
+            arrays=arrays, axis=axis, ddof=ddof, weights=weights, ignore_nan=ignore_nan
+        ),
     )
 
 
@@ -436,7 +440,9 @@ def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     --------
     scipy.stats.sem : standard error in the mean of dense arrays.
     """
-    avg, sq_avg, swgt = last(_ivar(arrays, axis, weights, ignore_nan))
+    avg, sq_avg, swgt = last(
+        _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
+    )
     return np.sqrt((sq_avg - avg ** 2) * (1 / (swgt - ddof)))
 
 
@@ -477,7 +483,7 @@ def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
     --------
     scipy.stats.sem : standard error in the mean of dense arrays.
     """
-    primitive = _ivar(arrays, axis, weights, ignore_nan)
+    primitive = _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
     for avg, sq_avg, swgt in primitive:
         yield np.sqrt((sq_avg - avg ** 2) * (1 / (swgt - ddof)))
 
