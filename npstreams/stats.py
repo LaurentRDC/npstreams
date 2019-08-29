@@ -56,6 +56,7 @@ def _iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
     yield from zip(weighted_sum, sum_of_weights)
 
 
+@array_stream
 def average(arrays, axis=-1, weights=None, ignore_nan=False):
     """ 
     Average (weighted) of a stream of arrays. This function consumes the
@@ -95,6 +96,7 @@ def average(arrays, axis=-1, weights=None, ignore_nan=False):
     return total_sum / total_weight
 
 
+@array_stream
 def iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
     """ 
     Streaming (weighted) average of arrays.
@@ -132,6 +134,7 @@ def iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
     yield from map(lambda element: truediv(*element), primitive)
 
 
+@array_stream
 def mean(arrays, axis=-1, ignore_nan=False):
     """ 
     Mean of a stream of arrays. This function consumes the
@@ -161,6 +164,7 @@ def mean(arrays, axis=-1, ignore_nan=False):
     return total_sum / total_count
 
 
+@array_stream
 def imean(arrays, axis=-1, ignore_nan=False):
     """ 
     Streaming mean of arrays. Equivalent to `iaverage(arrays, weights = None)`.
@@ -221,6 +225,61 @@ def _ivar(arrays, axis=-1, weights=None, ignore_nan=False):
     yield from zip(avgs, avg_of_squares, sum_of_weights)
 
 
+@array_stream
+def average_and_var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
+    """
+    Calculate the simultaneous average and variance of a stream of arrays. This is done in
+    single iteration for maximum performance.
+
+    Parameters
+    ----------
+    arrays : iterable of ndarrays
+        Arrays to be combined. This iterable can also a generator.
+    axis : int, optional
+        Reduction axis. Default is to combine the arrays in the stream as if 
+        they had been stacked along a new axis, then compute the variance along this new axis.
+        If None, arrays are flattened. If `axis` is an int larger that
+        the number of dimensions in the arrays of the stream, variance is computed
+        along the new axis.
+    ddof : int, optional
+        Means Delta Degrees of Freedom. The divisor used in calculations
+        is ``N - ddof``, where ``N`` represents the number of elements.
+    weights : iterable of ndarray, iterable of floats, or None, optional
+        Iterable of weights associated with the values in each item of `arrays`. 
+        Each value in an element of `arrays` contributes to the variance 
+        according to its associated weight. The weights array can either be a float
+        or an array of the same shape as any element of `arrays`. If weights=None, 
+        then all data in each element of `arrays` are assumed to have a weight equal to one.
+    ignore_nan : bool, optional
+        If True, NaNs are set to zero weight. Default is propagation of NaNs.
+    
+    Returns
+    -------
+    average : `~numpy.ndarray`
+        Average, possibly weighted.
+    var: `~numpy.ndarray`
+        Variance, possibly weighted.
+    
+    Notes
+    -----
+    Since the calculation of the variance requires knowledge of the average, this function is a
+    very thin wrapper around `var`.
+
+    References
+    ----------
+    .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
+        Communications of the ACM Vol. 22, Issue 9, pp. 532 - 535 (1979)
+    """
+    # Since the variance calculation requires knowing the average,
+    # `average_and_var` runs in the exact same time as `var`
+    avg, sq_avg, swgt = last(
+        _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
+    )
+    variance = (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
+    return avg, variance
+
+
+@array_stream
 def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Total variance of a stream of arrays. Weights are also supported. This function
@@ -239,7 +298,6 @@ def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     ddof : int, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
         Each value in an element of `arrays` contributes to the variance 
@@ -264,12 +322,13 @@ def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
         Communications of the ACM Vol. 22, Issue 9, pp. 532 - 535 (1979)
     """
-    avg, sq_avg, swgt = last(
-        _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
+    _, variance = average_and_var(
+        arrays=arrays, axis=axis, ddof=ddof, weights=weights, ignore_nan=ignore_nan
     )
-    return (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
+    return variance
 
 
+@array_stream
 def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Streaming variance of arrays. Weights are also supported.
@@ -315,6 +374,7 @@ def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
         yield (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
 
 
+@array_stream
 def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Total standard deviation of arrays. Weights are also supported. This function
@@ -357,6 +417,7 @@ def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     )
 
 
+@array_stream
 def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Streaming standard deviation of arrays. Weights are also supported.
@@ -375,7 +436,6 @@ def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     ddof : int, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
         Each value in an element of `arrays` contributes to the standard deviation 
@@ -403,6 +463,7 @@ def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     )
 
 
+@array_stream
 def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """ 
     Standard error in the mean (SEM) of a stream of arrays. This function consumes
@@ -421,7 +482,6 @@ def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     ddof : int, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
         Each value in an element of `arrays` contributes to the standard error 
@@ -446,6 +506,7 @@ def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     return np.sqrt((sq_avg - avg ** 2) * (1 / (swgt - ddof)))
 
 
+@array_stream
 def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
     """ 
     Streaming standard error in the mean (SEM) of arrays. This is equivalent to
@@ -464,7 +525,6 @@ def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
     ddof : int, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
-        By default `ddof` is one.
     weights : iterable of ndarray, iterable of floats, or None, optional
         Iterable of weights associated with the values in each item of `arrays`. 
         Each value in an element of `arrays` contributes to the standard error 

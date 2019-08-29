@@ -52,6 +52,7 @@ they can perform much faster than their generator versions.
     std
     var
     sem
+    average_and_var
     
 Numerics
 --------
