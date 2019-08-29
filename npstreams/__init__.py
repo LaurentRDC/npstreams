@@ -38,6 +38,7 @@ from .stats import (
     var,
     isem,
     sem,
+    average_and_var,
     ihistogram,
 )
 from .numerics import isum, sum, iprod, prod, isub, iall, iany, imax, imin
