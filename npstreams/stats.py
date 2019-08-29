@@ -231,6 +231,8 @@ def average_and_var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     Calculate the simultaneous average and variance of a stream of arrays. This is done in
     single iteration for maximum performance.
 
+    .. versionadded:: 1.6.1
+
     Parameters
     ----------
     arrays : iterable of ndarrays
