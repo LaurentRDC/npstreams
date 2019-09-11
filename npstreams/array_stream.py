@@ -36,13 +36,11 @@ class ArrayStream(Iterator):
 
     def __repr__(self):
         """ Verbose string representation """
-        representation = "< {clsname} object".format(clsname=self.__class__.__name__)
-        representation += " of data-type {dtype}".format(dtype=self.dtype)
+        representation = f"< {self.__class__.__name__} object"
+        representation += f" of data-type {self.dtype}"
 
         if not (self._sequence_length is NotImplemented):
-            representation += " and a sequence length of {length}".format(
-                length=self._sequence_length
-            )
+            representation += f" and a sequence length of {self._sequence_length}"
         else:
             representation += " of unknown length"
 

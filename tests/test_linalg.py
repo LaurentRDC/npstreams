@@ -25,7 +25,7 @@ class TestITensordot(unittest.TestCase):
         stream = tuple(np.random.random((8, 8)) for _ in range(2))
 
         for axis in (0, 1, 2):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.tensordot(*stream)
                 from_stream = last(itensordot(stream))
 
@@ -39,7 +39,7 @@ class TestIInner(unittest.TestCase):
         stream = tuple(np.random.random((8, 8)) for _ in range(2))
 
         for axis in (0, 1, 2):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.inner(*stream)
                 from_stream = last(iinner(stream))
 

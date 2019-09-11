@@ -48,7 +48,7 @@ def chunked(iterable, chunksize):
     """
     if not isinstance(chunksize, int):
         raise TypeError(
-            "Expected `chunksize` to be an integer, but received {}".format(chunksize)
+            f"Expected `chunksize` to be an integer, but received {chunksize}"
         )
 
     yield

@@ -24,7 +24,7 @@ class TestStack(unittest.TestCase):
         """ Test against numpy.concatenate for existing axes """
         stream = [np.random.random((15, 7, 2, 1)) for _ in range(10)]
         for axis in range(4):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 dense = np.concatenate(stream, axis=axis)
                 from_stack = stack(stream, axis=axis)
                 self.assertTrue(np.allclose(dense, from_stack))

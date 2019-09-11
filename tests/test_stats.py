@@ -44,7 +44,7 @@ class TestAverage(unittest.TestCase):
         stack = np.dstack(stream)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_stream = average(stream, axis=axis)
                 from_numpy = np.average(stack, axis=axis)
                 self.assertTrue(np.allclose(from_numpy, from_stream))
@@ -130,7 +130,7 @@ class TestIAverage(unittest.TestCase):
     def test_output_dtype(self):
         """ Test that that yielded arrays are always floats """
         for dtype in (np.uint8, np.bool, np.int16, np.float16):
-            with self.subTest("Dtype = {}".format(dtype)):
+            with self.subTest(f"Dtype = {dtype}"):
                 source = (np.zeros((16,), dtype=dtype) for _ in range(5))
                 avg = last(iaverage(source))
                 self.assertEqual(avg.dtype, np.float)
@@ -140,7 +140,7 @@ class TestIAverage(unittest.TestCase):
         source = [np.random.random((16, 12, 5)) for _ in range(10)]
         stack = np.stack(source, axis=-1)
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.average(stack, axis=axis)
                 out = last(iaverage(source, axis=axis))
                 self.assertSequenceEqual(from_numpy.shape, out.shape)
@@ -160,7 +160,7 @@ class TestMean(unittest.TestCase):
         stack = np.dstack(stream)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_stream = mean(stream, axis=axis)
                 from_numpy = np.mean(stack, axis=axis)
                 self.assertTrue(np.allclose(from_numpy, from_stream))
@@ -172,7 +172,7 @@ class TestMean(unittest.TestCase):
             arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
         stack = np.stack(source, axis=-1)
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.nanmean(stack, axis=axis)
                 out = mean(source, axis=axis, ignore_nan=True)
                 self.assertSequenceEqual(from_numpy.shape, out.shape)
@@ -185,7 +185,7 @@ class TestIMean(unittest.TestCase):
         source = [np.random.random((16, 12, 5)) for _ in range(10)]
         stack = np.stack(source, axis=-1)
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.mean(stack, axis=axis)
                 out = last(imean(source, axis=axis))
                 self.assertSequenceEqual(from_numpy.shape, out.shape)
@@ -198,7 +198,7 @@ class TestIMean(unittest.TestCase):
             arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
         stack = np.stack(source, axis=-1)
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.nanmean(stack, axis=axis)
                 out = last(imean(source, axis=axis, ignore_nan=True))
                 self.assertSequenceEqual(from_numpy.shape, out.shape)
@@ -212,7 +212,7 @@ class Testvar(unittest.TestCase):
         stack = np.stack(stream, axis=-1)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.var(stack, axis=axis)
                 from_var = var(stream, axis=axis)
                 self.assertSequenceEqual(from_numpy.shape, from_var.shape)
@@ -227,7 +227,7 @@ class Testvar(unittest.TestCase):
             simplefilter("ignore")
             for axis in (0, 1, 2, None):
                 for ddof in range(4):
-                    with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                    with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                         from_numpy = np.var(stack, axis=axis, ddof=ddof)
                         from_var = var(stream, axis=axis, ddof=ddof)
                         self.assertSequenceEqual(from_numpy.shape, from_var.shape)
@@ -248,7 +248,7 @@ class TestIvar(unittest.TestCase):
         stack = np.stack(stream, axis=-1)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.var(stack, axis=axis)
                 from_ivar = last(ivar(stream, axis=axis))
                 self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
@@ -263,7 +263,7 @@ class TestIvar(unittest.TestCase):
             simplefilter("ignore")
             for axis in (0, 1, 2, None):
                 for ddof in range(4):
-                    with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                    with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                         from_numpy = np.var(stack, axis=axis, ddof=ddof)
                         from_ivar = last(ivar(stream, axis=axis, ddof=ddof))
                         self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
@@ -279,7 +279,7 @@ class TestStd(unittest.TestCase):
             simplefilter("ignore")
             for axis in (0, 1, 2, None):
                 for ddof in range(4):
-                    with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                    with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                         from_numpy = np.std(stack, axis=axis, ddof=ddof)
                         from_ivar = std(stream, axis=axis, ddof=ddof)
                         self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
@@ -293,7 +293,7 @@ class TestStd(unittest.TestCase):
 
         for axis in (0, 1, 2, None):
             for ddof in range(4):
-                with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                     from_numpy = np.nanstd(stack, axis=axis, ddof=ddof)
                     from_ivar = std(source, axis=axis, ddof=ddof, ignore_nan=True)
                     self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
@@ -309,7 +309,7 @@ class TestIStd(unittest.TestCase):
             simplefilter("ignore")
             for axis in (0, 1, 2, None):
                 for ddof in range(4):
-                    with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                    with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                         from_numpy = np.std(stack, axis=axis, ddof=ddof)
                         from_ivar = last(istd(stream, axis=axis, ddof=ddof))
                         self.assertSequenceEqual(from_numpy.shape, from_ivar.shape)
@@ -323,7 +323,7 @@ class TestIStd(unittest.TestCase):
 
         for axis in (0, 1, 2, None):
             for ddof in range(4):
-                with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                     from_numpy = np.nanstd(stack, axis=axis, ddof=ddof)
                     from_ivar = last(
                         istd(source, axis=axis, ddof=ddof, ignore_nan=True)
@@ -341,7 +341,7 @@ class TestSem(unittest.TestCase):
 
         for axis in (0, 1, 2, None):
             for ddof in range(4):
-                with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                     from_scipy = scipy_sem(stack, axis=axis, ddof=ddof)
                     from_isem = sem(source, axis=axis, ddof=ddof)
                     self.assertSequenceEqual(from_scipy.shape, from_isem.shape)
@@ -356,7 +356,7 @@ class TestSem(unittest.TestCase):
 
         for axis in (0, 1, 2, None):
             for ddof in range(4):
-                with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                     from_scipy = scipy_sem(
                         stack, axis=axis, ddof=ddof, nan_policy="omit"
                     )
@@ -374,7 +374,7 @@ class TestISem(unittest.TestCase):
 
         for axis in (0, 1, 2, None):
             for ddof in range(4):
-                with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                     from_scipy = scipy_sem(stack, axis=axis, ddof=ddof)
                     from_isem = last(isem(source, axis=axis, ddof=ddof))
                     self.assertSequenceEqual(from_scipy.shape, from_isem.shape)
@@ -389,7 +389,7 @@ class TestISem(unittest.TestCase):
 
         for axis in (0, 1, 2, None):
             for ddof in range(4):
-                with self.subTest("axis = {}, ddof = {}".format(axis, ddof)):
+                with self.subTest(f"axis = {axis}, ddof = {ddof}"):
                     from_scipy = scipy_sem(
                         stack, axis=axis, ddof=ddof, nan_policy="omit"
                     )

@@ -120,8 +120,8 @@ def benchmark(
             "".ljust(console_width, "*"),
             "npstreams performance benchmark".upper().center(console_width),
             "",
-            "    npstreams".ljust(15) + " {}".format(__version__),
-            "    NumPy".ljust(15) + " {}".format(np.__version__),
+            "    npstreams".ljust(15) + f" {__version__}",
+            "    NumPy".ljust(15) + f" {np.__version__}",
             "",
             "    Speedup is NumPy time divided by npstreams time (Higher is better)",
             "".ljust(console_width, "*"),
@@ -140,8 +140,8 @@ def benchmark(
                 speedup = np_time / ns_time
                 print(
                     "    ",
-                    "shape = {}".format(shape).ljust(sh_just),
-                    "speedup = {:.4f}x".format(speedup),
+                    f"shape = {shape}".ljust(sh_just),
+                    f"speedup = {speedup:.4f}x",
                 )
 
             print("".ljust(console_width, "-"))
@@ -154,8 +154,8 @@ def benchmark(
                 speedup = np_time / ns_time
                 print(
                     "    ",
-                    "shape = {}".format(shape).ljust(sh_just),
-                    "speedup = {:.4f}x".format(speedup),
+                    f"shape = {shape}".ljust(sh_just),
+                    f"speedup = {speedup:.4f}x",
                 )
 
             print("".ljust(console_width, "-"))
@@ -179,12 +179,8 @@ def benchmark_ufunc(ufunc, shapes):
     """
     for shape in shapes:
 
-        numpy_statement = "{ufunc}.reduce(stack(stream()), axis = -1)".format(
-            ufunc=ufunc.__name__
-        )
-        npstreams_statement = "reduce_ufunc(stream(), {ufunc}, axis = -1)".format(
-            ufunc=ufunc.__name__
-        )
+        numpy_statement = f"{ufunc.__name__}.reduce(stack(stream()), axis = -1)"
+        npstreams_statement = f"reduce_ufunc(stream(), {ufunc.__name__}, axis = -1)"
 
         with np.errstate(invalid="ignore"):
             np_time = autotimeit(
@@ -215,8 +211,8 @@ def benchmark_func(func, shapes):
     """
     for shape in shapes:
 
-        numpy_statement = "np_{}(stack(stream()), axis = -1)".format(func.__name__)
-        npstreams_statement = "ns_{}(stream(), axis = -1)".format(func.__name__)
+        numpy_statement = f"np_{func.__name__}(stack(stream()), axis = -1)"
+        npstreams_statement = f"ns_{func.__name__}(stream(), axis = -1)"
 
         with np.errstate(invalid="ignore"):
             np_time = autotimeit(
@@ -246,9 +242,7 @@ def comparable_ufuncs(ufuncs, file):
     for ufunc in ufuncs:
         if not isinstance(ufunc, np.ufunc):
             print(
-                "Skipping function {func} as it is not a NumPy Universal Function".format(
-                    func=ufunc.__name__
-                )
+                f"Skipping function {ufunc.__name__} as it is not a NumPy Universal Function"
             )
             continue
 
@@ -256,9 +250,7 @@ def comparable_ufuncs(ufuncs, file):
             _check_binary_ufunc(ufunc)
         except ValueError:
             print(
-                "Skipping function {func} as it is not a valid binary ufunc".format(
-                    func=ufunc.__name__
-                )
+                f"Skipping function {ufunc.__name__} as it is not a valid binary ufunc"
             )
         else:
             yield ufunc
@@ -286,9 +278,7 @@ def comparable_funcs(funcs, file):
     for func in funcs:
         if func.__name__ not in npstreams_functions:
             print(
-                "Skipping function {func} as there is no npstreams equivalent".format(
-                    func=func.__name__
-                )
+                f"Skipping function {func.__name__} as there is no npstreams equivalent"
             )
         else:
             yield func

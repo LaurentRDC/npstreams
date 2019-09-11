@@ -86,7 +86,7 @@ class TestIreduceUfunc(unittest.TestCase):
     def test_output_shape(self):
         """ Test output shape """
         for axis in (0, 1, 2, 3, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.add.reduce(self.stack, axis=axis)
                 out = last(ireduce_ufunc(self.source, np.add, axis=axis))
                 self.assertSequenceEqual(from_numpy.shape, out.shape)
@@ -95,7 +95,7 @@ class TestIreduceUfunc(unittest.TestCase):
     def test_length(self):
         """ Test that the number of elements yielded by ireduce_ufunc is correct """
         for axis in (0, 1, 2, 3, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 source = (np.zeros((16, 5, 8)) for _ in range(10))
                 out = list(ireduce_ufunc(source, np.add, axis=axis))
                 self.assertEqual(10, len(out))
@@ -103,7 +103,7 @@ class TestIreduceUfunc(unittest.TestCase):
     def test_ignore_nan(self):
         """ Test that ignore_nan is working """
         for axis in (0, 1, 2, 3, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 out = last(
                     ireduce_ufunc(self.source, np.add, axis=axis, ignore_nan=True)
                 )
@@ -134,7 +134,7 @@ def test_binary_ufunc(ufunc):
             return last(ireduce_ufunc(arrays, ufunc, axis=axis))
 
         for axis in (0, 1, 2, -1):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = ufunc.reduce(self.stack, axis=axis)
                 from_sufunc = sufunc(self.source, axis=axis)
                 self.assertSequenceEqual(from_sufunc.shape, from_numpy.shape)
@@ -150,7 +150,7 @@ class TestAllBinaryUfuncs(unittest.TestCase):
 
 
 for ufunc in UFUNCS:
-    test_name = "test_ireduce_ufunc_on_{}".format(ufunc.__name__)
+    test_name = f"test_ireduce_ufunc_on_{ufunc.__name__}"
     test = test_binary_ufunc(ufunc)
     setattr(TestAllBinaryUfuncs, test_name, test)
 
@@ -183,7 +183,7 @@ class TestAllBinaryUfuncsIgnoreNans(unittest.TestCase):
 for ufunc in UFUNCS:
     if ufunc.identity is None:
         continue
-    test_name = "test_ireduce_ufunc_on_{}".format(ufunc.__name__)
+    test_name = f"test_ireduce_ufunc_on_{ufunc.__name__}"
     test = test_binary_ufunc_ignore_nan(ufunc)
     setattr(TestAllBinaryUfuncsIgnoreNans, test_name, test)
 

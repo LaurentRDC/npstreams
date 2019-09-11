@@ -62,7 +62,7 @@ class TestISum(unittest.TestCase):
         stack = np.dstack(stream)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.sum(stack, axis=axis)
                 from_isum = last(isum(stream, axis=axis))
                 self.assertTrue(np.allclose(from_isum, from_numpy))
@@ -116,7 +116,7 @@ class TestSum(unittest.TestCase):
         stack = np.dstack(stream)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.sum(stack, axis=axis)
                 from_sum = nssum(stream, axis=axis)
                 self.assertTrue(np.allclose(from_sum, from_numpy))
@@ -162,7 +162,7 @@ class TestIProd(unittest.TestCase):
         stack = np.dstack(stream)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.prod(stack, axis=axis)
                 from_stream = last(iprod(stream, axis=axis))
                 self.assertTrue(np.allclose(from_stream, from_numpy))
@@ -208,7 +208,7 @@ class TestProd(unittest.TestCase):
         stack = np.dstack(stream)
 
         for axis in (0, 1, 2, None):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.prod(stack, axis=axis)
                 from_stream = prod(stream, axis=axis)
                 self.assertTrue(np.allclose(from_stream, from_numpy))
@@ -221,7 +221,7 @@ class TestISub(unittest.TestCase):
         stack = np.stack(stream, axis=-1)
 
         for axis in range(stack.ndim):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.subtract.reduce(stack, axis=axis)
                 from_stream = last(isub(stream, axis=axis))
                 self.assertTrue(np.allclose(from_numpy, from_stream))
@@ -240,7 +240,7 @@ class TestIAll(unittest.TestCase):
             self.assertEqual(from_numpy, from_stream)
 
         for axis in range(stack.ndim):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.all(stack, axis=axis)
                 from_stream = last(iall(stream, axis=axis))
                 self.assertTrue(np.allclose(from_numpy, from_stream))
@@ -259,7 +259,7 @@ class TestIAny(unittest.TestCase):
             self.assertEqual(from_numpy, from_stream)
 
         for axis in range(stack.ndim):
-            with self.subTest("axis = {}".format(axis)):
+            with self.subTest(f"axis = {axis}"):
                 from_numpy = np.any(stack, axis=axis)
                 from_stream = last(iany(stream, axis=axis))
                 self.assertTrue(np.allclose(from_numpy, from_stream))

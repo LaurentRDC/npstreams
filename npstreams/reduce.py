@@ -38,13 +38,10 @@ def _check_binary_ufunc(ufunc):
     ValueError: if ``ufunc`` is not binary or the return type is boolean.
     """
     if not isinstance(ufunc, np.ufunc):
-        raise TypeError("{} is not a NumPy Ufunc".format(ufunc.__name__))
+        raise TypeError(f"{ufunc.__name__} is not a NumPy Ufunc")
     if ufunc.nin != 2:
         raise ValueError(
-            "Only binary ufuncs are supported, and {} is \
-                          not one of them".format(
-                ufunc.__name__
-            )
+            f"Only binary ufuncs are supported, and {ufunc.__name__} is not one of them"
         )
 
 
@@ -104,9 +101,7 @@ def ireduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs
     if ignore_nan:
         if ufunc.identity is None:
             raise ValueError(
-                "Cannot ignore NaNs because {} has no identity value".format(
-                    ufunc.__name__
-                )
+                f"Cannot ignore NaNs because {ufunc.__name__} has no identity value"
             )
         # TODO: use the ``where`` keyword in ufuncs instead
         arrays = map(partial(nan_to_num, fill_value=ufunc.identity, copy=False), arrays)
@@ -195,7 +190,7 @@ def preduce_ufunc(
     ignore_nan=False,
     processes=1,
     ntotal=None,
-    **kwargs
+    **kwargs,
 ):
     """
     Parallel reduction of array streams.
@@ -311,11 +306,8 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     first = next(arrays)
 
     if kwargs["axis"] not in range(first.ndim):
-        raise ValueError(
-            "Axis {} not supported on arrays of shape {}.".format(
-                kwargs["axis"], first.shape
-            )
-        )
+        axis = kwargs["axis"]
+        raise ValueError(f"Axis {axis} not supported on arrays of shape {first.shape}.")
 
     # Remove parameters that will not be used.
     kwargs.pop("out", None)
