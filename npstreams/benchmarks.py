@@ -282,3 +282,6 @@ def comparable_funcs(funcs, file):
             )
         else:
             yield func
+
+if __name__ == '__main__':
+    benchmark()
