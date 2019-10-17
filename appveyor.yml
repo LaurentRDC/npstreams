@@ -15,7 +15,6 @@ environment:
       TEST_CMD: "python -m unittest discover --verbose"
       CONDA_CHANNELS: "conda-forge"
       CONDA_DEPENDENCIES: "numpy scipy cython"
-      PIP_DEPENDENCIES: "black"
 
   matrix:
 
@@ -43,6 +42,19 @@ environment:
         NUMPY_VERSION: "1.16"
 
       - PYTHON_VERSION: "3.7"
+        NUMPY_VERSION: "1.17"
+
+        # Python 3.8
+      - PYTHON_VERSION: "3.8"
+        NUMPY_VERSION: "1.14"
+
+      - PYTHON_VERSION: "3.8"
+        NUMPY_VERSION: "1.15"
+
+      - PYTHON_VERSION: "3.8"
+        NUMPY_VERSION: "1.16"
+
+      - PYTHON_VERSION: "3.8"
         NUMPY_VERSION: "1.17"
 
 matrix:
