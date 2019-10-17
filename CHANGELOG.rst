@@ -1,3 +1,8 @@
+Release 1.6.2
+-------------
+
+* Added the ability to run default benchmarks from the command line with ``python -m npsteams.benchmarks``.
+
 Release 1.6.1
 -------------
 

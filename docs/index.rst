@@ -68,7 +68,7 @@ To run the benchmark with default parameters, from the interpreter::
 
 From a command-line terminal::
 
-    python -c 'import npstreams; npstreams.benchmark()'
+    python -m npstreams.benchmarks
 
 The results will be printed to the screen.
 
