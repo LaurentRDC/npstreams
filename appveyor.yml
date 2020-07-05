@@ -20,9 +20,6 @@ environment:
 
         # Python 3.6
       - PYTHON_VERSION: "3.6"
-        NUMPY_VERSION: "1.14"
-
-      - PYTHON_VERSION: "3.6"
         NUMPY_VERSION: "1.15"
 
       - PYTHON_VERSION: "3.6"
@@ -30,12 +27,12 @@ environment:
 
       - PYTHON_VERSION: "3.6"
         NUMPY_VERSION: "1.17"
+
+      - PYTHON_VERSION: "3.6"
+        NUMPY_VERSION: "1.18"
 
         # Python 3.7
       - PYTHON_VERSION: "3.7"
-        NUMPY_VERSION: "1.14"
-
-      - PYTHON_VERSION: "3.7"
         NUMPY_VERSION: "1.15"
 
       - PYTHON_VERSION: "3.7"
@@ -43,12 +40,12 @@ environment:
 
       - PYTHON_VERSION: "3.7"
         NUMPY_VERSION: "1.17"
+
+      - PYTHON_VERSION: "3.7"
+        NUMPY_VERSION: "1.18"
 
         # Python 3.8
       - PYTHON_VERSION: "3.8"
-        NUMPY_VERSION: "1.14"
-
-      - PYTHON_VERSION: "3.8"
         NUMPY_VERSION: "1.15"
 
       - PYTHON_VERSION: "3.8"
@@ -56,6 +53,9 @@ environment:
 
       - PYTHON_VERSION: "3.8"
         NUMPY_VERSION: "1.17"
+
+      - PYTHON_VERSION: "3.8"
+        NUMPY_VERSION: "1.18"
 
 matrix:
    fast_finish: true
