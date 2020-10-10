@@ -1,3 +1,8 @@
+Release 1.6.3
+-------------
+
+* Added support for Python 3.9
+
 Release 1.6.2
 -------------
 
