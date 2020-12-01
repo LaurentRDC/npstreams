@@ -32,7 +32,7 @@ with open("README.md") as f:
 with open("requirements.txt") as f:
     requirements = [line for line in f.read().split("\n") if len(line.strip())]
 
-exclude = {"exclude": ["external*", "docs", "tests", "*cache"]}
+exclude = {"exclude": ["external*", "docs", "*cache"]}
 packages = [
     BASE_PACKAGE + "." + x
     for x in find_packages(os.path.join(base_path, BASE_PACKAGE), **exclude)
