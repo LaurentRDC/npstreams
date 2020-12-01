@@ -50,6 +50,7 @@ if __name__ == "__main__":
         name="npstreams",
         description="Streaming operations on NumPy arrays",
         long_description=readme,
+        long_description_content_type="text/markdown",
         license=LICENSE,
         url="",
         download_url="http://github.com/LaurentRDC/npstreams",
