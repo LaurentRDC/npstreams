@@ -36,12 +36,14 @@ not work on most machines. Moreover, what if we want to transform the
 images one by one before averaging them? What about looking at the
 average while it is being computed? Let\'s look at an example:
 
-    import numpy as np
-    from npstreams import iaverage
-    from scipy.misc import imread
+```python
+import numpy as np
+from npstreams import iaverage
+from scipy.misc import imread
 
-    stream = map(imread, list_of_filenames)
-    averaged = iaverage(stream)
+stream = map(imread, list_of_filenames)
+averaged = iaverage(stream)
+```
 
 At this point, the generators `map` and `iaverage` are \'wired\' but
 will not compute anything until it is requested. We can look at the
