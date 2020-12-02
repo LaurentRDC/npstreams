@@ -3,7 +3,7 @@
 Stacking arrays from a stream
 -----------------------------
 """
-from collections import Sized
+from collections.abc import Sized
 from functools import partial
 
 import numpy as np
