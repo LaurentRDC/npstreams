@@ -1,6 +1,6 @@
 # npstreams
 
-[![Windows Build Status](https://img.shields.io/appveyor/ci/LaurentRDC/npstreams/master.svg)](https://ci.appveyor.com/project/LaurentRDC/npstreams) [![Documentation Build Status](https://readthedocs.org/projects/npstreams/badge/?version=master)](http://npstreams.readthedocs.io) [![PyPI Version](https://img.shields.io/pypi/v/npstreams.svg)](https://pypi.python.org/pypi/npstreams) [![Conda-forge Version](https://img.shields.io/conda/vn/conda-forge/npstreams.svg)](https://anaconda.org/conda-forge/npstreams) ![Supported Python Versions](https://img.shields.io/pypi/pyversions/npstreams.svg)
+[![Documentation Build Status](https://readthedocs.org/projects/npstreams/badge/?version=master)](http://npstreams.readthedocs.io) [![PyPI Version](https://img.shields.io/pypi/v/npstreams.svg)](https://pypi.python.org/pypi/npstreams) [![Conda-forge Version](https://img.shields.io/conda/vn/conda-forge/npstreams.svg)](https://anaconda.org/conda-forge/npstreams)
 
 npstreams is an open-source Python package for streaming NumPy array
 operations. The goal is to provide tested routines that operate on
