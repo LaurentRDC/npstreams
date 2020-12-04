@@ -5,6 +5,7 @@ Flow controls
 """
 from functools import partial
 from glob import iglob
+from pathlib import Path
 
 from .array_stream import ArrayStream
 from .parallel import pmap, pmap_unordered
@@ -51,6 +52,10 @@ def iload(files, load_func, **kwargs):
 
         ims = iload(['im1.tif', 'im2.tif', 'im3.tif'], imread)
     """
+    # TODO: better handling of Paths
+    if isinstance(files, Path):
+        files = str(files)
+
     if isinstance(files, str):
         files = iglob(files)
     files = iter(files)
@@ -90,6 +95,10 @@ def pload(files, load_func, processes=1, **kwargs):
     if processes == 1:
         yield from iload(files, load_func, **kwargs)
         return
+
+    # TODO: better handling of Paths
+    if isinstance(files, Path):
+        files = str(files)
 
     if isinstance(files, str):
         files = iglob(files)
