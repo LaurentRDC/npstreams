@@ -4,6 +4,7 @@ Release 1.6.4
 
 * Fixed an issue regarding a deprecation of `collections.Sized` (in favour of `collections.abc.Sized`) in Python 3.10+
 * Code snippets in documentation are now tested for correctness.
+* Tests are now included in source distributions.
 
 Release 1.6.3
 -------------

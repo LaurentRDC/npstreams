@@ -1,5 +1,10 @@
-include README.md CHANGELOG.rst LICENSE.txt requirements.txt
+include CHANGELOG.rst
+include LICENSE
+include README.md
+include requirements.txt 
+include dev-requirements.txt
+
 recursive-include tests *
 recursive-exclude docs *
-recursive-exclude docs/_build *
-recursive-exclude benchmarks *
+
+global-exclude *.py[cod] __pycache__ *.so *.dylib
