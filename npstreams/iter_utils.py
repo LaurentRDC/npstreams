@@ -179,7 +179,8 @@ def multilinspace(start, stop, num, endpoint=True):
 
     Examples
     --------
-    >>> multispace = ns.multilinspace(start = (0, 0), stop = (1, 1), num = 4, endpoint = False)
+    >>> from npstreams import multilinspace
+    >>> multispace = multilinspace(start = (0, 0), stop = (1, 1), num = 4, endpoint = False)
     >>> print(list(multispace))
     [(0, 0), (0.25, 0.25), (0.5, 0.5), (0.75, 0.75)]
 
@@ -216,7 +217,8 @@ def cyclic(iterable):
 
     Examples
     --------
-    >>> list(ns.cyclic((1,2,3)))
+    >>> from npstreams import cyclic
+    >>> list(cyclic((1,2,3)))
     [(1, 2, 3), (3, 1, 2), (2, 3, 1)]
     """
     iterable = tuple(iterable)
@@ -241,9 +243,10 @@ def length_hint(obj, default=0):
 
     Examples
     --------
-    >>> ns.length_hint([1,2,3,4,5])          # Should be exact
+    >>> from npstreams import length_hint
+    >>> length_hint([1,2,3,4,5])          # Should be exact
     5
-    >>> ns.length_hint(None, default = 15)   # Does not implement __length_hint__
+    >>> length_hint(None, default = 15)   # Does not implement __length_hint__
     15
     """
     try:
