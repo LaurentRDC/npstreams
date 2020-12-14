@@ -1,4 +1,9 @@
 
+Release 1.6.5
+-------------
+
+* Tests are now included in the package itself.
+
 Release 1.6.4
 -------------
 
