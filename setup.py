@@ -69,7 +69,6 @@ if __name__ == "__main__":
         #        ext_modules = cythonize("npstreams/*.pyx",
         #                                 compiler_directives = {'language_level':3,
         #                                                        'boundscheck': False}),
-        test_suite="setup.test_suite",
         classifiers=[
             "Environment :: Console",
             "Intended Audience :: Science/Research",
