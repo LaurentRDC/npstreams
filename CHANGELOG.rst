@@ -2,7 +2,9 @@
 Release 1.6.5
 -------------
 
+* Migration of testing infrastructure to pytest.
 * Tests are now included in the package itself.
+
 
 Release 1.6.4
 -------------

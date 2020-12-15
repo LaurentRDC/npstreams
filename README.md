@@ -134,8 +134,7 @@ python -m pip install git+git://github.com/LaurentRDC/npstreams.git
 ```
 
 Each version is tested against Python 3.6+. If you are using a different
-version, tests can be run using the standard library\'s
-`unittest` module.
+version, tests can be run using the `pytest` package.
 
 ## Citations
 

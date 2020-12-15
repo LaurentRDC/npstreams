@@ -13,9 +13,9 @@ from .array_stream import array_stream
 
 @array_stream
 def stack(arrays, axis=-1):
-    """ 
+    """
     Stack of all arrays from a stream. Generalization of numpy.stack
-    and numpy.concatenate. 
+    and numpy.concatenate.
 
     Parameters
     ----------
@@ -24,7 +24,7 @@ def stack(arrays, axis=-1):
     axis : int, optional
         Stacking direction. If ``axis = -1``, arrays are stacked along a
         new dimension.
-    
+
     Returns
     -------
     stacked : ndarray

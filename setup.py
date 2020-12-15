@@ -2,7 +2,6 @@
 import os
 import re
 from glob import glob
-from unittest import TestLoader
 
 from setuptools import Extension, find_packages, setup
 

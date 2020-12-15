@@ -10,9 +10,9 @@ from .iter_utils import length_hint, peek
 
 
 class ArrayStream(Iterator):
-    """ 
-    Iterator of arrays. Elements from the stream are converted to 
-    NumPy arrays. If ``stream`` is a single array, it will be 
+    """
+    Iterator of arrays. Elements from the stream are converted to
+    NumPy arrays. If ``stream`` is a single array, it will be
     repackaged as a length 1 iterable.
 
     Arrays in the stream will be cast to the same data-type as the first
@@ -54,9 +54,9 @@ class ArrayStream(Iterator):
         return np.stack(arraylist, axis=-1)
 
     def __length_hint__(self):
-        """ 
-        In certain cases, an ArrayStream can have a definite size. 
-        See https://www.python.org/dev/peps/pep-0424/ 
+        """
+        In certain cases, an ArrayStream can have a definite size.
+        See https://www.python.org/dev/peps/pep-0424/
         """
         return self._sequence_length
 
@@ -66,10 +66,10 @@ class ArrayStream(Iterator):
 
 
 def array_stream(func):
-    """ 
+    """
     Decorates streaming functions to make sure that the stream
-    is a stream of ndarrays. Objects that are not arrays are transformed 
-    into arrays. If the stream is in fact a single ndarray, this ndarray 
+    is a stream of ndarrays. Objects that are not arrays are transformed
+    into arrays. If the stream is in fact a single ndarray, this ndarray
     is repackaged into a sequence of length 1.
 
     The first argument of the decorated function is assumed to be an iterable of

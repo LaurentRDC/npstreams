@@ -17,7 +17,7 @@ from .numerics import isum
 
 @array_stream
 def _iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
-    """ 
+    """
     Primitive version of weighted averaging that yields the running sum and running weights sum,
     but avoids the costly division at every step.
     """
@@ -58,7 +58,7 @@ def _iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
 
 @array_stream
 def average(arrays, axis=-1, weights=None, ignore_nan=False):
-    """ 
+    """
     Average (weighted) of a stream of arrays. This function consumes the
     entire stream.
 
@@ -67,25 +67,25 @@ def average(arrays, axis=-1, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be averaged. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to average the arrays in the stream as if 
+        Reduction axis. Default is to average the arrays in the stream as if
         they had been stacked along a new axis, then average along this new axis.
         If None, arrays are flattened before averaging. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are averaged
         along the new axis.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the average 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the average
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If ``weights=None``, 
+        or an array of the same shape as any element of `arrays`. If ``weights=None``,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     avg: `~numpy.ndarray`, dtype float
-        Weighted average. 
-    
+        Weighted average.
+
     See Also
     --------
     iaverage : streaming (weighted) average.
@@ -98,7 +98,7 @@ def average(arrays, axis=-1, weights=None, ignore_nan=False):
 
 @array_stream
 def iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
-    """ 
+    """
     Streaming (weighted) average of arrays.
 
     Parameters
@@ -106,25 +106,25 @@ def iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be averaged. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to average the arrays in the stream as if 
+        Reduction axis. Default is to average the arrays in the stream as if
         they had been stacked along a new axis, then average along this new axis.
         If None, arrays are flattened before averaging. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are averaged
         along the new axis.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the average 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the average
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Yields
     ------
     avg: `~numpy.ndarray`, dtype float
-        Weighted average. 
-    
+        Weighted average.
+
     See Also
     --------
     imean : streaming array mean (non-weighted average).
@@ -136,7 +136,7 @@ def iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
 
 @array_stream
 def mean(arrays, axis=-1, ignore_nan=False):
-    """ 
+    """
     Mean of a stream of arrays. This function consumes the
     entire stream.
 
@@ -145,14 +145,14 @@ def mean(arrays, axis=-1, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be averaged. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to average the arrays in the stream as if 
+        Reduction axis. Default is to average the arrays in the stream as if
         they had been stacked along a new axis, then average along this new axis.
         If None, arrays are flattened before averaging. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are averaged
         along the new axis.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     mean: `~numpy.ndarray`, dtype float
@@ -166,7 +166,7 @@ def mean(arrays, axis=-1, ignore_nan=False):
 
 @array_stream
 def imean(arrays, axis=-1, ignore_nan=False):
-    """ 
+    """
     Streaming mean of arrays. Equivalent to `iaverage(arrays, weights = None)`.
 
     Parameters
@@ -174,14 +174,14 @@ def imean(arrays, axis=-1, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be averaged. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to average the arrays in the stream as if 
+        Reduction axis. Default is to average the arrays in the stream as if
         they had been stacked along a new axis, then average along this new axis.
         If None, arrays are flattened before averaging. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are averaged
         along the new axis.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Yields
     ------
     mean: `~numpy.ndarray`, dtype float
@@ -194,7 +194,7 @@ def imean(arrays, axis=-1, ignore_nan=False):
 
 @array_stream
 def _ivar(arrays, axis=-1, weights=None, ignore_nan=False):
-    """ 
+    """
     Primitive version of weighted variance that yields the running average, running average of squares and running weights sum,
     but avoids the costly division and squaring at every step.
     """
@@ -238,7 +238,7 @@ def average_and_var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be combined. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
+        Reduction axis. Default is to combine the arrays in the stream as if
         they had been stacked along a new axis, then compute the variance along this new axis.
         If None, arrays are flattened. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, variance is computed
@@ -247,21 +247,21 @@ def average_and_var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
         Means Delta Degrees of Freedom. The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the variance 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the variance
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     average : `~numpy.ndarray`
         Average, possibly weighted.
     var: `~numpy.ndarray`
         Variance, possibly weighted.
-    
+
     Notes
     -----
     Since the calculation of the variance requires knowledge of the average, this function is a
@@ -283,16 +283,16 @@ def average_and_var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
 
 @array_stream
 def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
-    """ 
+    """
     Total variance of a stream of arrays. Weights are also supported. This function
     consumes the input stream.
-    
+
     Parameters
     ----------
     arrays : iterable of ndarrays
         Arrays to be combined. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
+        Reduction axis. Default is to combine the arrays in the stream as if
         they had been stacked along a new axis, then compute the variance along this new axis.
         If None, arrays are flattened. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, variance is computed
@@ -301,24 +301,24 @@ def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the variance 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the variance
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     var: `~numpy.ndarray`
-        Variance. 
-    
+        Variance.
+
     See Also
     --------
     ivar : streaming variance
     numpy.var : variance calculation for dense arrays. Weights are not supported.
-    
+
     References
     ----------
     .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
@@ -332,15 +332,15 @@ def var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
 
 @array_stream
 def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
-    """ 
+    """
     Streaming variance of arrays. Weights are also supported.
-    
+
     Parameters
     ----------
     arrays : iterable of ndarrays
         Arrays to be combined. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
+        Reduction axis. Default is to combine the arrays in the stream as if
         they had been stacked along a new axis, then compute the variance along this new axis.
         If None, arrays are flattened. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, variance is computed
@@ -349,23 +349,23 @@ def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the variance 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the variance
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Yields
     ------
     var: `~numpy.ndarray`
-        Variance. 
-    
+        Variance.
+
     See Also
     --------
     numpy.var : variance calculation for dense arrays. Weights are not supported.
-    
+
     References
     ----------
     .. [#] D. H. D. West, Updating the mean and variance estimates: an improved method.
@@ -378,7 +378,7 @@ def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
 
 @array_stream
 def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
-    """ 
+    """
     Total standard deviation of arrays. Weights are also supported. This function
     consumes the input stream.
 
@@ -387,7 +387,7 @@ def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be combined. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
+        Reduction axis. Default is to combine the arrays in the stream as if
         they had been stacked along a new axis, then compute the standard deviation along this new axis.
         If None, arrays are flattened. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, standard deviation is computed
@@ -396,14 +396,14 @@ def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the standard deviation 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the standard deviation
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     std: `~numpy.ndarray`
@@ -421,7 +421,7 @@ def std(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
 
 @array_stream
 def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
-    """ 
+    """
     Streaming standard deviation of arrays. Weights are also supported.
     This is equivalent to calling `numpy.std(axis = 2)` on a stack of images.
 
@@ -430,7 +430,7 @@ def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be combined. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
+        Reduction axis. Default is to combine the arrays in the stream as if
         they had been stacked along a new axis, then compute the standard deviation along this new axis.
         If None, arrays are flattened. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, standard deviation is computed
@@ -439,14 +439,14 @@ def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the standard deviation 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the standard deviation
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Yields
     ------
     std: `~numpy.ndarray`
@@ -467,7 +467,7 @@ def istd(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
 
 @array_stream
 def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
-    """ 
+    """
     Standard error in the mean (SEM) of a stream of arrays. This function consumes
     the entire stream.
 
@@ -476,7 +476,7 @@ def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be combined. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
+        Reduction axis. Default is to combine the arrays in the stream as if
         they had been stacked along a new axis, then compute the standard error along this new axis.
         If None, arrays are flattened. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, standard error is computed
@@ -485,19 +485,19 @@ def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the standard error 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the standard error
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     sem: `~numpy.ndarray`, dtype float
-        Standard error in the mean. 
-    
+        Standard error in the mean.
+
     See Also
     --------
     scipy.stats.sem : standard error in the mean of dense arrays.
@@ -510,7 +510,7 @@ def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
 
 @array_stream
 def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
-    """ 
+    """
     Streaming standard error in the mean (SEM) of arrays. This is equivalent to
     calling `scipy.stats.sem(axis = 2)` on a stack of images.
 
@@ -519,7 +519,7 @@ def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be combined. This iterable can also a generator.
     axis : int, optional
-        Reduction axis. Default is to combine the arrays in the stream as if 
+        Reduction axis. Default is to combine the arrays in the stream as if
         they had been stacked along a new axis, then compute the standard error along this new axis.
         If None, arrays are flattened. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, standard error is computed
@@ -528,19 +528,19 @@ def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of elements.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in an element of `arrays` contributes to the standard error 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in an element of `arrays` contributes to the standard error
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If weights=None, 
+        or an array of the same shape as any element of `arrays`. If weights=None,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Yields
     ------
     sem: `~numpy.ndarray`, dtype float
-        Standard error in the mean. 
-    
+        Standard error in the mean.
+
     See Also
     --------
     scipy.stats.sem : standard error in the mean of dense arrays.
@@ -564,10 +564,10 @@ def ihistogram(arrays, bins, range=None, weights=None):
         Bin edges, including the rightmost edge, allowing for non-uniform bin widths.
         To determine the appropriate bins automatically, see ``numpy.histogram_bin_edges``.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `arrays`. 
-        Each value in a only contributes its associated weight towards the 
+        Iterable of weights associated with the values in each item of `arrays`.
+        Each value in a only contributes its associated weight towards the
         bin count (instead of 1). The weights array can either be a float
-        or an array of the same shape as any element of `arrays`. If ``weights=None``, 
+        or an array of the same shape as any element of `arrays`. If ``weights=None``,
         then all data in each element of `arrays` are assumed to have a weight equal to one.
 
         .. versionadded:: 1.6.1
@@ -576,7 +576,7 @@ def ihistogram(arrays, bins, range=None, weights=None):
     ------
     hist : `~numpy.ndarray`
         Streamed histogram.
-    
+
     See Also
     --------
     numpy.histogram : 1D histogram of dense arrays.

@@ -3,7 +3,6 @@ from npstreams import pmap, pmap_unordered, preduce
 from functools import reduce
 import numpy as np
 from operator import add
-import unittest
 
 
 def identity(obj, *args, **kwargs):
@@ -11,66 +10,62 @@ def identity(obj, *args, **kwargs):
     return obj
 
 
-class TestParallelReduce(unittest.TestCase):
-    def test_preduce_one_process(self):
-        """ Test that preduce reduces to functools.reduce for a single process """
-        integers = list(range(0, 10))
-        preduce_results = preduce(add, integers, processes=1)
-        reduce_results = reduce(add, integers)
+def test_preduce_preduce_one_process():
+    """ Test that preduce reduces to functools.reduce for a single process """
+    integers = list(range(0, 10))
+    preduce_results = preduce(add, integers, processes=1)
+    reduce_results = reduce(add, integers)
 
-        self.assertEqual(preduce_results, reduce_results)
-
-    def test_preduce_multiple_processes(self):
-        """ Test that preduce reduces to functools.reduce for a single process """
-        integers = list(range(0, 10))
-        preduce_results = preduce(add, integers, processes=2)
-        reduce_results = reduce(add, integers)
-
-        self.assertEqual(preduce_results, reduce_results)
-
-    def test_on_numpy_arrays(self):
-        """ Test sum of numpy arrays as parallel reduce"""
-        arrays = [np.zeros((32, 32)) for _ in range(10)]
-        s = preduce(add, arrays, processes=2)
-
-        self.assertTrue(np.allclose(s, arrays[0]))
-
-    def test_with_kwargs(self):
-        """ Test preduce with keyword-arguments """
-        pass
+    assert preduce_results == reduce_results
 
 
-class TestParallelMap(unittest.TestCase):
-    def test_trivial_map_no_args(self):
-        """ Test that pmap is working with no positional arguments """
-        integers = list(range(0, 10))
-        result = list(pmap(identity, integers, processes=2))
-        self.assertEqual(integers, result)
+def test_preduce_preduce_multiple_processes():
+    """ Test that preduce reduces to functools.reduce for a single process """
+    integers = list(range(0, 10))
+    preduce_results = preduce(add, integers, processes=2)
+    reduce_results = reduce(add, integers)
 
-    def test_trivial_map_kwargs(self):
-        """ Test that pmap is working with args and kwargs """
-        integers = list(range(0, 10))
-        result = list(pmap(identity, integers, processes=2, kwargs={"test": True}))
-        self.assertEqual(result, integers)
+    assert preduce_results == reduce_results
 
 
-class TestParallelMap(unittest.TestCase):
-    def test_trivial_map_no_args(self):
-        """ Test that pmap_unordered is working with no positional arguments """
-        integers = list(range(0, 10))
-        result = list(sorted(pmap_unordered(identity, integers, processes=2)))
-        self.assertEqual(integers, result)
+def test_preduce_on_numpy_arrays():
+    """ Test sum of numpy arrays as parallel reduce"""
+    arrays = [np.zeros((32, 32)) for _ in range(10)]
+    s = preduce(add, arrays, processes=2)
 
-    def test_trivial_map_kwargs(self):
-        """ Test that pmap_unordered is working with args and kwargs """
-        integers = list(range(0, 10))
-        result = list(
-            sorted(
-                pmap_unordered(identity, integers, processes=2, kwargs={"test": True})
-            )
-        )
-        self.assertEqual(result, integers)
+    assert np.allclose(s, arrays[0])
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_preduce_with_kwargs():
+    """ Test preduce with keyword-arguments """
+    pass
+
+
+def test_pmap_trivial_map_no_args():
+    """ Test that pmap is working with no positional arguments """
+    integers = list(range(0, 10))
+    result = list(pmap(identity, integers, processes=2))
+    assert integers == result
+
+
+def test_pmap_trivial_map_kwargs():
+    """ Test that pmap is working with args and kwargs """
+    integers = list(range(0, 10))
+    result = list(pmap(identity, integers, processes=2, kwargs={"test": True}))
+    assert result == integers
+
+
+def test_pmap_trivial_map_no_args():
+    """ Test that pmap_unordered is working with no positional arguments """
+    integers = list(range(0, 10))
+    result = list(sorted(pmap_unordered(identity, integers, processes=2)))
+    assert integers == result
+
+
+def test_pmap_trivial_map_kwargs():
+    """ Test that pmap_unordered is working with args and kwargs """
+    integers = list(range(0, 10))
+    result = list(
+        sorted(pmap_unordered(identity, integers, processes=2, kwargs={"test": True}))
+    )
+    assert result == integers

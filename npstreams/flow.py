@@ -26,16 +26,16 @@ def iload(files, load_func, **kwargs):
         Function taking a filename as its first arguments
     kwargs
         Keyword arguments are passed to ``load_func``.
-    
+
     Yields
     ------
     arr: `~numpy.ndarray`
-        Loaded data. 
-    
+        Loaded data.
+
     See Also
     --------
     pload : load files from parallel processes.
-    
+
     Examples
     --------
     To load images using scikit-image ::
@@ -43,7 +43,7 @@ def iload(files, load_func, **kwargs):
         from skimage.io import imread
         ims = iload('images_*.tif', imread)
 
-    Keyword arguments are passed to the ``load_func``; for example, 
+    Keyword arguments are passed to the ``load_func``; for example,
     to specify the scikit-image plugin ``'tifffile'``::
 
         ims = iload('images_*.tif', imread, plugin = 'tifffile')
@@ -65,10 +65,10 @@ def iload(files, load_func, **kwargs):
 
 def pload(files, load_func, processes=1, **kwargs):
     """
-    Create a stream of arrays from files, which are loaded lazily 
-    from multiple processes. 
-    
-    This function should be preferred to :func:`iload` in cases where 
+    Create a stream of arrays from files, which are loaded lazily
+    from multiple processes.
+
+    This function should be preferred to :func:`iload` in cases where
     the consumer function is much faster than the data can be loaded.
 
     Parameters
@@ -86,7 +86,7 @@ def pload(files, load_func, processes=1, **kwargs):
     Yields
     ------
     arr: `~numpy.ndarray`
-        Loaded data. 
+        Loaded data.
 
     See Also
     --------
@@ -122,7 +122,7 @@ def ipipe(*args, **kwargs):
 
         for arr in stream:
             yield f(g(h(arr)))
-    
+
     Parameters
     ----------
     *funcs : callable
@@ -137,7 +137,7 @@ def ipipe(*args, **kwargs):
         If the length of `arrays` is known, but passing `arrays` as a list
         would take too much memory, the total number of arrays `ntotal` can be specified. This
         allows for `pmap` to chunk better in case of ``processes > 1``.
-    
+
     Yields
     ------
     piped : ndarray

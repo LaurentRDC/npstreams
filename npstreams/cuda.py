@@ -60,7 +60,7 @@ def cuda_inplace_reduce(arrays, operator, dtype=None, ignore_nan=False, identity
         If True, NaNs are replaced with ``identity``. Default is propagation of NaNs.
     identity : float, optional
         If ``ignore_nan = True``, NaNs are replaced with this value.
-    
+
     Returns
     -------
     out : ndarray
@@ -84,17 +84,17 @@ def cuda_inplace_reduce(arrays, operator, dtype=None, ignore_nan=False, identity
 
 
 def csum(arrays, dtype=None, ignore_nan=False):
-    """ 
-    CUDA-enabled sum of stream of arrays. Arrays are summed along 
-    the streaming axis for performance reasons. 
+    """
+    CUDA-enabled sum of stream of arrays. Arrays are summed along
+    the streaming axis for performance reasons.
 
     Parameters
     ----------
     arrays : iterable
-        Arrays to be summed. 
+        Arrays to be summed.
     ignore_nan : bool, optional
         If True, NaNs are ignored. Default is propagation of NaNs.
-    
+
     Returns
     -------
     cuda_sum : ndarray
@@ -109,7 +109,7 @@ def csum(arrays, dtype=None, ignore_nan=False):
 
 
 def cprod(arrays, dtype=None, ignore_nan=False):
-    """ 
+    """
     CUDA-enabled product of a stream of arrays. Arrays are multiplied
     along the streaming axis for performance reasons.
 
@@ -118,14 +118,14 @@ def cprod(arrays, dtype=None, ignore_nan=False):
     arrays : iterable
         Arrays to be multiplied.
     dtype : numpy.dtype, optional
-        The type of the yielded array and of the accumulator in which the elements 
-        are summed. The dtype of a is used by default unless a has an integer dtype 
-        of less precision than the default platform integer. In that case, if a is 
-        signed then the platform integer is used while if a is unsigned then an 
+        The type of the yielded array and of the accumulator in which the elements
+        are summed. The dtype of a is used by default unless a has an integer dtype
+        of less precision than the default platform integer. In that case, if a is
+        signed then the platform integer is used while if a is unsigned then an
         unsigned integer of the same precision as the platform integer is used.
     ignore_nan : bool, optional
         If True, NaNs are ignored. Default is propagation of NaNs.
-    
+
     Yields
     ------
     online_prod : ndarray
@@ -147,7 +147,7 @@ def cmean(arrays, ignore_nan=False):
         Arrays to be averaged. This iterable can also a generator.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     cuda_mean : ndarray
@@ -190,14 +190,14 @@ def caverage(arrays, weights=None, ignore_nan=False):
     arrays : iterable of ndarrays
         Arrays to be averaged. This iterable can also a generator.
     weights : iterable of ndarray, iterable of floats, or None, optional
-        Iterable of weights associated with the values in each item of `images`. 
-        Each value in an element of `images` contributes to the average 
+        Iterable of weights associated with the values in each item of `images`.
+        Each value in an element of `images` contributes to the average
         according to its associated weight. The weights array can either be a float
-        or an array of the same shape as any element of `images`. If weights=None, 
+        or an array of the same shape as any element of `images`. If weights=None,
         then all data in each element of `images` are assumed to have a weight equal to one.
     ignore_nan : bool, optional
         If True, NaNs are set to zero weight. Default is propagation of NaNs.
-    
+
     Returns
     -------
     cuda_avg : ndarray

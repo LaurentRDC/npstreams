@@ -44,21 +44,21 @@ BenchmarkResults = namedtuple(
 
 
 def autotimeit(statement, setup="pass", repeat=3):
-    """ 
+    """
     Time a statement, automatically determining the number of times to
-    run the statement so that the total excecution time is not too short. 
+    run the statement so that the total excecution time is not too short.
 
     .. versionadded:: 1.5.2
-    
+
     Parameters
     ----------
     statement: string
         Statement to time. The statement will be executed after the `setup` statement.
     setup : string, optional
-        Setup statement executed before timing starts. 
+        Setup statement executed before timing starts.
     repeat : int, optional
         Number of repeated timing to execute.
-    
+
     Returns
     -------
     time : float
@@ -75,7 +75,7 @@ def benchmark(
     shapes=[(4, 4), (8, 8), (16, 16), (64, 64)],
     file=None,
 ):
-    """ 
+    """
     Benchmark npstreams against numpy and print the results.
 
     There are two categories of benchmarks. The first category compares NumPy functions against
@@ -83,9 +83,9 @@ def benchmark(
     against dynamically-generated npstreams versions of those same universal functions.
 
     All benchmarks compare a reduction operation on a stream of arrays of varying sizes. The sequence length is fixed.
-    
+
     .. versionadded:: 1.5.2
-    
+
     Parameters
     ----------
     funcs : iterable of NumPy functions, optional
@@ -162,9 +162,9 @@ def benchmark(
 
 
 def benchmark_ufunc(ufunc, shapes):
-    """ 
+    """
     Compare the running time between a NumPy ufunc and the npstreams equivalent.
-    
+
     Parameters
     ----------
     ufunc : NumPy ufunc
@@ -172,7 +172,7 @@ def benchmark_ufunc(ufunc, shapes):
     shapes : iterable of tuples, optional
         Shapes of arrays to test. Streams of random numbers will be generated with arrays of those shapes.
         The sequence lengths are fixed.
-    
+
     Yields
     ------
     results : BenchmarkResults
@@ -194,9 +194,9 @@ def benchmark_ufunc(ufunc, shapes):
 
 
 def benchmark_func(func, shapes):
-    """ 
+    """
     Compare the running time between a NumPy func and the npstreams equivalent.
-    
+
     Parameters
     ----------
     func : NumPy func
@@ -204,7 +204,7 @@ def benchmark_func(func, shapes):
     shapes : iterable of tuples, optional
         Shapes of arrays to test. Streams of random numbers will be generated with arrays of those shapes.
         The sequence lengths are fixed.
-    
+
     Yields
     ------
     results : BenchmarkResults
@@ -226,9 +226,9 @@ def benchmark_func(func, shapes):
 
 
 def comparable_ufuncs(ufuncs, file):
-    """ 
-    Yields ufuncs that can be compared between numpy and npstreams. 
-    
+    """
+    Yields ufuncs that can be compared between numpy and npstreams.
+
     Parameters
     ----------
     ufuncs : iterable of NumPy ufunc
@@ -237,7 +237,7 @@ def comparable_ufuncs(ufuncs, file):
     Yields
     ------
     ufunc : callable
-        NumPy ufuncs that can be compared with npstreams. 
+        NumPy ufuncs that can be compared with npstreams.
     """
     for ufunc in ufuncs:
         if not isinstance(ufunc, np.ufunc):
@@ -257,9 +257,9 @@ def comparable_ufuncs(ufuncs, file):
 
 
 def comparable_funcs(funcs, file):
-    """ 
-    Yields NumPy functions that have npstreams equivalents. 
-    
+    """
+    Yields NumPy functions that have npstreams equivalents.
+
     Parameters
     ----------
     ufuncs : iterable of NumPy functions
@@ -268,7 +268,7 @@ def comparable_funcs(funcs, file):
     Yields
     ------
     ufunc : callable
-        NumPy funcs that have npstreams equivalents. 
+        NumPy funcs that have npstreams equivalents.
     """
     import npstreams
 

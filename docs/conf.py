@@ -123,6 +123,7 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3.6", None)}
 autodoc_default_flags = ["members", "special-members"]
 autoclass_content = "both"
 
+
 def autodoc_skip_member(app, what, name, obj, skip, options):
     exclusions = {"__weakref__", "__doc__", "__module__", "__dict__"}
     exclude = name in exclusions

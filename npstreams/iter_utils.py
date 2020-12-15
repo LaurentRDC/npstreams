@@ -9,9 +9,9 @@ from itertools import chain, islice, tee
 
 
 def primed(gen):
-    """ 
+    """
     Decorator that primes a generator function, i.e. runs the function
-    until the first ``yield`` statement. Useful in cases where there 
+    until the first ``yield`` statement. Useful in cases where there
     are preliminary checks when creating the generator.
     """
 
@@ -32,16 +32,16 @@ def chunked(iterable, chunksize):
     Parameters
     ----------
     iterable : iterable
-        Iterable to be chunked. 
+        Iterable to be chunked.
     chunksize : int
-        Chunk size. 
+        Chunk size.
 
     Yields
     ------
     chunk : iterable
         Iterable of size `chunksize`. In special case of iterable not being
         divisible by `chunksize`, the last `chunk` will be smaller.
-    
+
     Raises
     ------
     TypeError : if `chunksize` is not an integer.
@@ -62,13 +62,13 @@ def chunked(iterable, chunksize):
 
 
 def peek(iterable):
-    """  
-    Peek ahead in an iterable. 
-    
+    """
+    Peek ahead in an iterable.
+
     Parameters
     ----------
     iterable : iterable
-    
+
     Returns
     -------
     first : object
@@ -93,12 +93,12 @@ def itercopy(iterable, copies=2):
         should not be used again.
     copies : int, optional
         Number of copies. Also determines the number of returned iterables.
-    
+
     Returns
     -------
     iter1, iter2, ... : iterable
         Copies of ``iterable``.
-    
+
     Examples
     --------
     By rebinding the name of the original iterable, we make sure that it
@@ -118,7 +118,7 @@ def itercopy(iterable, copies=2):
 
 
 def linspace(start, stop, num, endpoint=True):
-    """ 
+    """
     Generate linear space. This is sometimes more appropriate than
     using `range`.
 
@@ -158,7 +158,7 @@ def linspace(start, stop, num, endpoint=True):
 
 
 def multilinspace(start, stop, num, endpoint=True):
-    """ 
+    """
     Generate multilinear space, for joining the values in two iterables.
 
     Parameters
@@ -199,8 +199,8 @@ def multilinspace(start, stop, num, endpoint=True):
 
 
 def last(stream):
-    """ 
-    Retrieve the last item from a stream/iterator, consuming 
+    """
+    Retrieve the last item from a stream/iterator, consuming
     iterables in the process. If empty stream, a RuntimeError is raised.
     """
     # Wonderful idea from itertools recipes
@@ -212,7 +212,7 @@ def last(stream):
 
 
 def cyclic(iterable):
-    """ 
+    """
     Yields cyclic permutations of an iterable.
 
     Examples

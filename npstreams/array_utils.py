@@ -8,7 +8,7 @@ import numpy as np
 
 def nan_to_num(array, fill_value=0.0, copy=True):
     """
-    Replace NaNs with another fill value. 
+    Replace NaNs with another fill value.
 
     Parameters
     ----------
@@ -21,13 +21,13 @@ def nan_to_num(array, fill_value=0.0, copy=True):
         Whether to create a copy of `array` (True) or to replace values
         in-place (False). The in-place operation only occurs if
         casting to an array does not require a copy.
-    
+
     Returns
     -------
     out : ndarray
         Array without NaNs. If ``array`` was not of floating or complearray type,
         ``array`` is returned unchanged.
-    
+
     Notes
     -----
     Contrary to ``numpy.nan_to_num``, this functions does not handle

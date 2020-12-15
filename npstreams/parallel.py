@@ -123,7 +123,7 @@ def pmap(func, iterable, args=None, kwargs=None, processes=1, ntotal=None):
 
 def pmap_unordered(func, iterable, args=None, kwargs=None, processes=1, ntotal=None):
     """
-    Parallel application of a function with keyword arguments in no particular order. 
+    Parallel application of a function with keyword arguments in no particular order.
     This can reduce memory usage because results are not accumulated so that the order is preserved.
 
     Parameters

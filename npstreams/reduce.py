@@ -19,13 +19,13 @@ identity = lambda i: i
 
 @lru_cache(maxsize=128)
 def _check_binary_ufunc(ufunc):
-    """ 
-    Check that ufunc is suitable for ``ireduce_ufunc``. 
-    
-    Specifically, a binary ``numpy.ufunc`` function is required. Functions 
+    """
+    Check that ufunc is suitable for ``ireduce_ufunc``.
+
+    Specifically, a binary ``numpy.ufunc`` function is required. Functions
     that returns a boolean are also not suitable because they cannot be accumulated.
 
-    This function does not return anything. 
+    This function does not return anything.
 
     Parameters
     ----------
@@ -58,7 +58,7 @@ def ireduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs
 
     Note that performance is much better for the default ``axis = -1``. In such a case,
     reduction operations can occur in-place. This also allows to operate in constant-memory.
-    
+
     Parameters
     ----------
     arrays : iterable
@@ -66,24 +66,24 @@ def ireduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs
     ufunc : numpy.ufunc
         Binary universal function.
     axis : int or None, optional
-        Reduction axis. Default is to reduce the arrays in the stream as if 
+        Reduction axis. Default is to reduce the arrays in the stream as if
         they had been stacked along a new axis, then reduce along this new axis.
         If None, arrays are flattened before reduction. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are reduced
-        along the new axis. Note that not all of NumPy Ufuncs support 
+        along the new axis. Note that not all of NumPy Ufuncs support
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
     ignore_nan : bool, optional
         If True and ufunc has an identity value (e.g. ``numpy.add.identity`` is 0), then NaNs
-        are replaced with this identity. An error is raised if ``ufunc`` has no identity 
+        are replaced with this identity. An error is raised if ``ufunc`` has no identity
         (e.g. ``numpy.maximum.identity`` is ``None``).
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
-        (e.g. ``keepdims``) are not valid for all streaming functions. Also, contrary to NumPy 
+        (e.g. ``keepdims``) are not valid for all streaming functions. Also, contrary to NumPy
         v. 1.10+, ``casting = 'unsafe`` is the default in npstreams.
-    
-    Yields 
+
+    Yields
     ------
     reduced : ndarray or scalar
 
@@ -139,7 +139,7 @@ def reduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs)
 
     Note that performance is much better for the default ``axis = -1``. In such a case,
     reduction operations can occur in-place. This also allows to operate in constant-memory.
-    
+
     Parameters
     ----------
     arrays : iterable
@@ -147,11 +147,11 @@ def reduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs)
     ufunc : numpy.ufunc
         Binary universal function.
     axis : int or None, optional
-        Reduction axis. Default is to reduce the arrays in the stream as if 
+        Reduction axis. Default is to reduce the arrays in the stream as if
         they had been stacked along a new axis, then reduce along this new axis.
         If None, arrays are flattened before reduction. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are reduced
-        along the new axis. Note that not all of NumPy Ufuncs support 
+        along the new axis. Note that not all of NumPy Ufuncs support
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
@@ -162,8 +162,8 @@ def reduce_ufunc(arrays, ufunc, axis=-1, dtype=None, ignore_nan=False, **kwargs)
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
         (e.g. ``keepdims``) are not valid for all streaming functions. Note that
         contrary to NumPy v. 1.10+, ``casting = 'unsafe`` is the default in npstreams.
-    
-    Returns 
+
+    Returns
     -------
     reduced : ndarray or scalar
 
@@ -206,11 +206,11 @@ def preduce_ufunc(
     ufunc : numpy.ufunc
         Binary universal function.
     axis : int or None, optional
-        Reduction axis. Default is to reduce the arrays in the stream as if 
+        Reduction axis. Default is to reduce the arrays in the stream as if
         they had been stacked along a new axis, then reduce along this new axis.
         If None, arrays are flattened before reduction. If `axis` is an int larger that
         the number of dimensions in the arrays of the stream, arrays are reduced
-        along the new axis. Note that not all of NumPy Ufuncs support 
+        along the new axis. Note that not all of NumPy Ufuncs support
         ``axis = None``, e.g. ``numpy.subtract``.
     dtype : numpy.dtype or None, optional
         Overrides the dtype of the calculation and output arrays.
@@ -222,7 +222,7 @@ def preduce_ufunc(
         is used. Default is 1.
     kwargs
         Keyword arguments are passed to ``ufunc``. Note that some valid ufunc keyword arguments
-        (e.g. ``keepdims``) are not valid for all streaming functions. Also, contrary to NumPy 
+        (e.g. ``keepdims``) are not valid for all streaming functions. Also, contrary to NumPy
         v. 1.10+, ``casting = 'unsafe`` is the default in npstreams.
     """
     if processes == 1:
@@ -245,7 +245,7 @@ def preduce_ufunc(
 def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of a new axis (i.e. stacking).
-    
+
     Parameters
     ----------
     arrays : iterable
@@ -254,8 +254,8 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
         Binary universal function. Must have a signature of the form ufunc(x1, x2, ...)
     kwargs
         Keyword arguments are passed to ``ufunc``.
-    
-    Yields 
+
+    Yields
     ------
     reduced : ndarray
     """
@@ -288,7 +288,7 @@ def _ireduce_ufunc_new_axis(arrays, ufunc, **kwargs):
 def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, in the direction of an existing axis.
-    
+
     Parameters
     ----------
     arrays : iterable
@@ -298,7 +298,7 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
     kwargs
         Keyword arguments are passed to ``ufunc``. The ``out`` parameter is ignored.
 
-    Yields 
+    Yields
     ------
     reduced : ndarray
     """
@@ -340,7 +340,7 @@ def _ireduce_ufunc_existing_axis(arrays, ufunc, **kwargs):
 def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     """
     Reduction operation for arrays, over all axes.
-    
+
     Parameters
     ----------
     arrays : iterable
@@ -350,7 +350,7 @@ def _ireduce_ufunc_all_axes(arrays, ufunc, **kwargs):
     kwargs
         Keyword arguments are passed to ``ufunc``. The ``out`` parameter is ignored.
 
-    Yields 
+    Yields
     ------
     reduced : scalar
     """
