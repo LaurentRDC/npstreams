@@ -133,8 +133,7 @@ To install the latest development version from
 python -m pip install git+git://github.com/LaurentRDC/npstreams.git
 ```
 
-Each version is tested against Python 3.6+. If you are using a different
-version, tests can be run using the `pytest` package.
+Tests can be run using the `pytest` package.
 
 ## Citations
 

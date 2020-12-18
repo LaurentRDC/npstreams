@@ -1,4 +1,9 @@
 
+Release 1.6.6
+-------------
+
+* `Support for Python 3.6 and NumPy<1.17 has been dropped <https://numpy.org/neps/nep-0029-deprecation_policy.html>`_
+
 Release 1.6.5
 -------------
 

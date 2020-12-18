@@ -117,7 +117,7 @@ html_sidebars = {
 # html_show_sourcelink = True
 
 # Everything intersphinx's to Python.
-intersphinx_mapping = {"python": ("https://docs.python.org/3.6", None)}
+intersphinx_mapping = {"python": ("https://docs.python.org", None)}
 
 # Autodoc settings
 autodoc_default_flags = ["members", "special-members"]

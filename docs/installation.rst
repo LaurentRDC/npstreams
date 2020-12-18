@@ -9,7 +9,7 @@ Installation
 Requirements
 ============
 
-**npstreams** works on Linux, Mac OS X and Windows. It requires Python 3.6+ 
+**npstreams** works on Linux, Mac OS X and Windows. It requires Python 3.7+ 
 as well as `numpy`_. `scipy`_ is an optional dependency that is only used in
 tests; however, if SciPy cannot be imported, tests will not fail.
 

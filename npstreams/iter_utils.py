@@ -204,7 +204,7 @@ def last(stream):
     iterables in the process. If empty stream, a RuntimeError is raised.
     """
     # Wonderful idea from itertools recipes
-    # https://docs.python.org/3.6/library/itertools.html#itertools-recipes
+    # https://docs.python.org/3.9/library/itertools.html#itertools-recipes
     try:
         return deque(stream, maxlen=1)[0]
     except IndexError:
