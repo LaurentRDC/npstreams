@@ -6,6 +6,7 @@ Statistical functions
 from functools import partial
 from itertools import count, repeat, starmap
 from operator import truediv
+from warnings import catch_warnings, simplefilter
 
 import numpy as np
 
@@ -93,7 +94,9 @@ def average(arrays, axis=-1, weights=None, ignore_nan=False):
     mean : non-weighted average of a stream.
     """
     total_sum, total_weight = last(_iaverage(arrays, axis, weights, ignore_nan))
-    return total_sum / total_weight
+    with catch_warnings():
+        simplefilter("ignore", category=RuntimeWarning)
+        return np.true_divide(total_sum, total_weight)
 
 
 @array_stream
