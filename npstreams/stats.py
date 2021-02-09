@@ -27,7 +27,7 @@ def _iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
     # This case is pretty common
     if (weights is None) and (not ignore_nan) and (axis == -1):
         yield from zip(
-            isum(arrays, axis=axis, dtype=np.float, ignore_nan=False), count(1)
+            isum(arrays, axis=axis, dtype=float, ignore_nan=False), count(1)
         )
         return
 
@@ -48,10 +48,10 @@ def _iaverage(arrays, axis=-1, weights=None, ignore_nan=False):
 
     weights1, weights2 = itercopy(weights)
 
-    sum_of_weights = isum(weights1, axis=axis, dtype=np.float)
+    sum_of_weights = isum(weights1, axis=axis, dtype=float)
     weighted_arrays = map(lambda arr, wgt: arr * wgt, arrays, weights2)
     weighted_sum = isum(
-        weighted_arrays, axis=axis, ignore_nan=ignore_nan, dtype=np.float
+        weighted_arrays, axis=axis, ignore_nan=ignore_nan, dtype=float
     )
 
     yield from zip(weighted_sum, sum_of_weights)

@@ -48,7 +48,7 @@ def test_ireduce_ufunc_single_array():
     """ Test ireduce_ufunc on a single array, not a sequence """
     source = [np.random.random((16, 5, 8)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
-    source = np.ones((16, 16), dtype=np.int)
+    source = np.ones((16, 16), dtype=int)
     out = last(ireduce_ufunc(source, np.add, axis=-1))
     assert np.allclose(source, out)
 
@@ -73,7 +73,7 @@ def test_ireduce_ufunc_out_parameter():
 def test_ireduce_ufunc_ignore_nan_no_identity():
     """Test ireduce_ufunc on an ufunc with no identity raises
     an error for ignore_nan = True"""
-    source = [np.ones((16, 16), dtype=np.int) for _ in range(5)]
+    source = [np.ones((16, 16), dtype=int) for _ in range(5)]
     with pytest.raises(ValueError):
         ireduce_ufunc(source, np.maximum, axis=-1, ignore_nan=True)
 

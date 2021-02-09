@@ -11,14 +11,14 @@ import pytest
 
 def test_isum_trivial():
     """ Test a sum of zeros """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
     summed = last(isum(source))
     assert np.allclose(summed, np.zeros_like(summed))
 
 
 def test_isum_ignore_nans():
     """ Test a sum of zeros with NaNs sprinkled """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
     source.append(np.full((16,), fill_value=np.nan))
     summed = last(isum(source, ignore_nan=True))
     assert np.allclose(summed, np.zeros_like(summed))
@@ -26,22 +26,22 @@ def test_isum_ignore_nans():
 
 def test_isum_length():
     """ Test that the number of yielded elements is the same as source """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
     summed = list(isum(source, axis=0))
     assert 10 == len(summed)
 
 
 def test_isum_dtype():
     """ Test a sum of floating zeros with an int accumulator """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
-    summed = last(isum(source, dtype=np.int))
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
+    summed = last(isum(source, dtype=int))
     assert np.allclose(summed, np.zeros_like(summed))
-    assert summed.dtype == np.int
+    assert summed.dtype == int
 
 
 def test_isum_axis():
     """ Test that isum(axis = 0) yields 0d arrays """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
 
     summed = last(isum(source, axis=0))
     assert np.allclose(summed, np.zeros_like(summed))
@@ -52,7 +52,7 @@ def test_isum_axis():
 
 def test_isum_return_shape():
     """ Test that the shape of output is as expected """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
 
     summed = last(isum(source, axis=0))
     assert summed.shape == (1, 10)
@@ -72,14 +72,14 @@ def test_isum_against_numpy(axis):
 
 def test_sum_trivial():
     """ Test a sum of zeros """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
     summed = nssum(source)
     assert np.allclose(summed, np.zeros_like(summed))
 
 
 def test_sum_ignore_nans():
     """ Test a sum of zeros with NaNs sprinkled """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
     source.append(np.full((16,), fill_value=np.nan))
     summed = nssum(source, ignore_nan=True)
     assert np.allclose(summed, np.zeros_like(summed))
@@ -87,15 +87,15 @@ def test_sum_ignore_nans():
 
 def test_sum_dtype():
     """ Test a sum of floating zeros with an int accumulator """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
-    summed = nssum(source, dtype=np.int)
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
+    summed = nssum(source, dtype=int)
     assert np.allclose(summed, np.zeros_like(summed))
-    assert summed.dtype == np.int
+    assert summed.dtype == int
 
 
 def test_sum_axis():
     """ Test that isum(axis = 0) yields 0d arrays """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
 
     summed = nssum(source, axis=0)
     assert np.allclose(summed, np.zeros_like(summed))
@@ -106,7 +106,7 @@ def test_sum_axis():
 
 def test_sum_return_shape():
     """ Test that the shape of output is as expected """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
 
     summed = nssum(source, axis=0)
     assert summed.shape == (1, 10)
@@ -126,14 +126,14 @@ def test_sum_against_numpy(axis):
 
 def test_iprod_trivial():
     """ Test a product of ones """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
     product = last(iprod(source))
     assert np.allclose(product, np.ones_like(product))
 
 
 def test_iprod_ignore_nans():
     """ Test that NaNs are ignored. """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
     source.append(np.full_like(source[0], np.nan))
     product = last(iprod(source, ignore_nan=True))
     assert np.allclose(product, np.ones_like(product))
@@ -141,15 +141,15 @@ def test_iprod_ignore_nans():
 
 def test_iprod_dtype():
     """ Test that dtype argument is working """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
-    product = last(iprod(source, dtype=np.int))
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
+    product = last(iprod(source, dtype=int))
     assert np.allclose(product, np.ones_like(product))
-    assert product.dtype == np.int
+    assert product.dtype == int
 
 
 def test_iprod_axis():
     """ Test that iprod(axis = 0) yields 0d arrays """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
 
     summed = last(iprod(source, axis=0))
     assert np.all(summed == 1)
@@ -172,14 +172,14 @@ def test_iprod_against_numpy(axis):
 
 def test_prod_trivial():
     """ Test a product of ones """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
     product = prod(source)
     assert np.allclose(product, np.ones_like(product))
 
 
 def test_prod_ignore_nans():
     """ Test that NaNs are ignored. """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
     source.append(np.full_like(source[0], np.nan))
     product = prod(source, ignore_nan=True)
     assert np.allclose(product, np.ones_like(product))
@@ -187,15 +187,15 @@ def test_prod_ignore_nans():
 
 def test_prod_dtype():
     """ Test that dtype argument is working """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
-    product = prod(source, dtype=np.int)
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
+    product = prod(source, dtype=int)
     assert np.allclose(product, np.ones_like(product))
-    assert product.dtype == np.int
+    assert product.dtype == int
 
 
 def test_prod_axis():
     """ Test that iprod(axis = 0) yields 0d arrays """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
 
     summed = prod(source, axis=0)
     assert np.all(summed == 1)

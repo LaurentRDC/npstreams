@@ -34,7 +34,7 @@ seed(23)
 
 def test_average_trivial():
     """ Test average() on a stream of zeroes """
-    stream = repeat(np.zeros((64, 64), dtype=np.float), times=5)
+    stream = repeat(np.zeros((64, 64), dtype=float), times=5)
     for av in average(stream):
         assert np.allclose(av, np.zeros_like(av))
 
@@ -80,7 +80,7 @@ def test_average_ignore_nan():
 
 def test_iaverage_trivial():
     """ Test iaverage on stream of zeroes """
-    stream = repeat(np.zeros((64, 64), dtype=np.float), times=5)
+    stream = repeat(np.zeros((64, 64), dtype=float), times=5)
     for av in iaverage(stream):
         assert np.allclose(av, np.zeros_like(av))
 
@@ -120,12 +120,12 @@ def test_iaverage_length():
     assert len(avg) == 5
 
 
-@pytest.mark.parametrize("dtype", (np.uint8, np.bool, np.int16, np.float16))
+@pytest.mark.parametrize("dtype", (np.uint8, bool, np.int16, np.float16))
 def test_iaverage_output_dtype(dtype):
     """ Test that that yielded arrays are always floats """
     source = (np.zeros((16,), dtype=dtype) for _ in range(5))
     avg = last(iaverage(source))
-    assert avg.dtype == np.float
+    assert avg.dtype == float
 
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
@@ -142,7 +142,7 @@ def test_iaverage_output_shape(axis):
 
 def test_mean_trivial():
     """ Test mean() on a stream of zeroes """
-    stream = repeat(np.zeros((64, 64), dtype=np.float), times=5)
+    stream = repeat(np.zeros((64, 64), dtype=float), times=5)
     for av in mean(stream):
         assert np.allclose(av, np.zeros_like(av))
 

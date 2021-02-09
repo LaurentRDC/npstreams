@@ -31,7 +31,7 @@ def test_ipipe_multiprocessing():
 def test_iload_glob():
     """ Test that iload works on glob-like patterns """
     stream = iload(Path(__file__).parent / "data" / "test_data*.npy", load_func=np.load)
-    s = last(isum(stream)).astype(np.float)  # Cast to float for np.allclose
+    s = last(isum(stream)).astype(float)  # Cast to float for np.allclose
     assert np.allclose(s, np.zeros_like(s))
 
 
@@ -43,14 +43,14 @@ def test_iload_file_list():
         Path(__file__).parent / "data" / "test_data3.npy",
     ]
     stream = iload(files, load_func=np.load)
-    s = last(isum(stream)).astype(np.float)  # Cast to float for np.allclose
+    s = last(isum(stream)).astype(float)  # Cast to float for np.allclose
     assert np.allclose(s, np.zeros_like(s))
 
 
 def test_pload_glob():
     """ Test that pload works on glob-like patterns """
     stream = pload(Path(__file__).parent / "data" / "test_data*.npy", load_func=np.load)
-    s = last(isum(stream)).astype(np.float)  # Cast to float for np.allclose
+    s = last(isum(stream)).astype(float)  # Cast to float for np.allclose
     assert np.allclose(s, np.zeros_like(s))
 
     stream = pload(
@@ -58,7 +58,7 @@ def test_pload_glob():
         load_func=np.load,
         processes=2,
     )
-    s = last(isum(stream)).astype(np.float)  # Cast to float for np.allclose
+    s = last(isum(stream)).astype(float)  # Cast to float for np.allclose
     assert np.allclose(s, np.zeros_like(s))
 
 
@@ -70,7 +70,7 @@ def test_pload_file_list():
         Path(__file__).parent / "data" / "test_data3.npy",
     ]
     stream = pload(files, load_func=np.load)
-    s = last(isum(stream)).astype(np.float)  # Cast to float for np.allclose
+    s = last(isum(stream)).astype(float)  # Cast to float for np.allclose
     assert np.allclose(s, np.zeros_like(s))
 
     files = [
@@ -79,5 +79,5 @@ def test_pload_file_list():
         Path(__file__).parent / "data" / "test_data3.npy",
     ]
     stream = pload(files, load_func=np.load, processes=2)
-    s = last(isum(stream)).astype(np.float)  # Cast to float for np.allclose
+    s = last(isum(stream)).astype(float)  # Cast to float for np.allclose
     assert np.allclose(s, np.zeros_like(s))

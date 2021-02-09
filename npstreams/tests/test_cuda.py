@@ -19,14 +19,14 @@ skip_if_no_cuda = pytest.mark.skipif(
 
 @skip_if_no_cuda
 def test_csum_zero_sum():
-    stream = repeat(np.zeros((16, 16), dtype=np.float), times=5)
+    stream = repeat(np.zeros((16, 16), dtype=float), times=5)
     s = csum(stream)
     assert np.allclose(s, np.zeros((16, 16)))
 
 
 @skip_if_no_cuda
 def test_csum_dtype():
-    stream = repeat(np.zeros((16, 16), dtype=np.float), times=5)
+    stream = repeat(np.zeros((16, 16), dtype=float), times=5)
     s = csum(stream, dtype=np.int16)
     assert np.allclose(s, np.zeros((16, 16)))
     assert s.dtype == np.int16
@@ -35,7 +35,7 @@ def test_csum_dtype():
 @skip_if_no_cuda
 def test_csum_ignore_nans():
     """ Test a sum of zeros with NaNs sprinkled """
-    source = [np.zeros((16,), dtype=np.float) for _ in range(10)]
+    source = [np.zeros((16,), dtype=float) for _ in range(10)]
     source.append(np.full((16,), fill_value=np.nan))
     summed = csum(source, ignore_nan=True)
     assert np.allclose(summed, np.zeros_like(summed))
@@ -43,7 +43,7 @@ def test_csum_ignore_nans():
 
 @skip_if_no_cuda
 def test_cprod_ones_prod():
-    stream = repeat(np.ones((16, 16), dtype=np.float), times=5)
+    stream = repeat(np.ones((16, 16), dtype=float), times=5)
     s = cprod(stream)
     assert np.allclose(s, np.ones((16, 16)))
 
@@ -51,7 +51,7 @@ def test_cprod_ones_prod():
 @skip_if_no_cuda
 def test_cprod_ignore_nans():
     """ Test that NaNs are ignored. """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
     source.append(np.full_like(source[0], np.nan))
     product = cprod(source, ignore_nan=True)
     assert np.allclose(product, np.ones_like(product))
@@ -60,10 +60,10 @@ def test_cprod_ignore_nans():
 @skip_if_no_cuda
 def test_cprod_dtype():
     """ Test that dtype argument is working """
-    source = [np.ones((16,), dtype=np.float) for _ in range(10)]
-    product = cprod(source, dtype=np.int)
+    source = [np.ones((16,), dtype=float) for _ in range(10)]
+    product = cprod(source, dtype=int)
     assert np.allclose(product, np.ones_like(product))
-    assert product.dtype == np.int
+    assert product.dtype == int
 
 
 @skip_if_no_cuda
@@ -87,7 +87,7 @@ def test_cavg_weighted_average():
 
 @skip_if_no_cuda
 def test_cmean_of_ones():
-    stream = repeat(np.ones((16, 16), dtype=np.float), times=5)
+    stream = repeat(np.ones((16, 16), dtype=float), times=5)
     s = cmean(stream)
     assert np.allclose(s, np.ones((16, 16)))
 
