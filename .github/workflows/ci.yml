@@ -95,6 +95,8 @@ jobs:
         ls --recursive artifacts/
         mkdir dist
         mv --backup=numbered artifacts/*/** dist
+        rm -f dist/*~
+        echo "To be uploaded:"
         ls dist
 
     - name: Create release

@@ -2,7 +2,7 @@
 __author__ = "Laurent P. René de Cotret"
 __email__ = "laurent.renedecotret@mail.mcgill.ca"
 __license__ = "BSD"
-__version__ = "1.6.5"
+__version__ = "1.6.6"
 
 # Order of import is important
 # because of inter-dependency
