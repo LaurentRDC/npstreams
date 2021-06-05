@@ -1,4 +1,9 @@
 
+Release 1.6.6
+-------------
+
+* Added the ability to automatically publish to PyPI
+  
 Release 1.6.5
 -------------
 
