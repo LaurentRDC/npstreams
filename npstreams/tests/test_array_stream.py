@@ -10,7 +10,7 @@ def iden(arrays):
 
 
 def test_array_stream_decorator_type():
-    """ Test that all object from an array stream are ndarrays """
+    """Test that all object from an array stream are ndarrays"""
 
     stream = [0, 1, np.array([1])]
     for arr in iden(stream):
@@ -18,7 +18,7 @@ def test_array_stream_decorator_type():
 
 
 def test_single_array():
-    """ Test that a 'stream' consisting of a single array is repackaged into an iterable """
+    """Test that a 'stream' consisting of a single array is repackaged into an iterable"""
     stream = np.array([1, 2, 3])
     assert len(list(iden(stream))) == 1
 
@@ -40,7 +40,7 @@ def test_array_stream_length_hint_not_sized_iterable():
 
 
 def test_array_stream_conversion_to_array():
-    """ Test that numpy.array(Arraystream(...)) returns an array built as a stack of arrays """
+    """Test that numpy.array(Arraystream(...)) returns an array built as a stack of arrays"""
     a = ArrayStream([np.random.random((16, 16)) for _ in range(10)])
     arr = np.array(a)
     assert arr.shape == (16, 16, 10)

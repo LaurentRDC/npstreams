@@ -33,7 +33,7 @@ seed(23)
 
 
 def test_average_trivial():
-    """ Test average() on a stream of zeroes """
+    """Test average() on a stream of zeroes"""
     stream = repeat(np.zeros((64, 64), dtype=float), times=5)
     for av in average(stream):
         assert np.allclose(av, np.zeros_like(av))
@@ -41,7 +41,7 @@ def test_average_trivial():
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_average_vs_numpy(axis):
-    """ Test average vs. numpy.average """
+    """Test average vs. numpy.average"""
     stream = [np.random.random(size=(64, 64)) for _ in range(5)]
     stack = np.dstack(stream)
 
@@ -51,7 +51,7 @@ def test_average_vs_numpy(axis):
 
 
 def test_average_weighted_average():
-    """ Test results of weighted average against numpy.average """
+    """Test results of weighted average against numpy.average"""
     stream = [np.random.random(size=(16, 16)) for _ in range(5)]
 
     weights = [random() for _ in stream]
@@ -66,7 +66,7 @@ def test_average_weighted_average():
 
 
 def test_average_ignore_nan():
-    """ Test that NaNs are handled correctly """
+    """Test that NaNs are handled correctly"""
     stream = [np.random.random(size=(16, 12)) for _ in range(5)]
     for s in stream:
         s[randint(0, 15), randint(0, 11)] = np.nan
@@ -79,14 +79,14 @@ def test_average_ignore_nan():
 
 
 def test_iaverage_trivial():
-    """ Test iaverage on stream of zeroes """
+    """Test iaverage on stream of zeroes"""
     stream = repeat(np.zeros((64, 64), dtype=float), times=5)
     for av in iaverage(stream):
         assert np.allclose(av, np.zeros_like(av))
 
 
 def test_iaverage_weighted_average():
-    """ Test results of weighted iverage against numpy.average """
+    """Test results of weighted iverage against numpy.average"""
     stream = [np.random.random(size=(16, 16)) for _ in range(5)]
 
     weights = [random() for _ in stream]
@@ -101,7 +101,7 @@ def test_iaverage_weighted_average():
 
 
 def test_iaverage_ignore_nan():
-    """ Test that NaNs are handled correctly """
+    """Test that NaNs are handled correctly"""
     stream = [np.random.random(size=(16, 12)) for _ in range(5)]
     for s in stream:
         s[randint(0, 15), randint(0, 11)] = np.nan
@@ -114,7 +114,7 @@ def test_iaverage_ignore_nan():
 
 
 def test_iaverage_length():
-    """ Test that the number of yielded elements is the same as source """
+    """Test that the number of yielded elements is the same as source"""
     source = (np.zeros((16,)) for _ in range(5))
     avg = list(iaverage(source, axis=0))
     assert len(avg) == 5
@@ -122,7 +122,7 @@ def test_iaverage_length():
 
 @pytest.mark.parametrize("dtype", (np.uint8, bool, np.int16, np.float16))
 def test_iaverage_output_dtype(dtype):
-    """ Test that that yielded arrays are always floats """
+    """Test that that yielded arrays are always floats"""
     source = (np.zeros((16,), dtype=dtype) for _ in range(5))
     avg = last(iaverage(source))
     assert avg.dtype == float
@@ -130,7 +130,7 @@ def test_iaverage_output_dtype(dtype):
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_iaverage_output_shape(axis):
-    """ Test output shape """
+    """Test output shape"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
 
@@ -141,7 +141,7 @@ def test_iaverage_output_shape(axis):
 
 
 def test_mean_trivial():
-    """ Test mean() on a stream of zeroes """
+    """Test mean() on a stream of zeroes"""
     stream = repeat(np.zeros((64, 64), dtype=float), times=5)
     for av in mean(stream):
         assert np.allclose(av, np.zeros_like(av))
@@ -149,7 +149,7 @@ def test_mean_trivial():
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_mean_vs_numpy(axis):
-    """ Test mean vs. numpy.mean """
+    """Test mean vs. numpy.mean"""
     stream = [np.random.random(size=(64, 64)) for _ in range(5)]
     stack = np.dstack(stream)
 
@@ -160,7 +160,7 @@ def test_mean_vs_numpy(axis):
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_mean_against_numpy_nanmean(axis):
-    """ Test results against numpy.mean"""
+    """Test results against numpy.mean"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     for arr in source:
         arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
@@ -174,7 +174,7 @@ def test_mean_against_numpy_nanmean(axis):
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_imean_against_numpy_mean(axis):
-    """ Test results against numpy.mean"""
+    """Test results against numpy.mean"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
 
@@ -186,7 +186,7 @@ def test_imean_against_numpy_mean(axis):
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_imean_against_numpy_nanmean(axis):
-    """ Test results against numpy.mean"""
+    """Test results against numpy.mean"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     for arr in source:
         arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
@@ -200,7 +200,7 @@ def test_imean_against_numpy_nanmean(axis):
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_var_vs_numpy(axis):
-    """ Test that the axis parameter is handled correctly """
+    """Test that the axis parameter is handled correctly"""
     stream = [np.random.random((16, 7, 3)) for _ in range(5)]
     stack = np.stack(stream, axis=-1)
 
@@ -213,7 +213,7 @@ def test_var_vs_numpy(axis):
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 @pytest.mark.parametrize("ddof", range(4))
 def test_var_ddof(axis, ddof):
-    """ Test that the ddof parameter is equivalent to numpy's """
+    """Test that the ddof parameter is equivalent to numpy's"""
     stream = [np.random.random((16, 7, 3)) for _ in range(10)]
     stack = np.stack(stream, axis=-1)
 
@@ -227,7 +227,7 @@ def test_var_ddof(axis, ddof):
 
 
 def test_ivar_first():
-    """ Test that the first yielded value of ivar is an array fo zeros """
+    """Test that the first yielded value of ivar is an array fo zeros"""
     stream = repeat(np.random.random(size=(64, 64)), times=5)
     first = next(ivar(stream))
 
@@ -236,7 +236,7 @@ def test_ivar_first():
 
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 def test_ivar_output_shape(axis):
-    """ Test that the axis parameter is handled correctly """
+    """Test that the axis parameter is handled correctly"""
     stream = [np.random.random((16, 7, 3)) for _ in range(5)]
     stack = np.stack(stream, axis=-1)
 
@@ -249,7 +249,7 @@ def test_ivar_output_shape(axis):
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 @pytest.mark.parametrize("ddof", range(4))
 def test_ivar_ddof(axis, ddof):
-    """ Test that the ddof parameter is equivalent to numpy's """
+    """Test that the ddof parameter is equivalent to numpy's"""
     stream = [np.random.random((16, 7, 3)) for _ in range(10)]
     stack = np.stack(stream, axis=-1)
 
@@ -324,7 +324,7 @@ def test_istd_against_numpy_nanstd(axis, ddof):
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 @pytest.mark.parametrize("ddof", range(4))
 def test_sem_against_scipy_no_nans(axis, ddof):
-    """ Test that isem outputs the same as scipy.stats.sem """
+    """Test that isem outputs the same as scipy.stats.sem"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
 
@@ -338,7 +338,7 @@ def test_sem_against_scipy_no_nans(axis, ddof):
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 @pytest.mark.parametrize("ddof", range(4))
 def test_sem_against_scipy_with_nans(axis, ddof):
-    """ Test that isem outputs the same as scipy.stats.sem when NaNs are ignored. """
+    """Test that isem outputs the same as scipy.stats.sem when NaNs are ignored."""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     for arr in source:
         arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
@@ -354,7 +354,7 @@ def test_sem_against_scipy_with_nans(axis, ddof):
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 @pytest.mark.parametrize("ddof", range(4))
 def test_isem_against_scipy_no_nans(axis, ddof):
-    """ Test that isem outputs the same as scipy.stats.sem """
+    """Test that isem outputs the same as scipy.stats.sem"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
 
@@ -368,7 +368,7 @@ def test_isem_against_scipy_no_nans(axis, ddof):
 @pytest.mark.parametrize("axis", (0, 1, 2, None))
 @pytest.mark.parametrize("ddof", range(4))
 def test_isem_against_scipy_with_nans(axis, ddof):
-    """ Test that isem outputs the same as scipy.stats.sem when NaNs are ignored. """
+    """Test that isem outputs the same as scipy.stats.sem when NaNs are ignored."""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     for arr in source:
         arr[randint(0, 15), randint(0, 11), randint(0, 4)] = np.nan
@@ -381,7 +381,7 @@ def test_isem_against_scipy_with_nans(axis, ddof):
 
 
 def test_ihistogram_against_numpy_no_weights():
-    """ Test ihistogram against numpy.histogram with no weights """
+    """Test ihistogram against numpy.histogram with no weights"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
 
@@ -394,7 +394,7 @@ def test_ihistogram_against_numpy_no_weights():
 
 
 def test_ihistogram_trivial_weights():
-    """ Test ihistogram with weights being all 1s vs. weights=None """
+    """Test ihistogram with weights being all 1s vs. weights=None"""
     source = [np.random.random((16, 12, 5)) for _ in range(10)]
     weights = [np.array([1]) for _ in source]
 

@@ -9,7 +9,7 @@ import pytest
 
 
 def test_idot_against_numpy_multidot():
-    """ Test against numpy.linalg.multi_dot in 2D case """
+    """Test against numpy.linalg.multi_dot in 2D case"""
     stream = [np.random.random((8, 8)) for _ in range(7)]
 
     from_numpy = np.linalg.multi_dot(stream)
@@ -21,7 +21,7 @@ def test_idot_against_numpy_multidot():
 
 @pytest.mark.parametrize("axis", (0, 1, 2))
 def test_itensordot_against_numpy_tensordot(axis):
-    """ Test against numpy.tensordot in 2D case """
+    """Test against numpy.tensordot in 2D case"""
     stream = tuple(np.random.random((8, 8)) for _ in range(2))
 
     from_numpy = np.tensordot(*stream)
@@ -33,7 +33,7 @@ def test_itensordot_against_numpy_tensordot(axis):
 
 @pytest.mark.parametrize("axis", (0, 1, 2))
 def test_iinner_against_numpy_inner(axis):
-    """ Test against numpy.tensordot in 2D case """
+    """Test against numpy.tensordot in 2D case"""
     stream = tuple(np.random.random((8, 8)) for _ in range(2))
 
     from_numpy = np.inner(*stream)
@@ -44,7 +44,7 @@ def test_iinner_against_numpy_inner(axis):
 
 
 def test_ieinsum_against_numpy_einsum():
-    """ Test against numpy.einsum  """
+    """Test against numpy.einsum"""
     a = np.arange(60.0).reshape(3, 4, 5)
     b = np.arange(24.0).reshape(4, 3, 2)
     stream = [a, b]

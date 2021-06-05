@@ -36,7 +36,7 @@ UFUNCS_WITH_IDENTITY = list(filter(lambda u: u.identity is not None, UFUNCS))
 
 
 def test_ireduce_ufunc_no_side_effects():
-    """ Test that no arrays in the stream are modified """
+    """Test that no arrays in the stream are modified"""
     source = [np.random.random((16, 5, 8)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
     for arr in source:
@@ -45,7 +45,7 @@ def test_ireduce_ufunc_no_side_effects():
 
 
 def test_ireduce_ufunc_single_array():
-    """ Test ireduce_ufunc on a single array, not a sequence """
+    """Test ireduce_ufunc on a single array, not a sequence"""
     source = [np.random.random((16, 5, 8)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
     source = np.ones((16, 16), dtype=int)
@@ -54,7 +54,7 @@ def test_ireduce_ufunc_single_array():
 
 
 def test_ireduce_ufunc_out_parameter():
-    """ Test that the kwargs ``out`` is correctly passed to reduction function """
+    """Test that the kwargs ``out`` is correctly passed to reduction function"""
     source = [np.random.random((16, 5, 8)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
     not_out = last(ireduce_ufunc(source, np.add, axis=-1))
@@ -79,20 +79,20 @@ def test_ireduce_ufunc_ignore_nan_no_identity():
 
 
 def test_ireduce_ufunc_non_ufunc():
-    """ Test that ireduce_ufunc raises TypeError when a non-ufunc is passed """
+    """Test that ireduce_ufunc raises TypeError when a non-ufunc is passed"""
     with pytest.raises(TypeError):
         ireduce_ufunc(range(10), ufunc=lambda x: x)
 
 
 def test_ireduce_ufunc_non_binary_ufunc():
-    """ Test that ireduce_ufunc raises ValueError if non-binary ufunc is used """
+    """Test that ireduce_ufunc raises ValueError if non-binary ufunc is used"""
     with pytest.raises(ValueError):
         ireduce_ufunc(range(10), ufunc=np.absolute)
 
 
 @pytest.mark.parametrize("axis", (0, 1, 2, 3, None))
 def test_ireduce_ufunc_output_shape(axis):
-    """ Test output shape """
+    """Test output shape"""
     source = [np.random.random((16, 5, 8)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
 
@@ -104,7 +104,7 @@ def test_ireduce_ufunc_output_shape(axis):
 
 @pytest.mark.parametrize("axis", (0, 1, 2, 3, None))
 def test_ireduce_ufunc_length(axis):
-    """ Test that the number of elements yielded by ireduce_ufunc is correct """
+    """Test that the number of elements yielded by ireduce_ufunc is correct"""
 
     source = (np.zeros((16, 5, 8)) for _ in range(10))
     out = list(ireduce_ufunc(source, np.add, axis=axis))
@@ -113,7 +113,7 @@ def test_ireduce_ufunc_length(axis):
 
 @pytest.mark.parametrize("axis", (0, 1, 2, 3, None))
 def test_ireduce_ufunc_ignore_nan(axis):
-    """ Test that ignore_nan is working """
+    """Test that ignore_nan is working"""
     source = [np.random.random((16, 5, 8)) for _ in range(10)]
     stack = np.stack(source, axis=-1)
 
@@ -122,14 +122,14 @@ def test_ireduce_ufunc_ignore_nan(axis):
 
 
 def test_preduce_ufunc_trivial():
-    """ Test preduce_ufunc for a sum of zeroes over two processes"""
+    """Test preduce_ufunc for a sum of zeroes over two processes"""
     stream = [np.zeros((8, 8)) for _ in range(10)]
     s = preduce_ufunc(stream, ufunc=np.add, processes=2, ntotal=10)
     assert np.allclose(s, np.zeros_like(s))
 
 
 def test_preduce_ufunc_correctess():
-    """ Test preduce_ufunc is equivalent to reduce_ufunc for random sums"""
+    """Test preduce_ufunc is equivalent to reduce_ufunc for random sums"""
     stream = [np.random.random((8, 8)) for _ in range(20)]
     s = preduce_ufunc(stream, ufunc=np.add, processes=3, ntotal=10)
     assert np.allclose(s, reduce_ufunc(stream, np.add))

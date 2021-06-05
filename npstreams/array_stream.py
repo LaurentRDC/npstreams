@@ -35,7 +35,7 @@ class ArrayStream(Iterator):
         self.dtype = first.dtype
 
     def __repr__(self):
-        """ Verbose string representation """
+        """Verbose string representation"""
         representation = f"< {self.__class__.__name__} object"
         representation += f" of data-type {self.dtype}"
 
@@ -47,7 +47,7 @@ class ArrayStream(Iterator):
         return representation + " >"
 
     def __array__(self):
-        """ Returns a dense array created from this stream. """
+        """Returns a dense array created from this stream."""
         # As of numpy version 1.14, arrays are expanded into a list before contatenation
         # Therefore, it's ok to build that list first
         arraylist = list(self)

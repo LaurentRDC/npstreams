@@ -34,7 +34,7 @@ def test_csum_dtype():
 
 @skip_if_no_cuda
 def test_csum_ignore_nans():
-    """ Test a sum of zeros with NaNs sprinkled """
+    """Test a sum of zeros with NaNs sprinkled"""
     source = [np.zeros((16,), dtype=float) for _ in range(10)]
     source.append(np.full((16,), fill_value=np.nan))
     summed = csum(source, ignore_nan=True)
@@ -50,7 +50,7 @@ def test_cprod_ones_prod():
 
 @skip_if_no_cuda
 def test_cprod_ignore_nans():
-    """ Test that NaNs are ignored. """
+    """Test that NaNs are ignored."""
     source = [np.ones((16,), dtype=float) for _ in range(10)]
     source.append(np.full_like(source[0], np.nan))
     product = cprod(source, ignore_nan=True)
@@ -59,7 +59,7 @@ def test_cprod_ignore_nans():
 
 @skip_if_no_cuda
 def test_cprod_dtype():
-    """ Test that dtype argument is working """
+    """Test that dtype argument is working"""
     source = [np.ones((16,), dtype=float) for _ in range(10)]
     product = cprod(source, dtype=int)
     assert np.allclose(product, np.ones_like(product))
@@ -76,7 +76,7 @@ def test_cavg_no_weights():
 
 @skip_if_no_cuda
 def test_cavg_weighted_average():
-    """ Test results of weighted average against numpy.average """
+    """Test results of weighted average against numpy.average"""
     stream = [np.random.random(size=(16, 16)) for _ in range(5)]
 
     weights = [np.random.random(size=stream[0].shape) for _ in stream]
@@ -94,7 +94,7 @@ def test_cmean_of_ones():
 
 @skip_if_no_cuda
 def test_cmean_random():
-    """ Test cmean against numpy.mean on random data """
+    """Test cmean against numpy.mean on random data"""
     stream = [np.random.random(size=(16, 16)) for _ in range(5)]
     from_cmean = cmean(stream)
     from_numpy = np.mean(np.dstack(stream), axis=2)
