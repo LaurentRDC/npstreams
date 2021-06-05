@@ -2,3 +2,4 @@ sphinx >= 3
 sphinx_rtd_theme >= 0.4
 pytest >= 6
 scipy >= 1
+wheel
