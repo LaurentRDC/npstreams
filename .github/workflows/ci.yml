@@ -71,7 +71,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ runner.os }}-${{ matrix.python-version }}-artifact
+        name: ${{ runner.os }}-py${{ matrix.python-version }}-artifact
         path: dist/*
         retention-days: 7
 
@@ -83,12 +83,19 @@ jobs:
 
     - uses: actions/download-artifact@v2
       with:
-        path: dist/
+        path: artifacts/
 
     - name: Create release description
       run: |
-        python tools/release-description.py CHANGELOG.rst > description.md
+        python release-description.py CHANGELOG.rst > description.md
         cat description.md
+
+    - name: Move artifacts
+      run: |
+        ls --recursive artifacts/
+        mkdir dist
+        mv --backup=numbered artifacts/*/** dist
+        ls dist
 
     - name: Create release
       if: startsWith(github.ref, 'refs/tags/v')
