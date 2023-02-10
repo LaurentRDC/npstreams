@@ -276,7 +276,7 @@ def average_and_var(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     avg, sq_avg, swgt = last(
         _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
     )
-    variance = (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
+    variance = (sq_avg - avg**2) * (swgt / (swgt - ddof))
     return avg, variance
 
 
@@ -372,7 +372,7 @@ def ivar(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     """
     primitive = _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
     for avg, sq_avg, swgt in primitive:
-        yield (sq_avg - avg ** 2) * (swgt / (swgt - ddof))
+        yield (sq_avg - avg**2) * (swgt / (swgt - ddof))
 
 
 @array_stream
@@ -504,7 +504,7 @@ def sem(arrays, axis=-1, ddof=0, weights=None, ignore_nan=False):
     avg, sq_avg, swgt = last(
         _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
     )
-    return np.sqrt((sq_avg - avg ** 2) * (1 / (swgt - ddof)))
+    return np.sqrt((sq_avg - avg**2) * (1 / (swgt - ddof)))
 
 
 @array_stream
@@ -546,7 +546,7 @@ def isem(arrays, axis=-1, ddof=1, weights=None, ignore_nan=False):
     """
     primitive = _ivar(arrays=arrays, axis=axis, weights=weights, ignore_nan=ignore_nan)
     for avg, sq_avg, swgt in primitive:
-        yield np.sqrt((sq_avg - avg ** 2) * (1 / (swgt - ddof)))
+        yield np.sqrt((sq_avg - avg**2) * (1 / (swgt - ddof)))
 
 
 @array_stream
