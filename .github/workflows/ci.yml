@@ -87,6 +87,8 @@ jobs:
         files: |
           dist/*
     
+    # Github Actions have been set as a trusted publisher on PyPI's npstreams project,
+    # hence why no username, password, or token is required.
     - name: Upload to PyPI
       if: always()
       uses: pypa/gh-action-pypi-publish@release/v1
