@@ -46,7 +46,7 @@ class ArrayStream(Iterator):
 
         return representation + " >"
 
-    def __array__(self):
+    def __array__(self, *_, **__):
         """Returns a dense array created from this stream."""
         # As of numpy version 1.14, arrays are expanded into a list before contatenation
         # Therefore, it's ok to build that list first
