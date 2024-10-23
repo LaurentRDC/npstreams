@@ -80,8 +80,6 @@ jobs:
 
     - name: Create release
       uses: softprops/action-gh-release@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         body_path: description.md
         files: |
