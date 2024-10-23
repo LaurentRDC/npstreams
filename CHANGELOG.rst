@@ -1,8 +1,13 @@
 
+Release 1.7.0
+-------------
+
+* Explicit support for NumPy 2, in addition to NumPy 1.
+
 Release 1.6.6
 -------------
 
-* Added the ability to automatically publish to PyPI
+* Added the ability to automatically publish to PyPI.
   
 Release 1.6.5
 -------------

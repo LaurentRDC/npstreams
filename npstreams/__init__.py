@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 __author__ = "Laurent P. René de Cotret"
-__email__ = "laurent.renedecotret@mail.mcgill.ca"
+__email__ = "laurent.decotret@outlook.com"
 __license__ = "BSD"
-__version__ = "1.6.6"
+__version__ = "1.7.0"
 
 # Order of import is important
 # because of inter-dependency
