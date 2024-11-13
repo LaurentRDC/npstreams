@@ -4,10 +4,6 @@ __email__ = "laurent.decotret@outlook.com"
 __license__ = "BSD"
 __version__ = "1.7.0"
 
-# Order of import is important
-# because of inter-dependency
-from .utils import deprecated
-
 from .benchmarks import benchmark
 from .array_stream import array_stream, ArrayStream
 from .array_utils import nan_to_num

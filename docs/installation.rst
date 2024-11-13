@@ -36,7 +36,7 @@ repository::
 ...then installing the package with::
 
     cd npstreams
-    python setup.py install
+    pip install .
 
 
 Testing
@@ -45,7 +45,8 @@ Testing
 If you want to check that all the tests are running correctly with your Python
 configuration, type::
 
-    python setup.py test
+    pip install .[development]
+    pytest
 
 
 Embedding in applications

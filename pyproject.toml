@@ -1,0 +1,63 @@
+[build-system]
+requires = ["build", "setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {attr = "npstreams.__version__"}
+
+[project]
+name = "npstreams"
+dynamic = ["version"]
+authors = [
+  { name="Laurent P. René de Cotret", email="laurent.decotret@outlook.com" },
+]
+maintainers = [
+  { name="Laurent P. René de Cotret", email="laurent.decotret@outlook.com" },
+]
+description = "Streaming operations on NumPy arrays"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.7, <4"
+dependencies = ["numpy >= 1.17, <3"]
+keywords=["streaming", "numpy", "math"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+
+[project.optional-dependencies]
+development = [
+    "Sphinx >= 3",
+    "sphinx_rtd_theme >= 0.4",
+    "pytest >= 6",
+    "scipy >= 1",
+]
+
+[project.urls]
+Documentation = "https://npstreams.readthedocs.io/"
+Repository = "https://github.com/LaurentRDC/npstreams"
+"Bug Tracker" = "https://github.com/LaurentRDC/npstreams/issues"
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+log_cli_level = "INFO"
+addopts = ["--doctest-modules"]
+testpaths = ["npstreams/tests"]
+
+# See here for an explanation of how to include package data:
+# https://setuptools.pypa.io/en/latest/userguide/datafiles.html#package-data
+[tool.setuptools.package-data]
+npstreams = ["tests/data/*.npy"]

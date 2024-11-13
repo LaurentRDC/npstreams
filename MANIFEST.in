@@ -1,8 +1,6 @@
 include CHANGELOG.rst
 include LICENSE
 include README.md
-include requirements.txt 
-include dev-requirements.txt
 
 recursive-include npstreams/tests/data *
 
